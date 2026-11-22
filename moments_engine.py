@@ -102,3 +102,249 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
     cooldown = settings.get("contact_cooldown_days", 7)
     min_score = settings.get("min_score_to_fire", 0.5)
     weights = settings.get("score_weights", {})
+
+    suggestions = []
+
+    for city in hotel["guest_cities"]:
+        if _was_contacted_recently(city["name"], contacts, cooldown, today):
+            continue
+
+        weather = score_weather(hotel, city, settings)
+        air = score_air_quality(city, settings)
+
+        for days_out in range(window_lo, window_hi + 1):
+            check_in = today + timedelta(days=days_out)
+
+            if _is_blacked_out(check_in, hotel.get("blackout_dates", [])):
+                continue
+
+            blocked, strike_reason = is_strike_blocking(
+                check_in, hotel.get("travel_modes", []), data_dir
+            )
+            if blocked:
+                continue
+
+            holidays = score_holidays(check_in, settings, data_dir)
+            seasonal = score_seasonal(check_in, data_dir)
+            events = score_events(hotel, check_in, settings)
+
+            windows = _available_nights(
+                avail, check_in, min_nights, hotel["max_rooms_per_offer"]
+            )
+            if not windows:
+                continue
+
+            best_window = windows[0]
+            avail_score = min(best_window["rooms_free"] / max(hotel["rooms"], 1) * 2, 1.0)
+
+            combined = (
+                weather["score"] * weights.get("weather", 0.35)
+                + air["score"] * weights.get("air_quality", 0.10)
+                + holidays["score"] * weights.get("holiday", 0.20)
+                + seasonal["score"] * weights.get("seasonal", 0.15)
+                + avail_score * weights.get("availability", 0.20)
+            )
+
+            if combined < min_score:
+                continue
+
+            all_reasons = (
+                weather["reasons"]
+                + air["reasons"]
+                + holidays["reasons"]
+                + seasonal["reasons"]
+                + events["reasons"]
+            )
+            if not all_reasons:
+                continue
+
+            price = _compute_price(hotel, best_window["nights"], combined, settings)
+
+            suggestion = {
+                "hotel": hotel["name"],
+                "hotel_id": hotel["id"],
+                "guest_city": city["name"],
+                "check_in": best_window["check_in"],
+                "nights": best_window["nights"],
+                "rooms_to_offer": best_window["rooms_to_offer"],
+                "rooms_free": best_window["rooms_free"],
+                "score": round(combined, 3),
+                "price": price,
+                "reasons": all_reasons,
+                "source_scores": {
+                    "weather": weather["score"],
+                    "air_quality": air["score"],
+                    "holiday": holidays["score"],
+                    "seasonal": seasonal["score"],
+                    "events": events["score"],
+                    "availability": round(avail_score, 2),
+                },
+            }
+            suggestions.append(suggestion)
+
+    best_per_city: dict[str, dict] = {}
+    for s in suggestions:
+        key = s["guest_city"]
+        if key not in best_per_city or s["score"] > best_per_city[key]["score"]:
+            best_per_city[key] = s
+
+    return sorted(best_per_city.values(), key=lambda s: -s["score"])
+
+
+def explain_moments(hotel: dict, settings: dict, data_dir: Path,
+                    start_date: date, end_date: date) -> list[dict]:
+    """Explain which moments fire for each date in a range."""
+    results = []
+    d = start_date
+    while d <= end_date:
+        day_result = {"date": d.isoformat(), "weekday": d.strftime("%A"), "sources": {}}
+
+        for city in hotel["guest_cities"]:
+            weather = score_weather(hotel, city, settings)
+            air = score_air_quality(city, settings)
+            holidays = score_holidays(d, settings, data_dir)
+            seasonal = score_seasonal(d, data_dir)
+            blocked, strike_note = is_strike_blocking(d, hotel.get("travel_modes", []), data_dir)
+
+            weights = settings.get("score_weights", {})
+            combined = (
+                weather["score"] * weights.get("weather", 0.35)
+                + air["score"] * weights.get("air_quality", 0.10)
+                + holidays["score"] * weights.get("holiday", 0.20)
+                + seasonal["score"] * weights.get("seasonal", 0.15)
+            )
+
+            all_reasons = (
+                weather["reasons"] + air["reasons"]
+                + holidays["reasons"] + seasonal["reasons"]
+            )
+            if blocked:
+                all_reasons.append(f"BLOCKED: {strike_note}")
+
+            day_result["sources"][city["name"]] = {
+                "combined_score": round(combined, 3),
+                "fires": combined >= settings.get("min_score_to_fire", 0.5) and not blocked,
+                "weather": {"score": weather["score"], "reasons": weather["reasons"]},
+                "air_quality": {"score": air["score"], "reasons": air["reasons"]},
+                "holidays": {"score": holidays["score"], "reasons": holidays["reasons"]},
+                "seasonal": {"score": seasonal["score"], "reasons": seasonal["reasons"]},
+                "strike_blocked": blocked,
+                "all_reasons": all_reasons,
+            }
+
+        results.append(day_result)
+        d += timedelta(days=1)
+
+    return results
+
+
+def run_backtest(hotel: dict, settings: dict, months: int = 12) -> dict:
+    """Replay historical weather for the last N months, flag weekends."""
+    end_date = date.today() - timedelta(days=1)
+    start_date = end_date - timedelta(days=months * 30)
+
+    hotel_data = _cached_get(
+        f"https://archive-api.open-meteo.com/v1/archive"
+        f"?latitude={hotel['coords']['lat']}&longitude={hotel['coords']['lon']}"
+        f"&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum"
+        f"&timezone=Europe/Rome&start_date={start_date.isoformat()}&end_date={end_date.isoformat()}"
+    )
+
+    city_data = {}
+    for city in hotel["guest_cities"]:
+        time.sleep(0.3)
+        city_data[city["name"]] = _cached_get(
+            f"https://archive-api.open-meteo.com/v1/archive"
+            f"?latitude={city['coords']['lat']}&longitude={city['coords']['lon']}"
+            f"&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum"
+            f"&timezone=Europe/Rome&start_date={start_date.isoformat()}&end_date={end_date.isoformat()}"
+        )
+
+    if not hotel_data or not all(city_data.values()):
+        return {"error": "Could not fetch historical weather data."}
+
+    hotel_daily = hotel_data["daily"]
+    hotel_index = {d: i for i, d in enumerate(hotel_daily["time"])}
+
+    rows = []
+    d = start_date
+    while d <= end_date:
+        if d.weekday() == 4:  # Friday
+            fri, sat, sun = d, d + timedelta(days=1), d + timedelta(days=2)
+            weekend_dates = [fri, sat, sun]
+
+            for city_name, cdata in city_data.items():
+                if not cdata:
+                    continue
+                city_daily = cdata["daily"]
+                city_index = {dd: i for i, dd in enumerate(city_daily["time"])}
+
+                reasons = []
+                score = 0.0
+
+                city_wk_codes = []
+                hotel_wk_codes = []
+                for wd in weekend_dates:
+                    ci = city_index.get(wd.isoformat())
+                    hi = hotel_index.get(wd.isoformat())
+                    if ci is not None:
+                        city_wk_codes.append(city_daily["weather_code"][ci])
+                    if hi is not None:
+                        hotel_wk_codes.append(hotel_daily["weather_code"][hi])
+
+                if not city_wk_codes:
+                    d += timedelta(days=1)
+                    continue
+
+                rain_days_city = sum(1 for c in city_wk_codes if is_rainy(c))
+                rain_days_hotel = sum(1 for c in hotel_wk_codes if is_rainy(c))
+                hotel_better = rain_days_hotel < rain_days_city
+                if hotel_better and rain_days_city >= 2:
+                    score = max(score, 0.8)
+                    reasons.append(f"Rain in {city_name} ({rain_days_city}/3 days), drier at hotel")
+                elif hotel_better and rain_days_city == 1:
+                    score = max(score, 0.4)
+                    reasons.append(f"Some rain in {city_name}, drier at hotel")
+
+                snow_days = sum(1 for c in hotel_wk_codes if is_snowy(c))
+                if snow_days > 0:
+                    score = max(score, 0.7)
+                    reasons.append(f"Snow at {hotel['town']} ({snow_days} days)")
+
+                pre_fri = []
+                for back in range(1, 4):
+                    pre_d = (fri - timedelta(days=back)).isoformat()
+                    ci = city_index.get(pre_d)
+                    if ci is not None:
+                        pre_fri.append(city_daily["weather_code"][ci])
+                if len(pre_fri) >= 3 and all(is_rainy(c) for c in pre_fri):
+                    sunny_wk = sum(1 for c in hotel_wk_codes if is_sunny(c))
+                    if sunny_wk >= 1:
+                        score = max(score, 0.9)
+                        reasons.append(f"Sunny rebound at hotel after rain in {city_name}")
+
+                flagged = score >= settings.get("min_score_to_fire", 0.5)
+
+                rows.append({
+                    "weekend_friday": fri.isoformat(),
+                    "city": city_name,
+                    "flagged": flagged,
+                    "score": round(score, 2),
+                    "reasons": reasons,
+                    "city_weather": [describe_code(c) for c in city_wk_codes],
+                    "hotel_weather": [describe_code(c) for c in hotel_wk_codes],
+                })
+
+        d += timedelta(days=1)
+
+    flagged = [r for r in rows if r["flagged"]]
+    return {
+        "hotel": hotel["name"],
+        "period": f"{start_date.isoformat()} to {end_date.isoformat()}",
+        "months": months,
+        "total_weekends": len(rows),
+        "flagged_weekends": len(flagged),
+        "flag_rate_pct": round(len(flagged) / max(len(rows), 1) * 100, 1),
+        "flagged": flagged,
+        "demo": True,
+    }
