@@ -17,7 +17,7 @@ import httpx
 logger = logging.getLogger(__name__)
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-ANTHROPIC_MODEL = "claude-sonnet-4-20250514"
+ANTHROPIC_MODEL = "claude-haiku-5-5"
 
 _http = httpx.Client(
     headers={"User-Agent": "passpartout-events/1.0"},
@@ -29,6 +29,10 @@ def _fetch_page_text(url: str, max_chars: int = 15000) -> str | None:
     try:
         resp = _http.get(url, follow_redirects=True)
         resp.raise_for_status()
+        ct = resp.headers.get("content-type", "")
+        if "pdf" in ct or "octet-stream" in ct:
+            logger.warning("Skipping non-HTML content from %s", url[:80])
+            return None
         text = resp.text
         if "<html" in text.lower()[:200]:
             import re
@@ -55,7 +59,7 @@ def _ask_claude(system: str, user: str) -> str | None:
             },
             json={
                 "model": ANTHROPIC_MODEL,
-                "max_tokens": 2000,
+                "max_tokens": 4000,
                 "system": system,
                 "messages": [{"role": "user", "content": user}],
             },
@@ -63,7 +67,10 @@ def _ask_claude(system: str, user: str) -> str | None:
         )
         resp.raise_for_status()
         data = resp.json()
-        return data["content"][0]["text"]
+        for block in data["content"]:
+            if block.get("type") == "text":
+                return block["text"]
+        return None
     except Exception as exc:
         logger.error("Claude API error: %s", exc)
         return None
@@ -71,11 +78,12 @@ def _ask_claude(system: str, user: str) -> str | None:
 
 TOURISM_URLS = {
     "varenna": [
-        "https://www.lakecomo.eu/en/events",
-        "https://www.visitlakecomo.com/en/events",
+        "https://labreva.com/en/events",
+        "https://www.menaggio.com/en/",
     ],
     "bellagio": [
-        "https://www.lakecomo.eu/en/events",
+        "https://labreva.com/en/events",
+        "https://www.menaggio.com/en/",
     ],
 }
 
