@@ -4,13 +4,13 @@ A working demo that lets an AI assistant (Claude, ChatGPT and others) find and "
 
 It also exposes a REST API with interactive docs, so the same offers can be browsed from a web app, mobile app or any HTTP client.
 
-**Demo only:** the five hotels are fictional, availability is simulated, and bookings and payment links are fake.
+**Demo only:** the five hotels are fictional, availability is simulated, and bookings and payment links are fake. Weather forecasts are real, pulled from Open-Meteo.
 
 ## What the AI can do (MCP tools)
 
 | Tool | What it does |
 | --- | --- |
-| `current_moments` | What's happening now (rain in Milan, first snow, empty midweek) |
+| `current_moments` | Live weather forecast and moments triggered by it (rain, snow, sun on coast) |
 | `find_getaways` | Offers within X minutes by car or train, for given dates, budget and vibe |
 | `get_offer` | Full details of one offer |
 | `check_availability` | Is it open for these dates? |
@@ -20,7 +20,7 @@ It also exposes a REST API with interactive docs, so the same offers can be brow
 
 | Method | Endpoint | What it does |
 | --- | --- | --- |
-| GET | `/api/moments` | Current moments for a city |
+| GET | `/api/moments` | Live weather and triggered moments for a city |
 | GET | `/api/offers` | Search offers (city, dates, budget, vibe, travel mode) |
 | GET | `/api/offers/{id}` | Full details of one offer |
 | GET | `/api/offers/{id}/availability` | Check availability for dates |
@@ -33,7 +33,8 @@ Interactive API docs are at `/docs` (Swagger UI) and `/redoc` (ReDoc).
 ## Files
 
 - `server.py`: the MCP server and REST API (FastAPI)
-- `data.py`: sample hotels, offers and moments. **Edit this to change the demo.**
+- `data.py`: sample hotels, offers and weather trigger rules. **Edit this to change the demo.**
+- `weather.py`: live 7-day forecasts from Open-Meteo (free, no API key). Triggers offers based on actual weather conditions.
 - `requirements.txt`, `Procfile`: for hosting
 
 ## 1. Run it on your computer
@@ -96,8 +97,7 @@ curl -X POST http://localhost:8000/api/bookings \
 
 Good things to ask for, one at a time:
 
-1. "Replace the simulated moments with a real weather forecast from Open-Meteo."
-2. "Store hotels and offers in a database instead of data.py, with a simple page to add offers."
+1. "Store hotels and offers in a database instead of data.py, with a simple page to add offers."
 3. "Add a members list so `member_code` is checked properly."
 4. "Add a page showing all demo bookings."
 

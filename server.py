@@ -23,7 +23,8 @@ from mcp.server.mcpserver import MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel, EmailStr
 
-from data import DEMO_MEMBER_CODE, HOTELS, MOMENTS, OFFERS
+from data import DEMO_MEMBER_CODE, HOTELS, OFFERS
+from weather import get_weather_moments, is_offer_triggered
 
 # ---------- shared state ----------
 
@@ -102,6 +103,7 @@ def _offer_view(offer: dict, from_city: str, nights: int, member: bool) -> dict:
         "hotel": hotel["name"],
         "town": hotel["town"],
         "why_now": offer["trigger"],
+        "weather_triggered": is_offer_triggered(offer, from_city),
         "includes": offer["includes"],
         "travel_from_" + from_city.lower(): _travel(hotel, from_city),
         "nights": nights,
@@ -205,7 +207,8 @@ mcp = MCPServer(
     title="Passpartout (demo)",
     instructions=(
         "Passpartout finds private hotel offers within a short car or train ride of the "
-        "traveller's city, triggered by moments (weather, events, empty dates). "
+        "traveller's city, triggered by real weather forecasts (rain, sun, snow, cool temps). "
+        "Call current_moments first to see what the weather is driving today. "
         "Public prices show added value only; the real discount is shown only to members. "
         "Always say this is a demo with fictional hotels."
     ),
@@ -214,9 +217,11 @@ mcp = MCPServer(
 
 @mcp.tool()
 def current_moments(city: str = "Milan") -> dict:
-    """What's happening now that makes a short getaway from this city a good idea
-    (weather, events, empty dates). Simulated in the demo."""
-    return {"city": city, "moments": MOMENTS.get(city, []), "demo": True}
+    """What's happening now that makes a short getaway from this city a good idea.
+    Returns the live weather forecast and moments triggered by the forecast."""
+    result = get_weather_moments(city, OFFERS)
+    result["demo"] = True
+    return result
 
 
 @mcp.tool()
@@ -280,8 +285,10 @@ def root():
 
 @api.get("/api/moments", tags=["Moments"])
 def api_moments(city: str = Query("Milan", description="City name ('Milan' or 'Turin' in the demo)")):
-    """What's happening now that triggers getaway offers from this city."""
-    return {"city": city, "moments": MOMENTS.get(city, []), "demo": True}
+    """Live weather and moments that trigger getaway offers from this city."""
+    result = get_weather_moments(city, OFFERS)
+    result["demo"] = True
+    return result
 
 
 @api.get("/api/offers", tags=["Offers"])
