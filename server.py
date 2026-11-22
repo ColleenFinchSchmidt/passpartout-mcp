@@ -23,6 +23,7 @@ from fastapi.responses import RedirectResponse
 from mcp.server.mcpserver import MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel, EmailStr
+from starlette.middleware.cors import CORSMiddleware
 
 from data import DEMO_MEMBER_CODE, HOTELS, OFFERS
 from weather import get_weather_moments, is_offer_triggered, get_offer_forecast
@@ -513,18 +514,35 @@ if __name__ == "__main__":
     if "--stdio" in sys.argv:
         mcp.run("stdio")
     else:
-        public_host = os.environ.get("PUBLIC_HOST")
         host = os.environ.get("HOST", "127.0.0.1")
-        security = (
-            TransportSecuritySettings(allowed_hosts=[public_host, f"{public_host}:*"])
-            if public_host else None
+        public_host = os.environ.get("PUBLIC_HOST", "localhost")
+        security = TransportSecuritySettings(
+            allowed_origins=[
+                f"https://{public_host}",
+                "https://claude.ai",
+                "http://localhost:8000",
+                "http://127.0.0.1:8000",
+            ],
+            allowed_hosts=[
+                public_host,
+                f"{public_host}:*",
+                "localhost",
+                "localhost:*",
+                "127.0.0.1",
+                "127.0.0.1:*",
+            ],
         )
 
-        mcp_app = mcp.streamable_http_app(
+        combined = mcp.streamable_http_app(
             streamable_http_path="/mcp",
             transport_security=security,
-            host=host,
         )
-        api.mount("/mcp", mcp_app.routes[0].app)
+        combined.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+        combined.mount("/", app=api)
 
-        uvicorn.run(api, host=host, port=int(os.environ.get("PORT", "8000")))
+        uvicorn.run(combined, host=host, port=int(os.environ.get("PORT", "8000")))
