@@ -1,0 +1,140 @@
+"""Sample data for the Passpartout demo.
+
+All hotels and experiences below are FICTIONAL. Places and travel times are
+real-world approximations, for demo purposes only.
+"""
+
+HOTELS = [
+    {
+        "id": "h-como-1",
+        "name": "Villa Glicine (demo)",
+        "town": "Varenna, Lake Como",
+        "rooms": 22,
+        "public_rate_eur": 210,
+        "from": {"Milan": {"car_min": 75, "train_min": 65}, "Turin": {"car_min": 170, "train_min": 175}},
+        "station_walk_min": 8,
+        "vibe": ["lake", "romantic", "boat"],
+    },
+    {
+        "id": "h-langhe-1",
+        "name": "Cascina dei Noccioli (demo)",
+        "town": "La Morra, Langhe",
+        "rooms": 14,
+        "public_rate_eur": 180,
+        "from": {"Milan": {"car_min": 120, "train_min": None}, "Turin": {"car_min": 70, "train_min": None}},
+        "station_walk_min": None,
+        "pickup": "Free pickup from Alba station",
+        "vibe": ["wine", "food", "countryside"],
+    },
+    {
+        "id": "h-liguria-1",
+        "name": "Albergo Faro Blu (demo)",
+        "town": "Camogli, Liguria",
+        "rooms": 30,
+        "public_rate_eur": 190,
+        "from": {"Milan": {"car_min": 150, "train_min": 140}, "Turin": {"car_min": 135, "train_min": 150}},
+        "station_walk_min": 6,
+        "vibe": ["sea", "hiking", "romantic"],
+    },
+    {
+        "id": "h-garda-1",
+        "name": "Hotel Limonaia (demo)",
+        "town": "Sirmione, Lake Garda",
+        "rooms": 40,
+        "public_rate_eur": 170,
+        "from": {"Milan": {"car_min": 95, "train_min": 80}, "Turin": {"car_min": 190, "train_min": 160}},
+        "station_walk_min": None,
+        "pickup": "Shuttle from Desenzano station (15 min)",
+        "vibe": ["lake", "spa", "family"],
+    },
+    {
+        "id": "h-valtellina-1",
+        "name": "Baita Larice (demo)",
+        "town": "Bormio, Valtellina",
+        "rooms": 18,
+        "public_rate_eur": 160,
+        "from": {"Milan": {"car_min": 195, "train_min": 210}, "Turin": {"car_min": 290, "train_min": None}},
+        "station_walk_min": None,
+        "pickup": "Bus from Tirano station",
+        "vibe": ["mountains", "spa", "hiking"],
+    },
+]
+
+# Offers: a public layer (added value only) and a private layer (member rate).
+OFFERS = [
+    {
+        "id": "o-como-rain",
+        "hotel_id": "h-como-1",
+        "title": "Rainy-weekend escape on the lake",
+        "trigger": "Rain forecast in Milan this weekend",
+        "includes": ["Breakfast", "Late check-out 14:00", "Private boat ride to Bellagio (local partner)"],
+        "public_added_value": "Boat ride and late check-out included",
+        "member_discount_pct": 25,
+        "min_nights": 2,
+        "notice_days": [0, 10],
+        "weekdays_only": False,
+    },
+    {
+        "id": "o-langhe-harvest",
+        "hotel_id": "h-langhe-1",
+        "title": "Truffle-season midweek in the Langhe",
+        "trigger": "Empty midweek nights in white-truffle season",
+        "includes": ["Breakfast", "Truffle hunt with a local trifolao", "Wine tasting at a family cellar"],
+        "public_added_value": "Truffle hunt and wine tasting included",
+        "member_discount_pct": 20,
+        "min_nights": 2,
+        "notice_days": [2, 21],
+        "weekdays_only": True,
+    },
+    {
+        "id": "o-liguria-sun",
+        "hotel_id": "h-liguria-1",
+        "title": "Sunny seaside weekend by train",
+        "trigger": "Sun on the coast while Milan is grey",
+        "includes": ["Breakfast", "Picnic for the Portofino trail", "Aperitivo on the terrace"],
+        "public_added_value": "Trail picnic and aperitivo included",
+        "member_discount_pct": 22,
+        "min_nights": 1,
+        "notice_days": [3, 14],
+        "weekdays_only": False,
+    },
+    {
+        "id": "o-garda-spa",
+        "hotel_id": "h-garda-1",
+        "title": "Thermal spa reset, Sunday to Tuesday",
+        "trigger": "Soft occupancy Sunday to Tuesday",
+        "includes": ["Half board", "Thermal spa access", "Shuttle from Desenzano station"],
+        "public_added_value": "Spa access and station shuttle included",
+        "member_discount_pct": 30,
+        "min_nights": 2,
+        "notice_days": [1, 14],
+        "weekdays_only": True,
+    },
+    {
+        "id": "o-valtellina-snow",
+        "hotel_id": "h-valtellina-1",
+        "title": "First-snow weekend in the Alps",
+        "trigger": "First snowfall forecast in the Alps",
+        "includes": ["Breakfast", "Thermal baths entry", "Pizzoccheri dinner"],
+        "public_added_value": "Thermal baths and dinner included",
+        "member_discount_pct": 18,
+        "min_nights": 2,
+        "notice_days": [2, 14],
+        "weekdays_only": False,
+    },
+]
+
+# Simulated "moments" (a real engine would read weather, events and holiday feeds).
+MOMENTS = {
+    "Milan": [
+        "Rain forecast in Milan this weekend",
+        "Sun on the coast while Milan is grey",
+        "First snowfall forecast in the Alps",
+    ],
+    "Turin": [
+        "Empty midweek nights in white-truffle season",
+        "Sun on the coast while Milan is grey",
+    ],
+}
+
+DEMO_MEMBER_CODE = "DEMO-MEMBER"
