@@ -29,6 +29,7 @@ from data import DEMO_MEMBER_CODE, HOTELS, OFFERS
 from weather import get_weather_moments, is_offer_triggered, get_offer_forecast
 from moments_engine import evaluate_hotel, explain_moments, run_backtest, load_json
 from data_refresh import refresh_holidays
+from local_events import discover_events, get_approved_events
 
 # ---------- shared state ----------
 
@@ -381,6 +382,31 @@ def refresh_data() -> dict:
     }
 
 
+@mcp.tool()
+def discover_local_events(hotel_id: str | None = None) -> dict:
+    """AI agent: read tourism pages and local news near the hotel, then use
+    Claude to extract upcoming events (name, dates, place, relevance score).
+
+    Results are saved so the hotel can approve or hide them.
+    Requires ANTHROPIC_API_KEY. Cost: ~$0.01-0.03 per hotel per run.
+
+    hotel_id: hotel to scan (defaults to demo hotel)."""
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        return {"error": f"Hotel not found: {hotel_id}"}
+    return discover_events(hotel, MOMENTS_DATA)
+
+
+@mcp.tool()
+def list_local_events(hotel_id: str | None = None) -> dict:
+    """List discovered local events for a hotel. Events marked as hidden
+    by the hotel are excluded.
+
+    hotel_id: hotel to check (defaults to demo hotel)."""
+    events = get_approved_events(MOMENTS_DATA)
+    return {"events": events, "count": len(events)}
+
+
 # ========== REST API ==========
 
 api = FastAPI(
@@ -514,6 +540,26 @@ def api_explain_moments(
         "days": results,
         "demo": True,
     }
+
+
+@api.get("/api/hotel/events", tags=["Hotel tools"])
+def api_events(
+    hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
+):
+    """List discovered local events near the hotel."""
+    events = get_approved_events(MOMENTS_DATA)
+    return {"events": events, "count": len(events)}
+
+
+@api.post("/api/hotel/discover-events", tags=["Hotel tools"])
+def api_discover_events(
+    hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
+):
+    """Run the AI agent to discover local events. Requires ANTHROPIC_API_KEY."""
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    return discover_events(hotel, MOMENTS_DATA)
 
 
 @api.get("/api/hotel/backtest", tags=["Hotel tools"])
