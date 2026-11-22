@@ -1,0 +1,39 @@
+{
+  "min_score_to_fire": 0.5,
+  "booking_window_days": [
+    2,
+    14
+  ],
+  "min_nights": 2,
+  "contact_cooldown_days": 7,
+  "min_free_rooms": 1,
+  "score_weights": {
+    "weather": 0.35,
+    "air_quality": 0.1,
+    "holiday": 0.2,
+    "seasonal": 0.15,
+    "availability": 0.2
+  },
+  "weather_thresholds": {
+    "rain_code_min": 51,
+    "snow_code_min": 71,
+    "sunny_code_max": 1,
+    "grey_codes": [
+      2,
+      3,
+      45,
+      48
+    ],
+    "consecutive_rain_days_for_sunny_rebound": 3
+  },
+  "air_quality_thresholds": {
+    "pm25_bad_above": 25,
+    "pm10_bad_above": 50,
+    "aqi_bad_above": 3
+  },
+  "pricing": {
+    "base_discount_pct": 15,
+    "high_score_discount_pct": 25,
+    "score_for_max_discount": 0.8
+  }
+}
