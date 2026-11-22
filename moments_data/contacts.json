@@ -1,0 +1,4 @@
+{
+  "_comment": "Tracks when each guest city was last contacted, so we don't spam. Updated by the engine.",
+  "last_contact": {}
+}

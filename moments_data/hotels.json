@@ -1,0 +1,28 @@
+[
+  {
+    "id": "h-como-1",
+    "name": "Villa Glicine (demo)",
+    "town": "Varenna",
+    "region": "Lake Como",
+    "coords": { "lat": 46.01, "lon": 9.28 },
+    "rooms": 22,
+    "public_rate_eur": 210,
+    "lowest_price_eur": 150,
+    "max_discount_pct": 25,
+    "max_rooms_per_offer": 4,
+    "blackout_dates": ["2026-12-24", "2026-12-25", "2026-12-26", "2026-12-31"],
+    "guest_cities": [
+      { "name": "Milan", "coords": { "lat": 45.46, "lon": 9.19 } },
+      { "name": "Turin", "coords": { "lat": 45.07, "lon": 7.69 } }
+    ],
+    "travel_modes": ["train", "car"],
+    "moments_enabled": {
+      "rain_in_guest_city": true,
+      "snow_in_alps": true,
+      "sunny_weekend_after_rain": true,
+      "empty_midweek": true,
+      "smog_in_guest_city": true,
+      "local_events": false
+    }
+  }
+]

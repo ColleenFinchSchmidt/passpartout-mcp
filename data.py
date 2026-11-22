@@ -67,6 +67,7 @@ OFFERS = [
         "hotel_id": "h-como-1",
         "title": "Rainy-weekend escape on the lake",
         "trigger": "Rain forecast in Milan this weekend",
+        "weather_trigger": "city_rain",
         "includes": ["Breakfast", "Late check-out 14:00", "Private boat ride to Bellagio (local partner)"],
         "public_added_value": "Boat ride and late check-out included",
         "member_discount_pct": 25,
@@ -79,6 +80,7 @@ OFFERS = [
         "hotel_id": "h-langhe-1",
         "title": "Truffle-season midweek in the Langhe",
         "trigger": "Empty midweek nights in white-truffle season",
+        "weather_trigger": "dry_countryside",
         "includes": ["Breakfast", "Truffle hunt with a local trifolao", "Wine tasting at a family cellar"],
         "public_added_value": "Truffle hunt and wine tasting included",
         "member_discount_pct": 20,
@@ -91,6 +93,7 @@ OFFERS = [
         "hotel_id": "h-liguria-1",
         "title": "Sunny seaside weekend by train",
         "trigger": "Sun on the coast while Milan is grey",
+        "weather_trigger": "coast_sun_city_grey",
         "includes": ["Breakfast", "Picnic for the Portofino trail", "Aperitivo on the terrace"],
         "public_added_value": "Trail picnic and aperitivo included",
         "member_discount_pct": 22,
@@ -103,6 +106,7 @@ OFFERS = [
         "hotel_id": "h-garda-1",
         "title": "Thermal spa reset, Sunday to Tuesday",
         "trigger": "Soft occupancy Sunday to Tuesday",
+        "weather_trigger": "cool_spa",
         "includes": ["Half board", "Thermal spa access", "Shuttle from Desenzano station"],
         "public_added_value": "Spa access and station shuttle included",
         "member_discount_pct": 30,
@@ -115,6 +119,7 @@ OFFERS = [
         "hotel_id": "h-valtellina-1",
         "title": "First-snow weekend in the Alps",
         "trigger": "First snowfall forecast in the Alps",
+        "weather_trigger": "mountain_snow",
         "includes": ["Breakfast", "Thermal baths entry", "Pizzoccheri dinner"],
         "public_added_value": "Thermal baths and dinner included",
         "member_discount_pct": 18,
@@ -123,18 +128,5 @@ OFFERS = [
         "weekdays_only": False,
     },
 ]
-
-# Simulated "moments" (a real engine would read weather, events and holiday feeds).
-MOMENTS = {
-    "Milan": [
-        "Rain forecast in Milan this weekend",
-        "Sun on the coast while Milan is grey",
-        "First snowfall forecast in the Alps",
-    ],
-    "Turin": [
-        "Empty midweek nights in white-truffle season",
-        "Sun on the coast while Milan is grey",
-    ],
-}
 
 DEMO_MEMBER_CODE = "DEMO-MEMBER"
