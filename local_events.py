@@ -109,7 +109,31 @@ Only include events:
 Return [] if no relevant events found. Return ONLY valid JSON, no other text."""
 
 
-def discover_events(hotel: dict, data_dir: Path) -> dict:
+def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> dict:
+    """Discover local events. cache_only=True returns saved data, never calls APIs."""
+    events_file = data_dir / "local_events.json"
+
+    if cache_only:
+        if events_file.exists():
+            try:
+                data = json.loads(events_file.read_text())
+                data["_from_cache"] = True
+                return data
+            except (json.JSONDecodeError, ValueError):
+                pass
+        return {"events": [], "_from_cache": True, "_empty": True,
+                "note": "No cached data yet. Data refreshes automatically once a day."}
+
+    if events_file.exists():
+        try:
+            data = json.loads(events_file.read_text())
+            discovered = data.get("discovered", "")
+            if discovered and (date.today() - date.fromisoformat(discovered[:10])).days < 1:
+                data["_from_cache"] = True
+                return data
+        except (json.JSONDecodeError, ValueError):
+            pass
+
     if not ANTHROPIC_API_KEY:
         return {
             "error": "ANTHROPIC_API_KEY not set. Set it in your environment to enable event discovery.",

@@ -49,6 +49,52 @@ MOMENTS_SETTINGS = load_json(MOMENTS_DATA / "settings.json")
 MOMENTS_HOTELS = load_json(MOMENTS_DATA / "hotels.json")
 MOMENTS_HOTEL_BY_ID = {h["id"]: h for h in MOMENTS_HOTELS}
 
+
+def _refresh_paid_caches():
+    """Refresh stale paid-API caches at startup (once per day max).
+
+    This ensures MCP tools always have data to serve from cache,
+    without needing to make live API calls on individual requests.
+    """
+    import logging
+    log = logging.getLogger(__name__)
+
+    for hotel in MOMENTS_HOTELS:
+        lat = hotel.get("lat", 46.01)
+        lon = hotel.get("lon", 9.28)
+        region = hotel.get("region", "Lecco,Lombardy,Italy")
+        town = hotel.get("town", "varenna")
+
+        try:
+            result = fetch_predicthq_events(lat, lon, radius_km=30, days_ahead=90)
+            if result.get("_from_cache"):
+                log.info("PredictHQ cache fresh for %s", hotel["name"])
+            elif "error" not in result:
+                log.info("PredictHQ cache refreshed for %s (%d events)", hotel["name"], len(result.get("events", [])))
+        except Exception as exc:
+            log.warning("PredictHQ refresh failed for %s: %s", hotel["name"], exc)
+
+        try:
+            result = fetch_competitor_prices(location_name=region, keyword=f"hotel {town} lake como")
+            if result.get("_from_cache"):
+                log.info("DataForSEO cache fresh for %s", hotel["name"])
+            elif "error" not in result:
+                log.info("DataForSEO cache refreshed for %s (%d hotels)", hotel["name"], result.get("hotels_found", 0))
+        except Exception as exc:
+            log.warning("DataForSEO refresh failed for %s: %s", hotel["name"], exc)
+
+        try:
+            result = discover_events(hotel, MOMENTS_DATA)
+            if result.get("_from_cache"):
+                log.info("Local events cache fresh for %s", hotel["name"])
+            elif "error" not in result:
+                log.info("Local events refreshed for %s (%d events)", hotel["name"], len(result.get("events", [])))
+        except Exception as exc:
+            log.warning("Local events refresh failed for %s: %s", hotel["name"], exc)
+
+
+_refresh_paid_caches()
+
 HOTEL_API_KEY = os.environ.get("HOTEL_API_KEY", "")
 
 
@@ -395,17 +441,14 @@ def refresh_data() -> dict:
 
 @mcp.tool()
 def discover_local_events(hotel_id: str | None = None) -> dict:
-    """AI agent: read tourism pages and local news near the hotel, then use
-    Claude to extract upcoming events (name, dates, place, relevance score).
-
-    Results are saved so the hotel can approve or hide them.
-    Requires ANTHROPIC_API_KEY. Cost: ~$0.01-0.03 per hotel per run.
+    """Show previously discovered local events near the hotel (cached data).
+    Events refresh automatically once a day at server startup.
 
     hotel_id: hotel to scan (defaults to demo hotel)."""
     hotel = _resolve_hotel(hotel_id)
     if not hotel:
         return {"error": f"Hotel not found: {hotel_id}"}
-    return discover_events(hotel, MOMENTS_DATA)
+    return discover_events(hotel, MOMENTS_DATA, cache_only=True)
 
 
 @mcp.tool()
@@ -420,10 +463,8 @@ def list_local_events(hotel_id: str | None = None) -> dict:
 
 @mcp.tool()
 def demand_events(hotel_id: str | None = None, days_ahead: int = 90) -> dict:
-    """Fetch upcoming events near a hotel from PredictHQ (demand intelligence).
-    Shows ranked events that could drive travel demand.
-
-    Requires PREDICTHQ_API_KEY environment variable (free tier available).
+    """Upcoming events near a hotel from PredictHQ (cached data).
+    Data refreshes automatically once a day at server startup.
 
     hotel_id: hotel to check (defaults to demo hotel).
     days_ahead: how far ahead to look (default 90 days)."""
@@ -432,7 +473,7 @@ def demand_events(hotel_id: str | None = None, days_ahead: int = 90) -> dict:
         return {"error": f"Hotel not found: {hotel_id}"}
     lat = hotel.get("lat", 46.01)
     lon = hotel.get("lon", 9.28)
-    return fetch_predicthq_events(lat, lon, radius_km=30, days_ahead=days_ahead)
+    return fetch_predicthq_events(lat, lon, radius_km=30, days_ahead=days_ahead, cache_only=True)
 
 
 @mcp.tool()
@@ -441,11 +482,8 @@ def competitor_prices(
     check_in: str = "",
     check_out: str = "",
 ) -> dict:
-    """Fetch competitor hotel prices from Google Hotels via DataForSEO.
-    Shows what nearby hotels charge for the same dates — useful for pricing offers.
-
-    Requires DATAFORSEO_LOGIN and DATAFORSEO_PASSWORD environment variables
-    (pay-as-you-go, ~$0.004 per query).
+    """Competitor hotel prices from Google Hotels (cached data).
+    Data refreshes automatically once a day at server startup.
 
     hotel_id: hotel to check (defaults to demo hotel).
     check_in: YYYY-MM-DD (defaults to 2 weeks from now).
@@ -460,6 +498,7 @@ def competitor_prices(
         keyword=keyword,
         check_in=check_in,
         check_out=check_out,
+        cache_only=True,
     )
 
 

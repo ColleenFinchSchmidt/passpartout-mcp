@@ -34,6 +34,7 @@ _CACHE_MAX_AGE_HOURS = 24
 
 
 def _read_cache(key: str) -> dict | None:
+    """Return cached data if fresh (< 24 hours old)."""
     path = CACHE_DIR / f"{key}.json"
     if not path.exists():
         return None
@@ -45,6 +46,17 @@ def _read_cache(key: str) -> dict | None:
     except (json.JSONDecodeError, ValueError):
         pass
     return None
+
+
+def _read_cache_any(key: str) -> dict | None:
+    """Return cached data even if stale — for cache_only fallback."""
+    path = CACHE_DIR / f"{key}.json"
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text())
+    except (json.JSONDecodeError, ValueError):
+        return None
 
 
 def _write_cache(key: str, data: dict) -> None:
@@ -63,8 +75,12 @@ def fetch_predicthq_events(
     days_ahead: int = 90,
     limit: int = 20,
     force_refresh: bool = False,
+    cache_only: bool = False,
 ) -> dict:
-    """Fetch upcoming events near a location from PredictHQ."""
+    """Fetch upcoming events near a location from PredictHQ.
+
+    cache_only=True: never make a live API call; return cached data or empty.
+    """
     if not PREDICTHQ_API_KEY:
         return {
             "error": "PREDICTHQ_API_KEY not set.",
@@ -77,6 +93,15 @@ def fetch_predicthq_events(
         if cached:
             cached["_from_cache"] = True
             return cached
+
+    if cache_only:
+        stale = _read_cache_any(cache_key)
+        if stale:
+            stale["_from_cache"] = True
+            stale["_stale"] = True
+            return stale
+        return {"events": [], "_from_cache": True, "_empty": True,
+                "note": "No cached data yet. Data refreshes automatically once a day."}
 
     today = date.today()
     end = today + timedelta(days=days_ahead)
@@ -146,8 +171,12 @@ def fetch_competitor_prices(
     adults: int = 2,
     currency: str = "EUR",
     force_refresh: bool = False,
+    cache_only: bool = False,
 ) -> dict:
-    """Fetch competitor hotel prices from Google Hotels via DataForSEO."""
+    """Fetch competitor hotel prices from Google Hotels via DataForSEO.
+
+    cache_only=True: never make a live API call; return cached data or empty.
+    """
     if not DATAFORSEO_LOGIN or not DATAFORSEO_PASSWORD:
         return {
             "error": "DATAFORSEO_LOGIN and DATAFORSEO_PASSWORD not set.",
@@ -165,6 +194,15 @@ def fetch_competitor_prices(
         if cached:
             cached["_from_cache"] = True
             return cached
+
+    if cache_only:
+        stale = _read_cache_any(cache_key)
+        if stale:
+            stale["_from_cache"] = True
+            stale["_stale"] = True
+            return stale
+        return {"hotels": [], "_from_cache": True, "_empty": True,
+                "note": "No cached data yet. Data refreshes automatically once a day."}
 
     creds = base64.b64encode(
         f"{DATAFORSEO_LOGIN}:{DATAFORSEO_PASSWORD}".encode()
