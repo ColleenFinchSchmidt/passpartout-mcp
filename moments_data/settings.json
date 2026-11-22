@@ -1,5 +1,5 @@
 {
-  "min_score_to_fire": 0.25,
+  "min_score_to_fire": 0.50,
   "booking_window_days": [2, 14],
   "min_nights": 2,
   "contact_cooldown_days": 7,
