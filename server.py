@@ -28,6 +28,7 @@ from starlette.middleware.cors import CORSMiddleware
 from data import DEMO_MEMBER_CODE, HOTELS, OFFERS
 from weather import get_weather_moments, is_offer_triggered, get_offer_forecast
 from moments_engine import evaluate_hotel, explain_moments, run_backtest, load_json
+from data_refresh import refresh_holidays
 
 # ---------- shared state ----------
 
@@ -36,6 +37,12 @@ OFFER_BY_ID = {o["id"]: o for o in OFFERS}
 BOOKINGS: dict[str, dict] = {}
 
 MOMENTS_DATA = Path(__file__).parent / "moments_data"
+
+holidays_file = MOMENTS_DATA / "holidays.json"
+if not holidays_file.exists() or (date.today() - date.fromisoformat(
+        load_json(holidays_file).get("_generated", "2000-01-01"))).days > 30:
+    refresh_holidays(MOMENTS_DATA)
+
 MOMENTS_SETTINGS = load_json(MOMENTS_DATA / "settings.json")
 MOMENTS_HOTELS = load_json(MOMENTS_DATA / "hotels.json")
 MOMENTS_HOTEL_BY_ID = {h["id"]: h for h in MOMENTS_HOTELS}
@@ -356,6 +363,22 @@ def backtest_tool(hotel_id: str | None = None, months: int = 12) -> dict:
         return {"error": f"Hotel not found: {hotel_id}. Available: {[h['id'] for h in MOMENTS_HOTELS]}"}
     months = min(max(months, 1), 24)
     return run_backtest(hotel, MOMENTS_SETTINGS, months, MOMENTS_DATA)
+
+
+@mcp.tool()
+def refresh_data() -> dict:
+    """Refresh auto-generated data: Italian public holidays (from the
+    holidays Python package, includes Easter), auto-calculated ponti
+    (bridge days), and regional school calendars (Lombardy, Piedmont).
+
+    Call this to update the data files after adding a new year or region."""
+    data = refresh_holidays(MOMENTS_DATA)
+    return {
+        "refreshed": data["_generated"],
+        "public_holidays": len(data["public_holidays"]),
+        "ponti": len(data["ponti"]),
+        "school_periods": len(data["school_holidays"]),
+    }
 
 
 # ========== REST API ==========
