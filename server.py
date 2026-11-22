@@ -355,7 +355,7 @@ def backtest_tool(hotel_id: str | None = None, months: int = 12) -> dict:
     if not hotel:
         return {"error": f"Hotel not found: {hotel_id}. Available: {[h['id'] for h in MOMENTS_HOTELS]}"}
     months = min(max(months, 1), 24)
-    return run_backtest(hotel, MOMENTS_SETTINGS, months)
+    return run_backtest(hotel, MOMENTS_SETTINGS, months, MOMENTS_DATA)
 
 
 # ========== REST API ==========
@@ -502,7 +502,7 @@ def api_backtest(
     hotel = _resolve_hotel(hotel_id)
     if not hotel:
         raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
-    result = run_backtest(hotel, MOMENTS_SETTINGS, months)
+    result = run_backtest(hotel, MOMENTS_SETTINGS, months, MOMENTS_DATA)
     if "error" in result:
         raise HTTPException(status_code=502, detail=result["error"])
     return result

@@ -3,8 +3,10 @@
 Also includes a backtest function that replays historical weather.
 """
 
+import hashlib
 import json
 import time
+from collections import Counter
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -238,11 +240,48 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
     return results
 
 
-def run_backtest(hotel: dict, settings: dict, months: int = 12) -> dict:
-    """Replay historical weather for the last N months, flag weekends."""
+def _simulated_free_rooms(hotel: dict, d: date) -> int:
+    """Deterministic fake occupancy for backtesting (no real history)."""
+    total = hotel["rooms"]
+    dow = d.weekday()
+    base = 0.75 if dow in (4, 5) else 0.60 if dow == 6 else 0.45
+    m = d.month
+    if m in (7, 8):
+        base += 0.20
+    elif m in (6, 9):
+        base += 0.10
+    elif m == 12:
+        base += 0.15
+    elif m in (1, 2, 3):
+        base -= 0.10
+    h = int(hashlib.sha256(d.isoformat().encode()).hexdigest()[:8], 16)
+    base += ((h % 20) - 10) / 100.0
+    return max(total - round(total * max(0.05, min(0.95, base))), 0)
+
+
+def run_backtest(hotel: dict, settings: dict, months: int = 12,
+                 data_dir: Path | None = None) -> dict:
+    """Replay historical weather + holidays + seasonal + occupancy, flag weekends."""
+    if data_dir is None:
+        data_dir = Path(__file__).parent / "moments_data"
+
     end_date = date.today() - timedelta(days=1)
     start_date = end_date - timedelta(days=months * 30)
 
+    min_score = settings.get("min_score_to_fire", 0.25)
+    blackout_md = {bd[5:] for bd in hotel.get("blackout_dates", [])}
+
+    # Redistribute air-quality weight (no historical AQ data)
+    w = settings.get("score_weights", {})
+    aq = w.get("air_quality", 0.10)
+    bt_w = {
+        "weather": w.get("weather", 0.35) + aq * 0.4,
+        "holiday": w.get("holiday", 0.20) + aq * 0.3,
+        "seasonal": w.get("seasonal", 0.15) + aq * 0.15,
+        "availability": w.get("availability", 0.20) + aq * 0.15,
+    }
+
+    # Fetch historical weather
     hotel_data = _cached_get(
         f"https://archive-api.open-meteo.com/v1/archive"
         f"?latitude={hotel['coords']['lat']}&longitude={hotel['coords']['lon']}"
@@ -273,14 +312,21 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12) -> dict:
             fri, sat, sun = d, d + timedelta(days=1), d + timedelta(days=2)
             weekend_dates = [fri, sat, sun]
 
+            # Blackout check (year-agnostic): skip if any weekend day is blacked out
+            if any(wd.strftime("%m-%d") in blackout_md for wd in weekend_dates):
+                d += timedelta(days=1)
+                continue
+
             for city_name, cdata in city_data.items():
                 if not cdata:
                     continue
                 city_daily = cdata["daily"]
                 city_index = {dd: i for i, dd in enumerate(city_daily["time"])}
 
-                reasons = []
-                score = 0.0
+                # --- Weather scoring ---
+                weather_score = 0.0
+                weather_reasons = []
+                moment_types = []
 
                 city_wk_codes = []
                 hotel_wk_codes = []
@@ -300,16 +346,25 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12) -> dict:
                 rain_days_hotel = sum(1 for c in hotel_wk_codes if is_rainy(c))
                 hotel_better = rain_days_hotel < rain_days_city
                 if hotel_better and rain_days_city >= 2:
-                    score = max(score, 0.8)
-                    reasons.append(f"Rain in {city_name} ({rain_days_city}/3 days), drier at hotel")
+                    weather_score = max(weather_score, 0.8)
+                    weather_reasons.append(
+                        f"Rain in {city_name} ({rain_days_city}/3 days), drier at hotel"
+                    )
+                    moment_types.append("rain_escape")
                 elif hotel_better and rain_days_city == 1:
-                    score = max(score, 0.4)
-                    reasons.append(f"Some rain in {city_name}, drier at hotel")
+                    weather_score = max(weather_score, 0.4)
+                    weather_reasons.append(
+                        f"Some rain in {city_name}, drier at hotel"
+                    )
+                    moment_types.append("rain_escape")
 
                 snow_days = sum(1 for c in hotel_wk_codes if is_snowy(c))
                 if snow_days > 0:
-                    score = max(score, 0.7)
-                    reasons.append(f"Snow at {hotel['town']} ({snow_days} days)")
+                    weather_score = max(weather_score, 0.7)
+                    weather_reasons.append(
+                        f"Snow at {hotel['town']} ({snow_days} days)"
+                    )
+                    moment_types.append("snow")
 
                 pre_fri = []
                 for back in range(1, 4):
@@ -318,33 +373,114 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12) -> dict:
                     if ci is not None:
                         pre_fri.append(city_daily["weather_code"][ci])
                 if len(pre_fri) >= 3 and all(is_rainy(c) for c in pre_fri):
-                    sunny_wk = sum(1 for c in hotel_wk_codes if is_sunny(c))
+                    sunny_wk = sum(
+                        1 for c in hotel_wk_codes if is_sunny(c)
+                    )
                     if sunny_wk >= 1:
-                        score = max(score, 0.9)
-                        reasons.append(f"Sunny rebound at hotel after rain in {city_name}")
+                        weather_score = max(weather_score, 0.9)
+                        weather_reasons.append(
+                            f"Sunny rebound at hotel after rain in {city_name}"
+                        )
+                        moment_types.append("sunny_rebound")
 
-                flagged = score >= settings.get("min_score_to_fire", 0.5)
+                # --- Holiday scoring ---
+                holidays = score_holidays(fri, settings, data_dir)
+                for r in holidays.get("reasons", []):
+                    rl = r.lower()
+                    if "ponte" in rl or "bridge" in rl:
+                        moment_types.append("ponte")
+                    elif "school" in rl:
+                        moment_types.append("school_holiday")
+                    elif holidays["score"] > 0:
+                        moment_types.append("public_holiday")
+
+                # --- Seasonal scoring ---
+                seasonal = score_seasonal(fri, data_dir)
+                if seasonal["score"] > 0:
+                    moment_types.append("seasonal")
+
+                # --- Availability scoring (simulated occupancy) ---
+                free = _simulated_free_rooms(hotel, fri)
+                avail_score = min(free / max(hotel["rooms"], 1) * 2, 1.0)
+                if avail_score > 0.6:
+                    moment_types.append("low_occupancy")
+
+                # --- Combine with backtest weights ---
+                combined = (
+                    weather_score * bt_w["weather"]
+                    + holidays["score"] * bt_w["holiday"]
+                    + seasonal["score"] * bt_w["seasonal"]
+                    + avail_score * bt_w["availability"]
+                )
+
+                all_reasons = (
+                    weather_reasons
+                    + holidays.get("reasons", [])
+                    + seasonal.get("reasons", [])
+                )
+                if avail_score > 0.6:
+                    all_reasons.append(
+                        f"Low occupancy ({free}/{hotel['rooms']} rooms free)"
+                    )
+
+                flagged = combined >= min_score
 
                 rows.append({
                     "weekend_friday": fri.isoformat(),
                     "city": city_name,
                     "flagged": flagged,
-                    "score": round(score, 2),
-                    "reasons": reasons,
+                    "score": round(combined, 3),
+                    "moment_types": list(set(moment_types)),
+                    "reasons": all_reasons,
                     "city_weather": [describe_code(c) for c in city_wk_codes],
                     "hotel_weather": [describe_code(c) for c in hotel_wk_codes],
+                    "source_scores": {
+                        "weather": round(weather_score, 2),
+                        "holiday": holidays["score"],
+                        "seasonal": seasonal["score"],
+                        "availability": round(avail_score, 2),
+                    },
                 })
 
         d += timedelta(days=1)
 
-    flagged = [r for r in rows if r["flagged"]]
+    # Filter to flagged, then apply 1-per-guest-per-week cap
+    flagged_all = [r for r in rows if r["flagged"]]
+    flagged_all.sort(key=lambda r: -r["score"])
+    kept = []
+    kept_dates: dict[str, list[date]] = {}
+    for row in flagged_all:
+        city = row["city"]
+        fri = date.fromisoformat(row["weekend_friday"])
+        if any(abs((fri - p).days) < 7 for p in kept_dates.get(city, [])):
+            continue
+        kept.append(row)
+        kept_dates.setdefault(city, []).append(fri)
+    kept.sort(key=lambda r: r["weekend_friday"])
+
+    # Per-month and per-moment-type counts
+    month_counts: Counter = Counter()
+    type_counts: Counter = Counter()
+    for row in kept:
+        month_counts[row["weekend_friday"][:7]] += 1
+        for t in row["moment_types"]:
+            type_counts[t] += 1
+
     return {
         "hotel": hotel["name"],
         "period": f"{start_date.isoformat()} to {end_date.isoformat()}",
         "months": months,
         "total_weekends": len(rows),
-        "flagged_weekends": len(flagged),
-        "flag_rate_pct": round(len(flagged) / max(len(rows), 1) * 100, 1),
-        "flagged": flagged,
+        "flagged_before_dedup": len(flagged_all),
+        "flagged_weekends": len(kept),
+        "flag_rate_pct": round(len(kept) / max(len(rows), 1) * 100, 1),
+        "per_month": dict(sorted(month_counts.items())),
+        "per_type": dict(type_counts.most_common()),
+        "thresholds": {
+            "min_score": min_score,
+            "backtest_weights": {k: round(v, 3) for k, v in bt_w.items()},
+            "note": "Air-quality weight redistributed (no historical AQ data)",
+        },
+        "flagged": kept,
         "demo": True,
     }
