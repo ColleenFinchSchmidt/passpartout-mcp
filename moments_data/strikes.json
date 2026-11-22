@@ -1,0 +1,12 @@
+{
+  "_comment": "Known transport strikes that block travel. Check the Italian Ministry of Transport strike calendar (scioperi.mit.gov.it) and update. Dates are inclusive.",
+  "strikes": [
+    {
+      "from": "2026-12-13",
+      "to": "2026-12-13",
+      "mode": "train",
+      "region": "national",
+      "note": "Example: 24h national rail strike"
+    }
+  ]
+}
