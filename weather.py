@@ -3,9 +3,10 @@
 import json
 import logging
 import time
-from datetime import date
+from datetime import date, datetime
 from urllib.error import URLError
 from urllib.request import Request, urlopen
+from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)
 
@@ -90,11 +91,21 @@ def _describe_code(code: int) -> str:
 
 
 def _weekend_indices(dates: list[str]) -> list[int]:
-    """Indices of the nearest Fri-Sat-Sun block in the forecast."""
+    """Indices of the nearest Fri-Sat-Sun block in the forecast.
+
+    From Sunday 14:00 Rome time onward, skip the rest of the current
+    weekend and return the coming Friday-to-Sunday instead.
+    """
+    now = datetime.now(ZoneInfo("Europe/Rome"))
+    skip_today = now.weekday() == 6 and now.hour >= 14
+
     indices = []
     started = False
     for i, d in enumerate(dates):
-        wd = date.fromisoformat(d).weekday()
+        day = date.fromisoformat(d)
+        if skip_today and day == now.date():
+            continue
+        wd = day.weekday()
         if wd in (4, 5, 6):  # Fri, Sat, Sun
             started = True
             indices.append(i)
