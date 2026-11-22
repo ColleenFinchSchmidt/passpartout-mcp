@@ -30,6 +30,7 @@ from weather import get_weather_moments, is_offer_triggered, get_offer_forecast
 from moments_engine import evaluate_hotel, explain_moments, run_backtest, load_json
 from data_refresh import refresh_holidays
 from local_events import discover_events, get_approved_events
+from demand_signals import fetch_predicthq_events, fetch_competitor_prices
 
 # ---------- shared state ----------
 
@@ -407,6 +408,50 @@ def list_local_events(hotel_id: str | None = None) -> dict:
     return {"events": events, "count": len(events)}
 
 
+@mcp.tool()
+def demand_events(hotel_id: str | None = None, days_ahead: int = 90) -> dict:
+    """Fetch upcoming events near a hotel from PredictHQ (demand intelligence).
+    Shows ranked events that could drive travel demand.
+
+    Requires PREDICTHQ_API_KEY environment variable (free tier available).
+
+    hotel_id: hotel to check (defaults to demo hotel).
+    days_ahead: how far ahead to look (default 90 days)."""
+    hotel = MOMENTS_HOTEL_BY_ID.get(hotel_id or "villa-glicine")
+    if not hotel:
+        return {"error": f"Hotel not found: {hotel_id}"}
+    lat = hotel.get("lat", 46.01)
+    lon = hotel.get("lon", 9.28)
+    return fetch_predicthq_events(lat, lon, radius_km=30, days_ahead=days_ahead)
+
+
+@mcp.tool()
+def competitor_prices(
+    hotel_id: str | None = None,
+    check_in: str = "",
+    check_out: str = "",
+) -> dict:
+    """Fetch competitor hotel prices from Google Hotels via DataForSEO.
+    Shows what nearby hotels charge for the same dates — useful for pricing offers.
+
+    Requires DATAFORSEO_LOGIN and DATAFORSEO_PASSWORD environment variables
+    (pay-as-you-go, ~$0.004 per query).
+
+    hotel_id: hotel to check (defaults to demo hotel).
+    check_in: YYYY-MM-DD (defaults to 2 weeks from now).
+    check_out: YYYY-MM-DD (defaults to check_in + 2 nights)."""
+    hotel = MOMENTS_HOTEL_BY_ID.get(hotel_id or "villa-glicine")
+    if not hotel:
+        return {"error": f"Hotel not found: {hotel_id}"}
+    location = f"{hotel.get('town', 'Varenna')}, Lake Como, Italy"
+    return fetch_competitor_prices(
+        location_name=location,
+        keyword=hotel.get("town", ""),
+        check_in=check_in,
+        check_out=check_out,
+    )
+
+
 # ========== REST API ==========
 
 api = FastAPI(
@@ -560,6 +605,39 @@ def api_discover_events(
     if not hotel:
         raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
     return discover_events(hotel, MOMENTS_DATA)
+
+
+@api.get("/api/hotel/demand-events", tags=["Demand signals"])
+def api_demand_events(
+    hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
+    days_ahead: int = Query(90, ge=1, le=365, description="Days to look ahead"),
+):
+    """Upcoming events from PredictHQ that could drive travel demand. Requires PREDICTHQ_API_KEY."""
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    lat = hotel.get("lat", 46.01)
+    lon = hotel.get("lon", 9.28)
+    return fetch_predicthq_events(lat, lon, radius_km=30, days_ahead=days_ahead)
+
+
+@api.get("/api/hotel/competitor-prices", tags=["Demand signals"])
+def api_competitor_prices(
+    hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
+    check_in: str = Query("", description="Check-in date YYYY-MM-DD (defaults to 2 weeks out)"),
+    check_out: str = Query("", description="Check-out date YYYY-MM-DD (defaults to check_in + 2)"),
+):
+    """Competitor hotel prices from Google Hotels. Requires DATAFORSEO_LOGIN and DATAFORSEO_PASSWORD."""
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    location = f"{hotel.get('town', 'Varenna')}, Lake Como, Italy"
+    return fetch_competitor_prices(
+        location_name=location,
+        keyword=hotel.get("town", ""),
+        check_in=check_in,
+        check_out=check_out,
+    )
 
 
 @api.get("/api/hotel/backtest", tags=["Hotel tools"])
