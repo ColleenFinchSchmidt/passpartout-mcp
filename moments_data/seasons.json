@@ -1,0 +1,45 @@
+{
+  "_comment": "Seasonal events near Lake Como / Northern Italy. Hand-maintained.",
+  "seasons": [
+    {
+      "id": "wisteria",
+      "name": "Wisteria season at Villa Glicine",
+      "from": "04-15",
+      "to": "05-15",
+      "score": 0.8,
+      "reason": "Wisteria in full bloom at Villa Glicine"
+    },
+    {
+      "id": "foliage",
+      "name": "Autumn foliage on Lake Como",
+      "from": "10-10",
+      "to": "11-15",
+      "score": 0.7,
+      "reason": "Autumn colours on the lake"
+    },
+    {
+      "id": "christmas_markets",
+      "name": "Christmas markets in Como and Bellagio",
+      "from": "11-25",
+      "to": "12-23",
+      "score": 0.6,
+      "reason": "Christmas markets in Como and Bellagio"
+    },
+    {
+      "id": "spring_bloom",
+      "name": "Villa gardens spring bloom",
+      "from": "03-20",
+      "to": "04-30",
+      "score": 0.5,
+      "reason": "Villa gardens coming alive"
+    },
+    {
+      "id": "lake_swimming",
+      "name": "Lake swimming season",
+      "from": "06-15",
+      "to": "09-15",
+      "score": 0.6,
+      "reason": "Lake warm enough for swimming"
+    }
+  ]
+}
