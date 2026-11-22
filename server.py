@@ -24,7 +24,7 @@ from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel, EmailStr
 
 from data import DEMO_MEMBER_CODE, HOTELS, OFFERS
-from weather import get_weather_moments, is_offer_triggered
+from weather import get_weather_moments, is_offer_triggered, get_offer_forecast
 
 # ---------- shared state ----------
 
@@ -97,18 +97,23 @@ def _price(offer: dict, hotel: dict, nights: int, member: bool) -> dict:
 
 def _offer_view(offer: dict, from_city: str, nights: int, member: bool) -> dict:
     hotel = HOTEL_BY_ID[offer["hotel_id"]]
-    return {
+    triggered, reason = is_offer_triggered(offer, from_city)
+    view = {
         "offer_id": offer["id"],
         "title": offer["title"],
         "hotel": hotel["name"],
         "town": hotel["town"],
-        "why_now": offer["trigger"],
-        "weather_triggered": is_offer_triggered(offer, from_city),
+        "why_now": reason or offer["trigger"],
+        "weather_triggered": triggered,
         "includes": offer["includes"],
         "travel_from_" + from_city.lower(): _travel(hotel, from_city),
         "nights": nights,
         "price": _price(offer, hotel, nights, member),
     }
+    forecast = get_offer_forecast(offer["hotel_id"])
+    if forecast:
+        view["destination_forecast"] = forecast
+    return view
 
 
 def _find_getaways(

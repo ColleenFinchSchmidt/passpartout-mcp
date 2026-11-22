@@ -90,7 +90,17 @@ def _describe_code(code: int) -> str:
 
 
 def _weekend_indices(dates: list[str]) -> list[int]:
-    return [i for i, d in enumerate(dates) if date.fromisoformat(d).weekday() in (5, 6)]
+    """Indices of the nearest Fri-Sat-Sun block in the forecast."""
+    indices = []
+    started = False
+    for i, d in enumerate(dates):
+        wd = date.fromisoformat(d).weekday()
+        if wd in (4, 5, 6):  # Fri, Sat, Sun
+            started = True
+            indices.append(i)
+        elif started:
+            break
+    return indices
 
 def _midweek_indices(dates: list[str]) -> list[int]:
     return [i for i, d in enumerate(dates) if date.fromisoformat(d).weekday() in (0, 1, 2, 3)]
@@ -105,11 +115,13 @@ def _check_trigger(trigger_type: str, city_fc: dict, dest_fc: dict | None, city:
 
     if trigger_type == "city_rain":
         weekend = _weekend_indices(dates)
-        if weekend and any(_is_rainy(codes[i]) for i in weekend):
-            return f"Rain forecast in {city} this weekend"
+        rainy_wk = [dates[i] for i in weekend if _is_rainy(codes[i])]
+        if rainy_wk:
+            return f"Rain forecast in {city} this weekend ({', '.join(rainy_wk)})"
         near = list(range(min(3, len(codes))))
-        if any(_is_rainy(codes[i]) for i in near):
-            return f"Rain expected in {city} in the next few days"
+        rainy_near = [dates[i] for i in near if _is_rainy(codes[i])]
+        if rainy_near:
+            return f"Rain expected in {city} ({', '.join(rainy_near)})"
         return None
 
     if trigger_type == "coast_sun_city_grey":
@@ -165,7 +177,9 @@ def get_weather_moments(city: str, offers: list[dict]) -> dict:
     if weekend:
         wk_codes = [city_fc["weather_code"][i] for i in weekend]
         wk_desc = " and ".join(dict.fromkeys(_describe_code(c) for c in wk_codes))
-        weekend_summary = f"{wk_desc} ({', '.join(city_fc['time'][i] for i in weekend)})"
+        first = city_fc["time"][weekend[0]]
+        last = city_fc["time"][weekend[-1]]
+        weekend_summary = f"{wk_desc} ({first} to {last})" if first != last else f"{wk_desc} ({first})"
     else:
         weekend_summary = None
 
@@ -193,14 +207,32 @@ def get_weather_moments(city: str, offers: list[dict]) -> dict:
     }
 
 
-def is_offer_triggered(offer: dict, city: str) -> bool:
-    """Quick check: is this offer's weather trigger active for the given city?"""
+def is_offer_triggered(offer: dict, city: str) -> tuple[bool, str | None]:
+    """Check if this offer's weather trigger is active. Returns (triggered, reason)."""
     trigger_type = offer.get("weather_trigger")
     if not trigger_type:
-        return True  # offers without a weather trigger are always shown
+        return True, None
     forecasts = _fetch_all()
     city_fc = forecasts.get(city)
     if not city_fc:
-        return True  # if weather is unavailable, don't hide offers
+        return True, None
     dest_fc = forecasts.get(offer["hotel_id"])
-    return _check_trigger(trigger_type, city_fc, dest_fc, city) is not None
+    reason = _check_trigger(trigger_type, city_fc, dest_fc, city)
+    return reason is not None, reason
+
+
+def get_offer_forecast(hotel_id: str) -> list[dict] | None:
+    """Return the next few days' forecast for a hotel's destination."""
+    forecasts = _fetch_all()
+    fc = forecasts.get(hotel_id)
+    if not fc:
+        return None
+    days = []
+    for i in range(min(5, len(fc["time"]))):
+        days.append({
+            "date": fc["time"][i],
+            "weather": _describe_code(fc["weather_code"][i]),
+            "high": round(fc["temperature_2m_max"][i]),
+            "low": round(fc["temperature_2m_min"][i]),
+        })
+    return days
