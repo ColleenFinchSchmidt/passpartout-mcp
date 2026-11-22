@@ -443,10 +443,11 @@ def competitor_prices(
     hotel = MOMENTS_HOTEL_BY_ID.get(hotel_id or "villa-glicine")
     if not hotel:
         return {"error": f"Hotel not found: {hotel_id}"}
-    location = f"{hotel.get('town', 'Varenna')}, Lake Como, Italy"
+    location = hotel.get("region", "Lecco,Lombardy,Italy")
+    keyword = f"hotel {hotel.get('town', 'varenna')} lake como"
     return fetch_competitor_prices(
         location_name=location,
-        keyword=hotel.get("town", ""),
+        keyword=keyword,
         check_in=check_in,
         check_out=check_out,
     )
@@ -631,10 +632,11 @@ def api_competitor_prices(
     hotel = _resolve_hotel(hotel_id)
     if not hotel:
         raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
-    location = f"{hotel.get('town', 'Varenna')}, Lake Como, Italy"
+    location = hotel.get("region", "Lecco,Lombardy,Italy")
+    keyword = f"hotel {hotel.get('town', 'varenna')} lake como"
     return fetch_competitor_prices(
         location_name=location,
-        keyword=hotel.get("town", ""),
+        keyword=keyword,
         check_in=check_in,
         check_out=check_out,
     )

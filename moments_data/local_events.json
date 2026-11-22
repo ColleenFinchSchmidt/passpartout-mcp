@@ -1,0 +1,114 @@
+{
+  "hotel": "Villa Glicine (demo)",
+  "discovered": "2026-11-22",
+  "events": [
+    {
+      "name": "Menaggio on Ice (6th edition)",
+      "dates": {
+        "from": "2026-11-28",
+        "to": "2027-01-10"
+      },
+      "place": "Menaggio, Piazza Garibaldi",
+      "distance_km": 12,
+      "category": "sport",
+      "who": "families",
+      "relevance": 0.8,
+      "summary": "Outdoor ice skating rink on the lakeside piazza, part of Menaggio's Christmas programme with illuminated streets, markets and shows."
+    },
+    {
+      "name": "Città dei Balocchi Christmas market",
+      "dates": {
+        "from": "2026-11-27",
+        "to": "2027-01-06"
+      },
+      "place": "Como",
+      "distance_km": 25,
+      "category": "market",
+      "who": "families",
+      "relevance": 0.8,
+      "summary": "Large Christmas market in Como's historic centre, running from late November to early January, with stalls, food and festive atmosphere."
+    },
+    {
+      "name": "Weihnachtsmarkt Bellagio",
+      "dates": {
+        "from": "2026-12-01",
+        "to": "2026-12-31"
+      },
+      "place": "Bellagio",
+      "distance_km": 6,
+      "category": "market",
+      "who": "couples",
+      "relevance": 0.6,
+      "summary": "Christmas market in the lakeside village of Bellagio, held through December, with festive stalls and a picturesque setting."
+    },
+    {
+      "name": "Weihnachtsmarkt Colico",
+      "dates": {
+        "from": "2026-12-01",
+        "to": "2026-12-31"
+      },
+      "place": "Colico, Piazza Garibaldi",
+      "distance_km": 17,
+      "category": "market",
+      "who": "everyone",
+      "relevance": 0.5,
+      "summary": "Christmas market on Piazza Garibaldi in Colico during December 2026."
+    },
+    {
+      "name": "Carnival in Colico (Laghetto)",
+      "dates": {
+        "from": "2027-02-01",
+        "to": "2027-02-20"
+      },
+      "place": "Colico",
+      "distance_km": 17,
+      "category": "festival",
+      "who": "families",
+      "relevance": 0.5,
+      "summary": "Traditional carnival celebration in Colico in February 2027, with costumes and festivities for all ages (exact dates to be confirmed)."
+    },
+    {
+      "name": "Awaiting Christmas (Menaggio)",
+      "dates": {
+        "from": "2026-12-05",
+        "to": "2026-12-05"
+      },
+      "place": "Menaggio, Piazza Garibaldi",
+      "distance_km": 12,
+      "category": "festival",
+      "who": "families",
+      "relevance": 0.4,
+      "summary": "Children's Christmas entertainment at 11:00 in the heart of Menaggio."
+    },
+    {
+      "name": "Liszt's Liebestraum classical concert",
+      "dates": {
+        "from": "2026-11-29",
+        "to": "2026-11-29"
+      },
+      "place": "Loveno (Menaggio), Church of SS. Lorenzo e Agnese",
+      "distance_km": 13,
+      "category": "music",
+      "who": "couples",
+      "relevance": 0.4,
+      "summary": "Classical piano concert at 16:00 in a lakeside church near Menaggio."
+    },
+    {
+      "name": "Weihnachts-Krippen (Christmas nativity scenes)",
+      "dates": {
+        "from": "2026-12-01",
+        "to": "2026-12-31"
+      },
+      "place": "Gravedona",
+      "distance_km": 17,
+      "category": "art",
+      "who": "families",
+      "relevance": 0.3,
+      "summary": "Christmas nativity scene exhibition in Gravedona throughout December."
+    }
+  ],
+  "sources": [
+    "https://labreva.com/en/events",
+    "https://www.menaggio.com/en/"
+  ]
+}
