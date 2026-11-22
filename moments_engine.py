@@ -14,6 +14,7 @@ from moments_sources import (
     _cached_get,
     describe_code,
     fetch_forecast,
+    is_grey,
     is_rainy,
     is_snowy,
     is_sunny,
@@ -118,13 +119,17 @@ def _additive_score(
     total_rooms: int,
     holiday_result: dict,
     min_free_rooms: int = 1,
+    hotel_weather_penalty: float = 0.0,
 ) -> float:
+    empty_ratio = max(0, free_rooms / max(total_rooms, 1))
+
+    if empty_ratio < 0.30:
+        return 0.0
+
     score = 0.0
     score += min(weather_raw * 0.45, 0.40)
     score += min(aq_raw * 0.35, 0.25)
     score += min(seasonal_raw * 0.45, 0.30)
-
-    empty_ratio = max(0, free_rooms / max(total_rooms, 1))
     score += min(empty_ratio * 0.35, 0.30)
 
     if free_rooms >= min_free_rooms:
@@ -136,7 +141,9 @@ def _additive_score(
         if h["public"] and empty_ratio > 0.30:
             score += 0.05
 
-    return min(score, 1.0)
+    score -= hotel_weather_penalty
+
+    return max(min(score, 1.0), 0.0)
 
 
 # ---------------------------------------------------------------------------
@@ -244,6 +251,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
                 hotel["rooms"],
                 holidays,
                 min_free,
+                hotel_weather_penalty=weather.get("hotel_weather_penalty", 0.0),
             )
 
             if combined < min_score:
@@ -314,6 +322,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
                 hotel["rooms"],
                 hotel["rooms"],
                 holidays,
+                hotel_weather_penalty=weather.get("hotel_weather_penalty", 0.0),
             )
 
             all_reasons = (
@@ -425,6 +434,18 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
 
                 rain_city = sum(1 for c in city_codes if is_rainy(c))
                 rain_hotel = sum(1 for c in hotel_codes if is_rainy(c))
+                grey_hotel = sum(1 for c in hotel_codes if is_grey(c))
+
+                hotel_weather_penalty = 0.0
+                if rain_hotel >= 3:
+                    hotel_weather_penalty = 0.30
+                    weather_reasons.append(f"Bad weather at hotel ({rain_hotel} rainy days) — penalty")
+                elif rain_hotel >= 2:
+                    hotel_weather_penalty = 0.20
+                    weather_reasons.append(f"Rain at hotel ({rain_hotel} days) — penalty")
+                elif grey_hotel >= 3:
+                    hotel_weather_penalty = 0.10
+
                 hotel_better = rain_hotel < rain_city
                 if hotel_better and rain_city >= 2:
                     weather_score = max(weather_score, 0.8)
@@ -464,6 +485,7 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                 combined = _additive_score(
                     weather_score, 0.0, seasonal["score"],
                     free, hotel["rooms"], holidays, min_free,
+                    hotel_weather_penalty=hotel_weather_penalty,
                 )
 
                 moment_types = list(set(weather_types))
@@ -479,6 +501,8 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                     moment_types.append("seasonal")
                 if empty_ratio >= 0.40:
                     moment_types.append("low_occupancy")
+                if hotel_weather_penalty > 0:
+                    moment_types.append("hotel_rain_penalty")
 
                 all_reasons = (
                     weather_reasons
@@ -501,6 +525,7 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                     "free_rooms": free,
                     "source_scores": {
                         "weather": round(weather_score, 2),
+                        "hotel_weather_penalty": round(hotel_weather_penalty, 2),
                         "holiday": holidays["score"],
                         "seasonal": seasonal["score"],
                         "occupancy": round(empty_ratio, 2),

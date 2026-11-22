@@ -4,6 +4,7 @@
   "min_nights": 2,
   "contact_cooldown_days": 7,
   "min_free_rooms": 1,
+  "min_empty_ratio": 0.30,
 
   "score_weights": {
     "weather":   0.35,

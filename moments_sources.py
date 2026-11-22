@@ -155,13 +155,29 @@ def score_weather(hotel: dict, city: dict, settings: dict) -> dict:
             score = max(score, 0.3)
             reasons.append(f"Nice midweek weather at {hotel['town']} ({', '.join(nice_midweek[:3])})")
 
+    hotel_penalty = 0.0
+    hotel_rain_days = sum(1 for c in hotel_codes if is_rainy(c))
+    hotel_grey_days = sum(1 for c in hotel_codes if is_grey(c))
+    if hotel_rain_days >= 3:
+        hotel_penalty = 0.30
+        reasons.append(f"Bad weather at {hotel['town']} ({hotel_rain_days} rainy days) — penalty applied")
+    elif hotel_rain_days >= 2:
+        hotel_penalty = 0.20
+        reasons.append(f"Rain at {hotel['town']} ({hotel_rain_days} days) — penalty applied")
+    elif hotel_grey_days >= 4:
+        hotel_penalty = 0.10
+        reasons.append(f"Grey skies at {hotel['town']} — small penalty")
+
     return {
         "score": round(score, 2),
+        "hotel_weather_penalty": round(hotel_penalty, 2),
         "reasons": reasons,
         "details": {
             "city_today": describe_code(city_codes[0]),
             "hotel_today": describe_code(hotel_codes[0]),
             "city_temp_max": city_daily["temperature_2m_max"][0],
+            "hotel_rain_days": hotel_rain_days,
+            "hotel_grey_days": hotel_grey_days,
         },
     }
 
@@ -273,22 +289,45 @@ def is_strike_blocking(target_date: date, travel_modes: list[str], data_dir: Pat
     return False, ""
 
 
-# ---- 5. Seasonal calendar ----
+# ---- 5. Events from real sources (replaces hand-written seasonal calendar) ----
 
 def score_seasonal(target_date: date, data_dir: Path) -> dict:
-    seasons_file = data_dir / "seasons.json"
-    if not seasons_file.exists():
-        return {"score": 0, "reasons": [], "details": {}}
-
-    sdata = json.loads(seasons_file.read_text())
     score = 0.0
     reasons = []
 
-    md = target_date.strftime("%m-%d")
-    for s in sdata.get("seasons", []):
-        if s["from"] <= md <= s["to"]:
-            score = max(score, s.get("score", 0.5))
-            reasons.append(s["reason"])
+    events_file = data_dir / "local_events.json"
+    if events_file.exists():
+        try:
+            edata = json.loads(events_file.read_text())
+            for ev in edata.get("events", []):
+                if ev.get("hidden"):
+                    continue
+                dates = ev.get("dates", {})
+                efrom = dates.get("from", "")
+                eto = dates.get("to", efrom)
+                if efrom and efrom <= target_date.isoformat() <= eto:
+                    relevance = ev.get("relevance", 0.5)
+                    score = max(score, min(relevance, 0.8))
+                    reasons.append(f"{ev['name']} ({ev.get('place', 'nearby')})")
+        except (json.JSONDecodeError, KeyError):
+            pass
+
+    cache_file = data_dir / "cache" / "predicthq_46.01_9.28_30_90.json"
+    if cache_file.exists():
+        try:
+            pdata = json.loads(cache_file.read_text())
+            for ev in pdata.get("events", []):
+                start_str = ev.get("start", "")[:10]
+                end_str = ev.get("end", start_str)[:10]
+                if start_str and start_str <= target_date.isoformat() <= end_str:
+                    rank = ev.get("rank", 0)
+                    local_rank = ev.get("local_rank", 0)
+                    if rank >= 70 or local_rank >= 80:
+                        ev_score = min(rank / 100.0, 0.8)
+                        score = max(score, ev_score)
+                        reasons.append(f"{ev['name']} (PredictHQ rank {rank})")
+        except (json.JSONDecodeError, KeyError):
+            pass
 
     return {"score": round(score, 2), "reasons": reasons, "details": {}}
 

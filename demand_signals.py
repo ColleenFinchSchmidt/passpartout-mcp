@@ -7,6 +7,8 @@ Two data sources, each gated behind its own API key:
 
 Both are optional.  When a key is missing the function returns a helpful
 error dict instead of crashing.
+
+Results are cached to disk and refreshed once per day to protect costs.
 """
 
 import base64
@@ -14,6 +16,7 @@ import json
 import logging
 import os
 from datetime import date, timedelta
+from pathlib import Path
 
 import httpx
 
@@ -25,6 +28,30 @@ DATAFORSEO_PASSWORD = os.environ.get("DATAFORSEO_PASSWORD", "")
 
 _http = httpx.Client(timeout=30)
 
+CACHE_DIR = Path(__file__).parent / "moments_data" / "cache"
+CACHE_DIR.mkdir(exist_ok=True)
+_CACHE_MAX_AGE_HOURS = 24
+
+
+def _read_cache(key: str) -> dict | None:
+    path = CACHE_DIR / f"{key}.json"
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text())
+        fetched = data.get("_cached_at", "")
+        if fetched and (date.today() - date.fromisoformat(fetched[:10])).days < 1:
+            return data
+    except (json.JSONDecodeError, ValueError):
+        pass
+    return None
+
+
+def _write_cache(key: str, data: dict) -> None:
+    data["_cached_at"] = date.today().isoformat()
+    path = CACHE_DIR / f"{key}.json"
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+
 # ---------------------------------------------------------------------------
 # PredictHQ — event demand intelligence
 # ---------------------------------------------------------------------------
@@ -35,6 +62,7 @@ def fetch_predicthq_events(
     radius_km: int = 30,
     days_ahead: int = 90,
     limit: int = 20,
+    force_refresh: bool = False,
 ) -> dict:
     """Fetch upcoming events near a location from PredictHQ."""
     if not PREDICTHQ_API_KEY:
@@ -42,6 +70,13 @@ def fetch_predicthq_events(
             "error": "PREDICTHQ_API_KEY not set.",
             "signup": "Free tier at https://www.predicthq.com/pricing — covers 2 locations.",
         }
+
+    cache_key = f"predicthq_{lat}_{lon}_{radius_km}_{days_ahead}"
+    if not force_refresh:
+        cached = _read_cache(cache_key)
+        if cached:
+            cached["_from_cache"] = True
+            return cached
 
     today = date.today()
     end = today + timedelta(days=days_ahead)
@@ -87,7 +122,7 @@ def fetch_predicthq_events(
             "labels": item.get("labels", []),
         })
 
-    return {
+    result = {
         "source": "PredictHQ",
         "location": f"{lat},{lon}",
         "radius_km": radius_km,
@@ -95,6 +130,8 @@ def fetch_predicthq_events(
         "count": data.get("count", 0),
         "events": events,
     }
+    _write_cache(cache_key, result)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -108,6 +145,7 @@ def fetch_competitor_prices(
     check_out: str = "",
     adults: int = 2,
     currency: str = "EUR",
+    force_refresh: bool = False,
 ) -> dict:
     """Fetch competitor hotel prices from Google Hotels via DataForSEO."""
     if not DATAFORSEO_LOGIN or not DATAFORSEO_PASSWORD:
@@ -120,6 +158,13 @@ def fetch_competitor_prices(
         check_in = (date.today() + timedelta(days=14)).isoformat()
     if not check_out:
         check_out = (date.today() + timedelta(days=16)).isoformat()
+
+    cache_key = f"dataforseo_{location_name}_{check_in}_{check_out}".replace(",", "_").replace(" ", "_")
+    if not force_refresh:
+        cached = _read_cache(cache_key)
+        if cached:
+            cached["_from_cache"] = True
+            return cached
 
     creds = base64.b64encode(
         f"{DATAFORSEO_LOGIN}:{DATAFORSEO_PASSWORD}".encode()
@@ -175,7 +220,7 @@ def fetch_competitor_prices(
 
     cost_info = data.get("tasks", [{}])[0].get("cost", 0)
 
-    return {
+    result = {
         "source": "DataForSEO / Google Hotels",
         "location": location_name,
         "check_in": check_in,
@@ -184,3 +229,5 @@ def fetch_competitor_prices(
         "hotels_found": len(hotels),
         "hotels": hotels[:20],
     }
+    _write_cache(cache_key, result)
+    return result

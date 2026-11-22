@@ -18,7 +18,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.responses import RedirectResponse
 from mcp.server.mcpserver import MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
@@ -48,6 +48,16 @@ if not holidays_file.exists() or (date.today() - date.fromisoformat(
 MOMENTS_SETTINGS = load_json(MOMENTS_DATA / "settings.json")
 MOMENTS_HOTELS = load_json(MOMENTS_DATA / "hotels.json")
 MOMENTS_HOTEL_BY_ID = {h["id"]: h for h in MOMENTS_HOTELS}
+
+HOTEL_API_KEY = os.environ.get("HOTEL_API_KEY", "")
+
+
+def require_hotel_api_key(x_api_key: str = Header(None)):
+    """Protect /api/hotel/* endpoints. MCP tools bypass this."""
+    if not HOTEL_API_KEY:
+        return
+    if x_api_key != HOTEL_API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid or missing X-Api-Key header.")
 
 
 # ---------- helpers (used by both MCP tools and REST endpoints) ----------
@@ -547,7 +557,7 @@ def api_book(booking: BookingRequest):
 
 # ---------- Hotel-side REST endpoints ----------
 
-@api.get("/api/hotel/suggest", tags=["Hotel tools"])
+@api.get("/api/hotel/suggest", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_suggest_offers(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
 ):
@@ -565,7 +575,7 @@ def api_suggest_offers(
     }
 
 
-@api.get("/api/hotel/explain", tags=["Hotel tools"])
+@api.get("/api/hotel/explain", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_explain_moments(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
     start: str | None = Query(None, description="Start date YYYY-MM-DD (defaults to today)"),
@@ -588,7 +598,7 @@ def api_explain_moments(
     }
 
 
-@api.get("/api/hotel/events", tags=["Hotel tools"])
+@api.get("/api/hotel/events", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_events(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
 ):
@@ -597,7 +607,7 @@ def api_events(
     return {"events": events, "count": len(events)}
 
 
-@api.post("/api/hotel/discover-events", tags=["Hotel tools"])
+@api.post("/api/hotel/discover-events", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_discover_events(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
 ):
@@ -608,7 +618,7 @@ def api_discover_events(
     return discover_events(hotel, MOMENTS_DATA)
 
 
-@api.get("/api/hotel/demand-events", tags=["Demand signals"])
+@api.get("/api/hotel/demand-events", tags=["Demand signals"], dependencies=[Depends(require_hotel_api_key)])
 def api_demand_events(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
     days_ahead: int = Query(90, ge=1, le=365, description="Days to look ahead"),
@@ -622,7 +632,7 @@ def api_demand_events(
     return fetch_predicthq_events(lat, lon, radius_km=30, days_ahead=days_ahead)
 
 
-@api.get("/api/hotel/competitor-prices", tags=["Demand signals"])
+@api.get("/api/hotel/competitor-prices", tags=["Demand signals"], dependencies=[Depends(require_hotel_api_key)])
 def api_competitor_prices(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
     check_in: str = Query("", description="Check-in date YYYY-MM-DD (defaults to 2 weeks out)"),
@@ -642,7 +652,7 @@ def api_competitor_prices(
     )
 
 
-@api.get("/api/hotel/backtest", tags=["Hotel tools"])
+@api.get("/api/hotel/backtest", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_backtest(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
     months: int = Query(12, ge=1, le=24, description="Months to look back"),
