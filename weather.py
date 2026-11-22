@@ -126,9 +126,16 @@ def _check_trigger(trigger_type: str, city_fc: dict, dest_fc: dict | None, city:
 
     if trigger_type == "city_rain":
         weekend = _weekend_indices(dates)
-        rainy_wk = [dates[i] for i in weekend if _is_rainy(codes[i])]
-        if rainy_wk:
-            return f"Rain forecast in {city} this weekend ({', '.join(rainy_wk)})"
+        city_rain_wk = [i for i in weekend if _is_rainy(codes[i])]
+        # Only trigger if the hotel is drier than the city
+        if dest_fc:
+            hotel_rain_wk = [i for i in weekend
+                             if i < len(dest_fc["weather_code"]) and _is_rainy(dest_fc["weather_code"][i])]
+            if len(hotel_rain_wk) >= len(city_rain_wk):
+                return None
+        if city_rain_wk:
+            rainy_dates = [dates[i] for i in city_rain_wk]
+            return f"Rain forecast in {city} this weekend ({', '.join(rainy_dates)}), drier at the hotel"
         near = list(range(min(3, len(codes))))
         rainy_near = [dates[i] for i in near if _is_rainy(codes[i])]
         if rainy_near:
@@ -155,7 +162,7 @@ def _check_trigger(trigger_type: str, city_fc: dict, dest_fc: dict | None, city:
         near = list(range(min(5, len(codes))))
         avg_max = sum(city_fc["temperature_2m_max"][i] for i in near) / max(len(near), 1)
         if avg_max < 15:
-            return f"Cool days ahead in {city} ({avg_max:.0f} °C avg) — thermal spa weather"
+            return f"Cool days ahead in {city} ({avg_max:.0f} \u00b0C avg) \u2014 thermal spa weather"
         return None
 
     if trigger_type == "dry_countryside":
@@ -165,7 +172,7 @@ def _check_trigger(trigger_type: str, city_fc: dict, dest_fc: dict | None, city:
             return None
         mid = _midweek_indices(dest_fc["time"])
         if mid and all(dest_fc["precipitation_sum"][i] < 2 for i in mid):
-            return "Dry days in the Langhe — truffle season is on"
+            return "Dry days in the Langhe \u2014 truffle season is on"
         return None
 
     return None
@@ -209,7 +216,7 @@ def get_weather_moments(city: str, offers: list[dict]) -> dict:
     return {
         "city": city,
         "weather": {
-            "today": f"{_describe_code(today_code)}, {today_max:.0f} °C (low {today_min:.0f} °C)",
+            "today": f"{_describe_code(today_code)}, {today_max:.0f} \u00b0C (low {today_min:.0f} \u00b0C)",
             "weekend": weekend_summary,
             "source": "Open-Meteo (live forecast)",
         },
