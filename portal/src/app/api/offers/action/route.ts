@@ -19,41 +19,45 @@ export async function POST(req: NextRequest) {
     segmentScore,
     packageType,
     inclusions,
+    extrasValue,
+    extrasCost,
   } = body;
 
   if (!["approved", "edited", "skipped"].includes(action)) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
 
-  if (action === "edited") {
+  const finalPrice = editedFields?.privatePriceEur ?? privatePriceEur;
+
+  if (action === "approved" || action === "edited") {
     const hotel = await prisma.hotel.findUnique({ where: { id: hotelId } });
     if (!hotel) {
       return NextResponse.json({ error: "Hotel not found" }, { status: 404 });
     }
 
-    const editedPrice = editedFields?.privatePriceEur ?? privatePriceEur;
-    const editedDiscount =
-      ((hotel.publicRateEur - editedPrice) / hotel.publicRateEur) * 100;
-
-    if (editedDiscount > hotel.maxDiscountPct) {
+    if (finalPrice < hotel.lowestPriceEur) {
       return NextResponse.json(
-        {
-          error: `Discount ${editedDiscount.toFixed(1)}% exceeds max ${hotel.maxDiscountPct}%`,
-        },
-        { status: 422 }
+        { error: `Price €${finalPrice} is below minimum €${hotel.lowestPriceEur}` },
+        { status: 422 },
       );
     }
-    if (editedPrice < hotel.lowestPriceEur) {
+
+    const discountPerNight = hotel.publicRateEur - finalPrice;
+    const extrasPerNight = extrasCost ?? 0;
+    const totalGiveaway = discountPerNight + extrasPerNight;
+    const maxGiveaway = hotel.publicRateEur * (hotel.maxDiscountPct / 100);
+
+    if (totalGiveaway > maxGiveaway) {
       return NextResponse.json(
         {
-          error: `Price €${editedPrice} is below minimum €${hotel.lowestPriceEur}`,
+          error: `Total give-away €${totalGiveaway}/night (€${discountPerNight} discount + €${extrasPerNight} extras) exceeds max €${maxGiveaway}/night`,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
   }
 
-  const isHoldback = Math.random() < 0.10;
+  const isHoldback = Math.random() < 0.1;
 
   const record = await prisma.offerAction.create({
     data: {
@@ -64,7 +68,7 @@ export async function POST(req: NextRequest) {
       nights,
       roomsToOffer,
       publicPriceEur,
-      privatePriceEur: editedFields?.privatePriceEur ?? privatePriceEur,
+      privatePriceEur: finalPrice,
       discountPct: editedFields?.discountPct ?? discountPct,
       reasons,
       editedFields: action === "edited" ? editedFields : undefined,
@@ -72,6 +76,8 @@ export async function POST(req: NextRequest) {
       segmentScore: segmentScore ?? null,
       packageType: packageType ?? null,
       inclusions: inclusions ?? [],
+      extrasValue: extrasValue ?? null,
+      extrasCost: extrasCost ?? null,
       holdback: isHoldback,
     },
   });

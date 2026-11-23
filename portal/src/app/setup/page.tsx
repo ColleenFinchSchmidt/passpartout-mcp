@@ -7,6 +7,15 @@ const ENGINE_URL =
   process.env.ENGINE_URL || "https://web-production-eb412a2e.up.railway.app";
 const API_KEY = process.env.HOTEL_API_KEY || "";
 
+type ExtraItem = {
+  id: string;
+  name: string;
+  value_to_guest: number;
+  cost_to_hotel: number;
+  limit: string;
+  segments: string[];
+};
+
 type HotelData = {
   id: string;
   name: string;
@@ -15,6 +24,7 @@ type HotelData = {
   segments_wanted?: string[];
   segments_excluded?: string[];
   experiences?: string[];
+  extras?: ExtraItem[];
   rooms: number;
   public_rate_eur: number;
   lowest_price_eur: number;
@@ -213,6 +223,54 @@ export default async function SetupPage() {
                   </span>
                 )}
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-5 space-y-4">
+              <h2 className="text-sm font-semibold text-[var(--color-text)]">
+                Extras library
+              </h2>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                Extras you can add to offers. Each has a guest-facing value and
+                a real cost to the hotel. The engine auto-picks extras by
+                segment.
+              </p>
+              {hotel.extras && hotel.extras.length > 0 ? (
+                <div className="border border-[var(--color-border)] rounded-lg divide-y divide-[var(--color-border)]">
+                  {hotel.extras.map((ex) => (
+                    <div key={ex.id} className="p-3 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-[var(--color-text)]">
+                          {ex.name}
+                        </span>
+                        <div className="flex items-center gap-3 text-xs">
+                          <span className="text-emerald-700">
+                            &euro;{ex.value_to_guest} value
+                          </span>
+                          <span className="text-[var(--color-text-muted)]">
+                            &euro;{ex.cost_to_hotel} cost
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-[var(--color-text-muted)]">
+                        <span>{ex.limit}</span>
+                        <div className="flex gap-1">
+                          {ex.segments.map((s) => (
+                            <Badge key={s} variant="segment" className="text-[10px] px-1.5 py-0">
+                              {allSegments[s]?.label ?? formatLabel(s)}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-xs text-[var(--color-text-muted)]">
+                  No extras configured yet
+                </span>
+              )}
             </CardContent>
           </Card>
 

@@ -42,6 +42,8 @@ model OfferAction {
   segmentScore    Float?
   packageType     String?
   inclusions      String[]
+  extrasValue     Float?
+  extrasCost      Float?
   holdback        Boolean  @default(false)
   createdAt       DateTime @default(now())
 }

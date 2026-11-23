@@ -651,6 +651,7 @@ def api_suggest_offers(
             "segments_wanted": hotel.get("segments_wanted", []),
             "segments_excluded": hotel.get("segments_excluded", []),
             "experiences": hotel.get("experiences", []),
+            "extras": hotel.get("extras", []),
             "rooms": hotel.get("rooms", 0),
             "public_rate_eur": hotel.get("public_rate_eur", 0),
             "lowest_price_eur": hotel.get("lowest_price_eur", 0),

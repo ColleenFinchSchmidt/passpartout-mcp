@@ -61,6 +61,14 @@
     "amenities": ["spa", "pool", "restaurant", "garden", "lake_view", "terrace", "family_rooms", "parking", "gym"],
     "segments_wanted": ["young_couples", "retirees", "families", "remote_workers", "friends_groups"],
     "segments_excluded": [],
-    "experiences": ["spa_access", "boat_trip", "dinner", "garden_tour", "wine_tasting"]
+    "experiences": ["spa_access", "boat_trip", "dinner", "garden_tour", "wine_tasting"],
+    "extras": [
+      {"id": "spa_pass", "name": "Spa day pass", "value_to_guest": 40, "cost_to_hotel": 15, "limit": "1 per room per day", "segments": ["young_couples", "retirees", "remote_workers"]},
+      {"id": "boat_borromean", "name": "Boat to Borromean Islands", "value_to_guest": 35, "cost_to_hotel": 20, "limit": "1 per room, weather permitting", "segments": ["young_couples", "retirees", "families", "friends_groups"]},
+      {"id": "dinner", "name": "Dinner", "value_to_guest": 45, "cost_to_hotel": 25, "limit": "up to €35 pp, 1 evening per stay", "segments": ["retirees", "young_couples", "friends_groups"]},
+      {"id": "late_checkout", "name": "Late check-out (2 pm)", "value_to_guest": 20, "cost_to_hotel": 0, "limit": "subject to availability", "segments": ["retirees", "remote_workers", "young_couples"]},
+      {"id": "welcome_prosecco", "name": "Welcome prosecco", "value_to_guest": 15, "cost_to_hotel": 5, "limit": "1 per room on arrival", "segments": ["young_couples", "friends_groups"]},
+      {"id": "parking", "name": "Free parking", "value_to_guest": 15, "cost_to_hotel": 0, "limit": "1 car per room", "segments": ["families", "retirees"]}
+    ]
   }
 ]
