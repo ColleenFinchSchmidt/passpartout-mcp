@@ -312,6 +312,44 @@ def is_strike_blocking(target_date: date, travel_modes: list[str], data_dir: Pat
 
 MAX_SPECIFIC_EVENT_DAYS = 14
 
+# Event weight by category/type — higher = more likely to motivate a trip
+CATEGORY_WEIGHT = {
+    "festivals": 0.9, "performing-arts": 0.8, "concerts": 0.8,
+    "community": 0.7, "expos": 0.7, "conferences": 0.6,
+    "sports": 0.3, "academic": 0.2, "school-holidays": 0.2,
+}
+# AI-discovered event_type weights
+EVENT_TYPE_WEIGHT = {
+    "festival": 0.9, "food_wine": 0.85, "classical_art": 0.8,
+    "indie_music": 0.75, "market_fair": 0.7, "nature": 0.6,
+    "sport": 0.3, "other": 0.5,
+}
+CROWD_WEIGHT = {"large": 1.0, "medium": 0.7, "small": 0.4}
+AUDIENCE_WEIGHT = {"all_ages": 1.0, "families": 0.8, "adults": 0.8}
+
+
+def _phq_event_weight(ev: dict) -> float:
+    """Weight a PredictHQ event: category × rank. Low-tier sport = tiny weight."""
+    cat = ev.get("category", "")
+    rank = ev.get("rank") or ev.get("local_rank") or 50
+    cat_w = CATEGORY_WEIGHT.get(cat, 0.5)
+    rank_w = min(rank / 100, 1.0)
+    return round(cat_w * rank_w, 3)
+
+
+def _ai_event_weight(ev: dict) -> float:
+    """Weight an AI-discovered event: type × crowd × audience."""
+    etype = ev.get("event_type", "other")
+    crowd = ev.get("crowd_size", "medium")
+    audience = ev.get("audience", "all_ages")
+    return round(
+        EVENT_TYPE_WEIGHT.get(etype, 0.5)
+        * CROWD_WEIGHT.get(crowd, 0.7)
+        * AUDIENCE_WEIGHT.get(audience, 1.0),
+        3,
+    )
+
+
 def _event_duration_days(ev: dict) -> int | None:
     """Return event duration in days, or None if dates are missing/invalid."""
     dates = ev.get("dates", {})
@@ -371,16 +409,20 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
         if not source_url:
             continue
         duration = _event_duration_days(ev)
+        weight = _ai_event_weight(ev)
+        relevance = ev.get("relevance", 0.5) * weight
         label = f"{ev['name']} ({ev.get('place', 'nearby')})"
         if duration is not None and duration > MAX_SPECIFIC_EVENT_DAYS:
             also_on.append(label)
-            score = max(score, min(ev.get("relevance", 0.3) * 0.4, 0.3))
+            score = max(score, min(relevance * 0.4, 0.3))
         else:
-            relevance = ev.get("relevance", 0.5)
             score = max(score, min(relevance, 0.8))
             reasons.append(label)
         seen_names.add(ev["name"].lower())
-        event_sources.append({"name": ev["name"], "place": ev.get("place", ""), "source_url": source_url})
+        event_sources.append({
+            "name": ev["name"], "place": ev.get("place", ""),
+            "source_url": source_url, "weight": weight,
+        })
 
     # PredictHQ events (labelled "Source: PredictHQ")
     if hotel:
@@ -396,8 +438,8 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
                 if not (start_str <= target_date.isoformat() <= end_str):
                     continue
                 name = ev["name"]
-                rank = ev.get("rank") or ev.get("local_rank") or 50
-                relevance = min(rank / 100, 0.8)
+                weight = _phq_event_weight(ev)
+                relevance = weight
                 try:
                     duration = (date.fromisoformat(end_str) - date.fromisoformat(start_str)).days + 1
                 except ValueError:
@@ -410,7 +452,11 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
                     score = max(score, min(relevance, 0.8))
                     reasons.append(label)
                 seen_names.add(name.lower())
-                event_sources.append({"name": name, "place": "", "source_url": "Source: PredictHQ"})
+                event_sources.append({
+                    "name": name, "place": "", "source_url": "Source: PredictHQ",
+                    "weight": weight, "category": ev.get("category", ""),
+                    "rank": ev.get("rank") or ev.get("local_rank") or 0,
+                })
 
     return {"score": round(score, 2), "reasons": reasons, "also_on": also_on, "event_sources": event_sources, "details": {}}
 

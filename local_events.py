@@ -67,7 +67,7 @@ def _ask_claude(system: str, user: str) -> str | None:
                 return block.text
         return None
     except Exception as exc:
-        logger.error("Claude API error (%s): %s", type(exc).__name__, exc)
+        logger.warning("Claude API error (%s): %s", type(exc).__name__, exc)
         return None
 
 
@@ -176,6 +176,7 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False,
             return cached
 
     if not ANTHROPIC_API_KEY:
+        logger.warning("ANTHROPIC_API_KEY not set — skipping event discovery for %s", hotel_id)
         return {
             "error": "ANTHROPIC_API_KEY not set. Set it in your environment to enable event discovery.",
             "cost_note": "Event discovery uses Claude Haiku — roughly $0.01-0.03 per hotel per run.",
@@ -205,6 +206,8 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False,
         + "\n\n".join(all_text)
     )
 
+    logger.warning("Calling Claude %s for %s (%d pages, %d chars total)",
+                    ANTHROPIC_MODEL, hotel_id, len(all_text), sum(len(t) for t in all_text))
     response = _ask_claude(system_prompt, prompt)
     if not response:
         return {"events": [], "note": "Claude API call failed."}

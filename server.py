@@ -92,11 +92,11 @@ def _refresh_paid_caches(force_events: bool = False):
         try:
             result = discover_events(hotel, MOMENTS_DATA, force=force_events)
             if result.get("_from_cache"):
-                _log.info("Local events cache fresh for %s", hotel["name"])
+                _log.warning("Local events cache fresh for %s (cached=%d events)", hotel["name"], len(result.get("events", [])))
             elif "error" in result:
                 _log.warning("Local events discovery error for %s: %s", hotel["name"], result["error"])
             else:
-                _log.warning("Local events refreshed for %s (%d events)", hotel["name"], len(result.get("events", [])))
+                _log.warning("Local events refreshed for %s (%d events found)", hotel["name"], len(result.get("events", [])))
         except Exception as exc:
             _log.warning("Local events refresh failed for %s: %s", hotel["name"], exc)
 
@@ -124,10 +124,23 @@ def _start_daily_scheduler():
     t.start()
 
 
+def _needs_event_refresh() -> bool:
+    """Only force event discovery if any hotel's data is older than 24h."""
+    from events_db import get_discovered_at
+    for hotel in MOMENTS_HOTELS:
+        discovered = get_discovered_at(hotel["id"])
+        if not discovered or (date.today() - discovered).days >= 1:
+            return True
+    return False
+
+
 def _run_startup_refresh():
     """Run the initial cache refresh in a background thread so the server starts fast."""
     try:
-        _refresh_paid_caches(force_events=True)
+        force = _needs_event_refresh()
+        if force:
+            _log.info("Event data >24h old — forcing rediscovery")
+        _refresh_paid_caches(force_events=force)
         _log.info("Startup cache refresh complete")
     except Exception as exc:
         _log.error("Startup cache refresh failed: %s", exc)
@@ -719,12 +732,35 @@ def api_events(
 @api.post("/api/hotel/discover-events", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_discover_events(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
+    force: bool = Query(False, description="Force rediscovery even if cache is fresh"),
 ):
     """Run the AI agent to discover local events. Requires ANTHROPIC_API_KEY."""
     hotel = _resolve_hotel(hotel_id)
     if not hotel:
         raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
-    return discover_events(hotel, MOMENTS_DATA)
+    return discover_events(hotel, MOMENTS_DATA, force=force)
+
+
+@api.get("/api/hotel/event-status", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+def api_event_status():
+    """Diagnostic: check event discovery configuration and status."""
+    from local_events import ANTHROPIC_API_KEY as _ak, TOURISM_URLS
+    from events_db import get_discovered_at, load_events
+    status = {
+        "anthropic_key_set": bool(_ak),
+        "hotels": {},
+    }
+    for hotel in MOMENTS_HOTELS:
+        hid = hotel["id"]
+        discovered = get_discovered_at(hid)
+        cached = load_events(hid)
+        event_count = len(cached["events"]) if cached and cached.get("events") else 0
+        status["hotels"][hid] = {
+            "last_discovery": discovered.isoformat() if discovered else None,
+            "cached_events": event_count,
+            "tourism_urls": TOURISM_URLS.get(hid, []),
+        }
+    return status
 
 
 @api.get("/api/hotel/demand-events", tags=["Demand signals"], dependencies=[Depends(require_hotel_api_key)])
