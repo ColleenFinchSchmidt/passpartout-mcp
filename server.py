@@ -684,6 +684,36 @@ def api_suggest_offers(
     }
 
 
+@api.get("/api/hotel/offers-timeline", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+def api_offers_timeline(
+    hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
+):
+    """2-week timeline of offer periods with themes, aligned dates, and skip reasons."""
+    from offer_timeline import evaluate_timeline
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    periods = evaluate_timeline(hotel, MOMENTS_SETTINGS, MOMENTS_DATA)
+    return {
+        "hotel": hotel["name"],
+        "hotel_id": hotel["id"],
+        "date": date.today().isoformat(),
+        "periods": periods,
+        "_hotel_profile": {
+            "id": hotel["id"],
+            "name": hotel["name"],
+            "town": hotel.get("town", ""),
+            "rooms": hotel.get("rooms", 0),
+            "public_rate_eur": hotel.get("public_rate_eur", 0),
+            "lowest_price_eur": hotel.get("lowest_price_eur", 0),
+            "max_discount_pct": hotel.get("max_discount_pct", 0),
+            "amenities": hotel.get("amenities", []),
+            "extras": hotel.get("extras", []),
+        },
+        "demo": True,
+    }
+
+
 @api.get("/api/hotel/settings", tags=["Hotel tools"])
 def api_hotel_settings():
     """Return segment definitions and configuration for the portal."""

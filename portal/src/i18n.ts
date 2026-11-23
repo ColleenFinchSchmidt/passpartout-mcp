@@ -24,6 +24,11 @@ type TranslationStrings = {
     privatePrice: string;
     perNight: string;
     target: string;
+    noOffer: string;
+    createAnyway: string;
+    seeTheData: string;
+    whyTheseDates: string;
+    roomsFree: string;
   };
   calendar: { title: string; comingSoon: string };
   results: { title: string; comingSoon: string };
@@ -60,6 +65,11 @@ const translations: Record<Locale, TranslationStrings> = {
       privatePrice: "Private",
       perNight: "/night",
       target: "Target",
+      noOffer: "No offer",
+      createAnyway: "Create an offer anyway",
+      seeTheData: "See the data",
+      whyTheseDates: "Why these dates",
+      roomsFree: "rooms free",
     },
     calendar: {
       title: "Calendar & rules",
@@ -107,6 +117,11 @@ const translations: Record<Locale, TranslationStrings> = {
       privatePrice: "Privato",
       perNight: "/notte",
       target: "Destinatari",
+      noOffer: "Nessuna offerta",
+      createAnyway: "Crea un'offerta comunque",
+      seeTheData: "Vedi i dati",
+      whyTheseDates: "Perché queste date",
+      roomsFree: "camere libere",
     },
     calendar: {
       title: "Calendario e regole",

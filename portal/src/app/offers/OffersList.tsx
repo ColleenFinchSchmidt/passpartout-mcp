@@ -15,6 +15,7 @@ import {
   Calendar,
   TrendingDown,
   ChevronRight,
+  ChevronDown,
   Check,
   X,
   Pencil,
@@ -28,7 +29,11 @@ import {
   MousePointer,
   BedDouble,
   Loader2,
+  Plus,
+  Info,
 } from "lucide-react";
+
+/* ---------- types ---------- */
 
 type Extra = {
   id: string;
@@ -68,6 +73,13 @@ type TargetSegment = {
   package?: SegmentPackage;
 };
 
+type RowTheme = {
+  theme_en: string;
+  theme_it: string;
+  reasons_en: string[];
+  reasons_it: string[];
+};
+
 type Suggestion = {
   hotel: string;
   hotel_id: string;
@@ -88,9 +100,32 @@ type Suggestion = {
   };
   reasons: string[];
   also_on?: string[];
-  event_sources?: { name: string; place: string; source_url: string }[];
+  event_sources?: { name: string; place: string; source_url: string; weight?: number }[];
   target_segments?: TargetSegment[];
   source_scores: Record<string, number>;
+  why_these_dates?: { en: string; it: string };
+  row_themes?: Record<string, RowTheme>;
+};
+
+type SkipReason = {
+  en: string;
+  it: string;
+  code: string;
+};
+
+type Period = {
+  id: string;
+  label_en: string;
+  label_it: string;
+  type: string;
+  start: string;
+  end: string;
+  rooms_free: number;
+  has_offer: boolean;
+  score?: number;
+  suggestion?: Suggestion;
+  skip_reason?: SkipReason;
+  can_create?: boolean;
 };
 
 type WaveMetrics = {
@@ -137,6 +172,8 @@ type RowState = {
   extras: Set<string>;
 };
 
+/* ---------- helpers ---------- */
+
 const GUESTS = 2;
 
 function stayMultiplier(unit: string, nights: number): number {
@@ -163,31 +200,14 @@ function guestCities(s: Suggestion): string[] {
   return [];
 }
 
-function classifyReasons(reasons: string[]): {
-  icon: React.ReactNode;
-  variant: "weather" | "event" | "occupancy";
-  label: string;
-} {
-  const text = reasons.join(" ").toLowerCase();
-  if (text.includes("spa escape"))
-    return { icon: <CloudRain className="w-3.5 h-3.5" />, variant: "event", label: "Spa escape" };
-  if (text.includes("rain") || text.includes("grey"))
-    return { icon: <CloudRain className="w-3.5 h-3.5" />, variant: "weather", label: reasons[0] };
-  if (text.includes("snow"))
-    return { icon: <Snowflake className="w-3.5 h-3.5" />, variant: "weather", label: reasons[0] };
-  if (text.includes("sunny"))
-    return { icon: <Sun className="w-3.5 h-3.5" />, variant: "event", label: reasons[0] };
-  if (text.includes("smog") || text.includes("air"))
-    return { icon: <Wind className="w-3.5 h-3.5" />, variant: "weather", label: reasons[0] };
-  if (text.includes("ponte") || text.includes("holiday") || text.includes("event"))
-    return { icon: <Calendar className="w-3.5 h-3.5" />, variant: "event", label: reasons[0] };
-  if (text.includes("empty") || text.includes("occupancy") || text.includes("room"))
-    return { icon: <TrendingDown className="w-3.5 h-3.5" />, variant: "occupancy", label: reasons[0] };
-  return { icon: <CloudRain className="w-3.5 h-3.5" />, variant: "weather", label: reasons[0] ?? "Moment detected" };
-}
-
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
+function formatDateShort(iso: string) {
+  const d = new Date(iso);
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  return `${days[d.getDay()]} ${d.getDate()}`;
 }
 
 function checkOutDate(checkIn: string, nights: number) {
@@ -219,6 +239,8 @@ function statusLabel(status: string): string {
   }
 }
 
+/* ---------- InventoryPanel ---------- */
+
 function InventoryPanel({
   inv,
   onSendWave,
@@ -232,7 +254,6 @@ function InventoryPanel({
 
   return (
     <div className="space-y-3">
-      {/* Allocation bar */}
       <div className="flex items-center gap-3 text-sm">
         <span className="font-medium text-[var(--color-text)]">
           {inv.rooms_allocated} allocated
@@ -250,7 +271,6 @@ function InventoryPanel({
         </Badge>
       </div>
 
-      {/* Progress bar */}
       <div className="h-2 bg-[var(--color-bg-hover)] rounded-full overflow-hidden flex">
         <div
           className="bg-emerald-500 transition-all"
@@ -262,7 +282,6 @@ function InventoryPanel({
         />
       </div>
 
-      {/* Waves table */}
       <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
         <table className="w-full text-xs">
           <thead>
@@ -325,15 +344,9 @@ function InventoryPanel({
         </table>
       </div>
 
-      {/* Send next wave button */}
       {hasPending && inv.status === "active" && (
         <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onSendWave}
-            disabled={sendingWave}
-          >
+          <Button variant="outline" size="sm" onClick={onSendWave} disabled={sendingWave}>
             {sendingWave ? (
               <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
             ) : (
@@ -347,7 +360,6 @@ function InventoryPanel({
         </div>
       )}
 
-      {/* Sold out + waitlist */}
       {inv.status === "sold_out" && (
         <div className="flex items-center gap-2 text-sm">
           <Bell className="w-4 h-4 text-amber-500" />
@@ -366,7 +378,48 @@ function InventoryPanel({
   );
 }
 
-function OfferCard({ s }: { s: Suggestion }) {
+/* ---------- NoOfferCard ---------- */
+
+function NoOfferCard({ period }: { period: Period }) {
+  const { locale } = useLocale();
+  const labels = t(locale).offers;
+  const reason = period.skip_reason;
+  const reasonText = reason ? (locale === "it" ? reason.it : reason.en) : "";
+
+  return (
+    <Card className="border-dashed border-[var(--color-border)] opacity-70">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-[var(--color-text-muted)]">
+                {labels.noOffer}
+              </span>
+            </div>
+            <p className="text-xs text-[var(--color-text-muted)]">
+              {reasonText}
+            </p>
+            {period.rooms_free > 0 && (
+              <p className="text-xs text-[var(--color-text-muted)]">
+                {period.rooms_free} {labels.roomsFree}
+              </p>
+            )}
+          </div>
+          {period.can_create && (
+            <Button variant="outline" size="sm" className="text-xs shrink-0" disabled>
+              <Plus className="w-3 h-3 mr-1" />
+              {labels.createAnyway}
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ---------- OfferCard ---------- */
+
+function OfferCard({ s, periodLabel }: { s: Suggestion; periodLabel?: string }) {
   const { locale } = useLocale();
   const labels = t(locale).offers;
   const cities = guestCities(s);
@@ -392,6 +445,7 @@ function OfferCard({ s }: { s: Suggestion }) {
 
   const [rows, setRows] = useState<Record<RowKey, RowState>>(initialRows);
   const [editingRow, setEditingRow] = useState<RowKey | null>(null);
+  const [dataOpen, setDataOpen] = useState<Record<RowKey, boolean>>({});
   const [cardState, setCardState] = useState<"idle" | "done">("idle");
   const [doneAction, setDoneAction] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
@@ -442,14 +496,7 @@ function OfferCard({ s }: { s: Suggestion }) {
       }
     }
     const totalGiveaway = discountTotal + extrasCostTotal;
-    return {
-      roomTotal,
-      discountTotal,
-      extrasCostTotal,
-      extrasValueTotal,
-      totalGiveaway,
-      overMax: totalGiveaway > maxGiveawayTotal,
-    };
+    return { roomTotal, discountTotal, extrasCostTotal, extrasValueTotal, totalGiveaway, overMax: totalGiveaway > maxGiveawayTotal };
   }
 
   async function handleSend() {
@@ -490,17 +537,11 @@ function OfferCard({ s }: { s: Suggestion }) {
         return;
       }
     }
-    // Create inventory record with wave plan
     const enabledRows = Object.entries(rows).filter(([, r]) => r.enabled);
     const citySegments = enabledRows.map(([key]) => {
       const [city, segKey] = key.split("|");
       const seg = segments.find(s => s.segment === segKey);
-      return {
-        city,
-        segment: segKey,
-        segment_label: seg?.label ?? segKey,
-        contact_limit: 500,
-      };
+      return { city, segment: segKey, segment_label: seg?.label ?? segKey, contact_limit: 500 };
     });
 
     try {
@@ -521,9 +562,7 @@ function OfferCard({ s }: { s: Suggestion }) {
         const invData = await invRes.json();
         setInventory(invData);
       }
-    } catch {
-      // inventory creation is best-effort for demo
-    }
+    } catch { /* best-effort */ }
 
     setDoneAction("approved");
     setCardState("done");
@@ -573,13 +612,10 @@ function OfferCard({ s }: { s: Suggestion }) {
         const data = await res.json();
         if (data.offer) setInventory(data.offer);
       }
-    } catch {
-      // best-effort
-    }
+    } catch { /* best-effort */ }
     setSendingWave(false);
   }
 
-  const { icon, variant, label } = classifyReasons(s.reasons);
   const activeCount = Object.values(rows).filter(r => r.enabled).length;
 
   if (cardState === "done") {
@@ -596,11 +632,7 @@ function OfferCard({ s }: { s: Suggestion }) {
                 {s.nights}n · Wave 1 sent
               </span>
             </div>
-            <InventoryPanel
-              inv={inventory}
-              onSendWave={handleSendWave}
-              sendingWave={sendingWave}
-            />
+            <InventoryPanel inv={inventory} onSendWave={handleSendWave} sendingWave={sendingWave} />
           </CardContent>
         </Card>
       );
@@ -615,9 +647,7 @@ function OfferCard({ s }: { s: Suggestion }) {
             <X className="w-5 h-5 text-gray-400" />
           )}
           <span className="text-sm font-medium">
-            {doneAction === "approved"
-              ? `Sent ${activeCount} row${activeCount !== 1 ? "s" : ""}`
-              : "Skipped"}
+            {doneAction === "approved" ? `Sent ${activeCount} row${activeCount !== 1 ? "s" : ""}` : "Skipped"}
           </span>
           <span className="text-sm text-[var(--color-text-muted)] ml-auto">
             {cities.join(", ")} · {formatDate(s.check_in)}
@@ -630,60 +660,32 @@ function OfferCard({ s }: { s: Suggestion }) {
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-5 space-y-4">
-        {/* Header */}
+        {/* Header: dates + price */}
         <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant={variant}>
-                <span className="flex items-center gap-1">{icon}{label}</span>
-              </Badge>
-              <span className="text-xs text-[var(--color-text-muted)]">
-                Score {Math.round(s.score * 100)}%
-              </span>
-            </div>
-            <div>
-              <p className="text-sm text-[var(--color-text-muted)]">
-                {formatDate(s.check_in)} – {checkOutDate(s.check_in, s.nights)}
-                <span className="mx-1.5">·</span>
-                {s.nights} {labels.nights}
-                <span className="mx-1.5">·</span>
-                {s.rooms_to_offer} {labels.rooms}
+          <div className="space-y-1.5">
+            <p className="text-sm text-[var(--color-text)]">
+              {formatDate(s.check_in)} – {checkOutDate(s.check_in, s.nights)}
+              <span className="mx-1.5 text-[var(--color-text-muted)]">·</span>
+              <span className="text-[var(--color-text-muted)]">{s.nights} {labels.nights}</span>
+              <span className="mx-1.5 text-[var(--color-text-muted)]">·</span>
+              <span className="text-[var(--color-text-muted)]">{s.rooms_to_offer} {labels.rooms}</span>
+            </p>
+            {/* Why these dates */}
+            {s.why_these_dates && (
+              <p className="text-xs text-[var(--color-text-muted)] flex items-center gap-1">
+                <Calendar className="w-3 h-3 shrink-0" />
+                {locale === "it" ? s.why_these_dates.it : s.why_these_dates.en}
               </p>
-            </div>
+            )}
           </div>
-          <div className="text-right">
+          <div className="text-right shrink-0">
             <div className="text-xs text-[var(--color-text-muted)]">
               <span className="line-through">€{publicRate * nights}</span> public ({nights}n)
             </div>
           </div>
         </div>
 
-        {/* Reasons */}
-        <div className="space-y-1">
-          <p className="text-xs font-medium text-[var(--color-text-muted)]">{labels.whyNow}</p>
-          <ul className="text-xs text-[var(--color-text-muted)] space-y-0.5">
-            {s.reasons.map((r, i) => <li key={i}>· {r}</li>)}
-          </ul>
-          {s.also_on && s.also_on.length > 0 && (
-            <p className="text-xs text-[var(--color-text-muted)] italic mt-1">
-              Also on: {s.also_on.map((a, i) => {
-                const src = s.event_sources?.find(e => a.startsWith(e.name));
-                const isUrl = src && (src.source_url.startsWith("http://") || src.source_url.startsWith("https://"));
-                return <span key={i}>{i > 0 ? ", " : ""}{isUrl ? <a href={src.source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--color-text)]">{a}</a> : a}</span>;
-              })}
-            </p>
-          )}
-          {s.event_sources && s.event_sources.length > 0 && (
-            <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
-              Sources: {[...new Set(s.event_sources.map(e => e.source_url))].map((url, i) => {
-                const isUrl = url.startsWith("http://") || url.startsWith("https://");
-                return <span key={i}>{i > 0 ? ", " : ""}{isUrl ? <a href={url} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--color-text)]">{new URL(url).hostname}</a> : <span>{url}</span>}</span>;
-              })}
-            </p>
-          )}
-        </div>
-
-        {/* City × Segment rows */}
+        {/* City × Segment rows with themes */}
         {segments.length > 0 && (
           <div className="border border-[var(--color-border)] rounded-lg divide-y divide-[var(--color-border)]">
             {cities.map(city =>
@@ -695,6 +697,8 @@ function OfferCard({ s }: { s: Suggestion }) {
                 const stay = computeStayTotals(key, seg);
                 const isEditing = editingRow === key;
                 const activeExtras = extras.filter(e => r.extras.has(e.id));
+                const theme = s.row_themes?.[key];
+                const isDataOpen = dataOpen[key] ?? false;
 
                 return (
                   <div key={key} className={`p-3 ${!r.enabled ? "opacity-40" : ""}`}>
@@ -730,6 +734,23 @@ function OfferCard({ s }: { s: Suggestion }) {
                       </div>
                     </div>
 
+                    {/* Theme headline + reasons */}
+                    {r.enabled && theme && (
+                      <div className="ml-9 mt-2 space-y-1.5">
+                        <p className="text-sm font-medium text-[var(--color-text)]">
+                          {locale === "it" ? theme.theme_it : theme.theme_en}
+                        </p>
+                        <ul className="space-y-0.5">
+                          {(locale === "it" ? theme.reasons_it : theme.reasons_en).map((reason, i) => (
+                            <li key={i} className="text-xs text-[var(--color-text-muted)] flex items-start gap-1.5">
+                              <span className="text-[var(--color-text-muted)] mt-0.5 shrink-0">·</span>
+                              {reason}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
                     {/* Extras summary (non-edit mode) */}
                     {!isEditing && r.enabled && activeExtras.length > 0 && (
                       <div className="ml-9 mt-1.5 flex items-start gap-1.5">
@@ -743,15 +764,48 @@ function OfferCard({ s }: { s: Suggestion }) {
                       </div>
                     )}
 
+                    {/* See the data (collapsed raw signals) */}
+                    {r.enabled && s.reasons.length > 0 && (
+                      <div className="ml-9 mt-2">
+                        <button
+                          onClick={() => setDataOpen(prev => ({ ...prev, [key]: !prev[key] }))}
+                          className="flex items-center gap-1 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+                        >
+                          <ChevronDown className={`w-3 h-3 transition-transform ${isDataOpen ? "" : "-rotate-90"}`} />
+                          {labels.seeTheData}
+                        </button>
+                        {isDataOpen && (
+                          <div className="mt-1.5 pl-4 space-y-1 border-l-2 border-[var(--color-border)]">
+                            <ul className="text-[11px] text-[var(--color-text-muted)] space-y-0.5">
+                              {s.reasons.map((reason, i) => <li key={i}>· {reason}</li>)}
+                            </ul>
+                            {s.also_on && s.also_on.length > 0 && (
+                              <p className="text-[11px] text-[var(--color-text-muted)] italic">
+                                Also on: {s.also_on.join(", ")}
+                              </p>
+                            )}
+                            {s.event_sources && s.event_sources.length > 0 && (
+                              <p className="text-[10px] text-[var(--color-text-muted)]">
+                                Sources: {[...new Set(s.event_sources.map(e => e.source_url))].map((url, i) => {
+                                  const isUrl = url.startsWith("http://") || url.startsWith("https://");
+                                  return <span key={i}>{i > 0 ? ", " : ""}{isUrl ? <a href={url} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--color-text)]">{new URL(url).hostname}</a> : <span>{url}</span>}</span>;
+                                })}
+                              </p>
+                            )}
+                            <div className="flex gap-3 text-[10px] text-[var(--color-text-muted)]">
+                              {Object.entries(s.source_scores).map(([k, v]) => (
+                                <span key={k}>{k}: {typeof v === "number" ? v.toFixed(2) : v}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {/* Edit button */}
                     {!isEditing && r.enabled && (
                       <div className="ml-9 mt-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 text-xs"
-                          onClick={() => setEditingRow(key)}
-                        >
+                        <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setEditingRow(key)}>
                           <Pencil className="w-3 h-3 mr-1" /> Edit
                         </Button>
                       </div>
@@ -760,7 +814,6 @@ function OfferCard({ s }: { s: Suggestion }) {
                     {/* Edit panel */}
                     {isEditing && r.enabled && (
                       <div className="ml-9 mt-3 space-y-3 p-3 bg-[var(--color-bg-hover)] rounded-lg">
-                        {/* Price */}
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-medium w-12">Price</span>
                           <span className="text-xs">€</span>
@@ -773,7 +826,6 @@ function OfferCard({ s }: { s: Suggestion }) {
                           <span className="text-xs text-[var(--color-text-muted)]">/night × {nights} = €{r.price * nights}</span>
                         </div>
 
-                        {/* Extras checkboxes */}
                         {extras.length > 0 && (
                           <div>
                             <p className="text-xs font-medium mb-1.5">Extras ({GUESTS} guests, {nights} nights)</p>
@@ -781,10 +833,7 @@ function OfferCard({ s }: { s: Suggestion }) {
                               {extras.map(ex => {
                                 const mult = stayMultiplier(ex.unit ?? "per_stay_per_room", nights);
                                 return (
-                                  <label
-                                    key={ex.id}
-                                    className="flex items-center gap-2 text-xs cursor-pointer"
-                                  >
+                                  <label key={ex.id} className="flex items-center gap-2 text-xs cursor-pointer">
                                     <input
                                       type="checkbox"
                                       checked={r.extras.has(ex.id)}
@@ -804,7 +853,6 @@ function OfferCard({ s }: { s: Suggestion }) {
                           </div>
                         )}
 
-                        {/* Live totals — per stay */}
                         <div className="border-t border-[var(--color-border)] pt-2 space-y-1">
                           <div className="flex justify-between text-xs">
                             <span className="text-[var(--color-text-muted)]">Guest sees ({nights}n, {GUESTS} guests)</span>
@@ -833,12 +881,7 @@ function OfferCard({ s }: { s: Suggestion }) {
                         </div>
 
                         <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 text-xs"
-                            onClick={() => setEditingRow(null)}
-                          >
+                          <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setEditingRow(null)}>
                             Done
                           </Button>
                         </div>
@@ -859,9 +902,7 @@ function OfferCard({ s }: { s: Suggestion }) {
         )}
 
         {/* Actions */}
-        {actionError && (
-          <p className="text-xs text-red-600">{actionError}</p>
-        )}
+        {actionError && <p className="text-xs text-red-600">{actionError}</p>}
         <div className="flex items-center justify-between pt-1">
           <span className="text-xs text-[var(--color-text-muted)]">
             {activeCount} of {cities.length * segments.length} rows selected
@@ -870,11 +911,7 @@ function OfferCard({ s }: { s: Suggestion }) {
             <Button variant="ghost" size="sm" onClick={handleSkip}>
               {labels.skip}
             </Button>
-            <Button
-              size="sm"
-              onClick={handleSend}
-              disabled={activeCount === 0}
-            >
+            <Button size="sm" onClick={handleSend} disabled={activeCount === 0}>
               Send {activeCount} row{activeCount !== 1 ? "s" : ""}
               <ChevronRight className="w-3.5 h-3.5 ml-1" />
             </Button>
@@ -885,11 +922,45 @@ function OfferCard({ s }: { s: Suggestion }) {
   );
 }
 
+/* ---------- PeriodSection ---------- */
+
+function PeriodSection({ period }: { period: Period }) {
+  const { locale } = useLocale();
+  const label = locale === "it" ? period.label_it : period.label_en;
+  const dateRange = `${formatDateShort(period.start)} – ${formatDateShort(period.end)}`;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <h2 className="text-sm font-semibold text-[var(--color-text)] font-[family-name:var(--font-space-grotesk)]">
+          {label}
+        </h2>
+        <span className="text-xs text-[var(--color-text-muted)]">{dateRange}</span>
+        {period.has_offer && period.score !== undefined && (
+          <Badge variant="default" className="text-[10px] ml-auto">
+            Score {Math.round(period.score * 100)}%
+          </Badge>
+        )}
+      </div>
+
+      {period.has_offer && period.suggestion ? (
+        <OfferCard s={period.suggestion} periodLabel={label} />
+      ) : (
+        <NoOfferCard period={period} />
+      )}
+    </div>
+  );
+}
+
+/* ---------- OffersList ---------- */
+
 export default function OffersList({
-  suggestions,
+  periods,
+  hotelProfile,
   engineError,
 }: {
-  suggestions: Array<Record<string, unknown>>;
+  periods: Array<Record<string, unknown>>;
+  hotelProfile: Record<string, unknown>;
   engineError: string;
 }) {
   const { locale } = useLocale();
@@ -910,22 +981,8 @@ export default function OffersList({
     );
   }
 
-  const typed = suggestions as unknown as Suggestion[];
-
-  if (typed.length === 0) {
-    return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-semibold font-[family-name:var(--font-space-grotesk)]">
-          {labels.title}
-        </h1>
-        <Card>
-          <CardContent className="py-12 text-center text-[var(--color-text-muted)]">
-            {labels.empty}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const typed = periods as unknown as Period[];
+  const offersCount = typed.filter(p => p.has_offer).length;
 
   return (
     <div className="space-y-6">
@@ -934,13 +991,13 @@ export default function OffersList({
           {labels.title}
         </h1>
         <span className="text-sm text-[var(--color-text-muted)]">
-          {typed.length} {typed.length === 1 ? "offer" : "offers"}
+          {offersCount} offer{offersCount !== 1 ? "s" : ""} · {typed.length} periods
         </span>
       </div>
 
-      <div className="space-y-3">
-        {typed.map((s, i) => (
-          <OfferCard key={`${(s.guest_cities ?? [s.guest_city]).join("-")}-${s.check_in}-${i}`} s={s} />
+      <div className="space-y-5">
+        {typed.map(period => (
+          <PeriodSection key={period.id} period={period} />
         ))}
       </div>
     </div>

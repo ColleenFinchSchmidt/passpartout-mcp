@@ -7,18 +7,20 @@ const ENGINE_URL =
 const API_KEY = process.env.HOTEL_API_KEY || "";
 
 export default async function OffersPage() {
-  let suggestions: Array<Record<string, unknown>> = [];
+  let periods: Array<Record<string, unknown>> = [];
   let engineError = "";
+  let hotelProfile: Record<string, unknown> = {};
 
   try {
-    const url = `${ENGINE_URL}/api/hotel/suggest?hotel_id=bristol-stresa`;
+    const url = `${ENGINE_URL}/api/hotel/offers-timeline?hotel_id=bristol-stresa`;
     const headers: Record<string, string> = {};
     if (API_KEY) headers["x-api-key"] = API_KEY;
 
     const res = await fetch(url, { cache: "no-store", headers });
     if (res.ok) {
       const data = await res.json();
-      suggestions = data.suggestions ?? [];
+      periods = data.periods ?? [];
+      hotelProfile = data._hotel_profile ?? {};
     } else {
       engineError = `Engine returned ${res.status}`;
     }
@@ -28,7 +30,8 @@ export default async function OffersPage() {
 
   return (
     <OffersList
-      suggestions={suggestions}
+      periods={periods}
+      hotelProfile={hotelProfile}
       engineError={engineError}
     />
   );
