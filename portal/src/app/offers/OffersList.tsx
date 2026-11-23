@@ -8,12 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useLocale } from "@/components/LocaleProvider";
 import { t } from "@/i18n";
 import {
-  CloudRain,
-  Wind,
-  Sun,
-  Snowflake,
   Calendar,
-  TrendingDown,
   ChevronRight,
   ChevronDown,
   Check,
@@ -30,7 +25,6 @@ import {
   BedDouble,
   Loader2,
   Plus,
-  Info,
 } from "lucide-react";
 
 /* ---------- types ---------- */
@@ -562,7 +556,7 @@ function OfferCard({ s, periodLabel }: { s: Suggestion; periodLabel?: string }) 
         const invData = await invRes.json();
         setInventory(invData);
       }
-    } catch { /* best-effort */ }
+    } catch (_e) { /* best-effort */ }
 
     setDoneAction("approved");
     setCardState("done");
@@ -612,7 +606,7 @@ function OfferCard({ s, periodLabel }: { s: Suggestion; periodLabel?: string }) 
         const data = await res.json();
         if (data.offer) setInventory(data.offer);
       }
-    } catch { /* best-effort */ }
+    } catch (_e) { /* best-effort */ }
     setSendingWave(false);
   }
 
