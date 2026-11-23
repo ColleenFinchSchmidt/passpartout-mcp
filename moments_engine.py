@@ -25,6 +25,8 @@ from moments_sources import (
     score_seasonal,
     score_weather,
 )
+from hotel_profile import compute_hotel_segment_fit
+from local_events import event_segment_weights
 
 
 def load_json(path: Path) -> dict | list:
@@ -109,6 +111,90 @@ def _classify_holidays(holiday_result: dict) -> dict:
         "school": is_school,
         "public": score > 0 and not is_ponte and not is_school,
     }
+
+
+def _active_signals(check_in: date, weather_score: float, air_score: float,
+                    holiday_result: dict, seasonal_result: dict,
+                    days_out: int) -> list[str]:
+    """Determine which demand signals are active for this moment."""
+    signals = []
+    dow = check_in.weekday()
+    is_weekend = dow >= 4
+
+    if weather_score >= 0.5 and is_weekend:
+        signals.append("rainy_weekend")
+    if air_score >= 0.4:
+        signals.append("smog_grey_week")
+    if dow in (0, 1, 2, 3):
+        signals.append("midweek_dates")
+
+    h = _classify_holidays(holiday_result)
+    if h["ponte"]:
+        signals.append("long_weekend")
+    if h["school"]:
+        signals.append("school_holidays")
+    if days_out <= 4:
+        signals.append("short_notice")
+    if seasonal_result.get("score", 0) > 0:
+        for r in seasonal_result.get("reasons", []):
+            signals.append("seasonal_gardens")
+            break
+
+    return signals
+
+
+def _per_segment_scores(
+    moment_strength: float,
+    active_signals: list[str],
+    hotel: dict,
+    settings: dict,
+    seasonal_events: list[dict] | None = None,
+) -> list[dict]:
+    """Compute per-segment scores: moment × segment_weight × hotel_fit.
+
+    Returns a sorted list of {segment, label, score, reasons} for segments
+    above 0.3 threshold, top 2 max.
+    """
+    segments = settings.get("segments", {})
+    weight_table = settings.get("signal_segment_weights", {})
+    hotel_fit = compute_hotel_segment_fit(hotel, settings)
+    excluded = set(hotel.get("segments_excluded", []))
+
+    results = []
+    for seg_key, seg_info in segments.items():
+        if seg_key in excluded:
+            continue
+
+        signal_weights = []
+        for signal in active_signals:
+            w = weight_table.get(signal, {}).get(seg_key, 0.3)
+            signal_weights.append(w)
+
+        if seasonal_events:
+            for ev in seasonal_events:
+                ev_weights = event_segment_weights(ev, settings)
+                signal_weights.append(ev_weights.get(seg_key, 0.3))
+
+        if not signal_weights:
+            continue
+
+        avg_weight = sum(signal_weights) / len(signal_weights)
+        fit = hotel_fit.get(seg_key, 0.5)
+        seg_score = moment_strength * avg_weight * fit
+
+        if seg_score >= 0.05:
+            results.append({
+                "segment": seg_key,
+                "label": seg_info.get("label", seg_key),
+                "score": round(seg_score, 3),
+                "segment_weight": round(avg_weight, 2),
+                "hotel_fit": fit,
+                "channels": seg_info.get("channels", []),
+                "starting_mix": seg_info.get("starting_mix", ""),
+            })
+
+    results.sort(key=lambda x: -x["score"])
+    return results[:2]
 
 
 def _additive_score(
@@ -294,6 +380,14 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
 
             also_on = seasonal.get("also_on", [])
 
+            active_sigs = _active_signals(
+                check_in, weather["score"], air["score"],
+                holidays, seasonal, days_out,
+            )
+            top_segments = _per_segment_scores(
+                combined, active_sigs, hotel, settings,
+            )
+
             suggestion = {
                 "hotel": hotel["name"],
                 "hotel_id": hotel["id"],
@@ -306,6 +400,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
                 "price": price,
                 "reasons": all_reasons,
                 "also_on": also_on,
+                "target_segments": top_segments,
                 "source_scores": {
                     "weather": weather["score"],
                     "air_quality": air["score"],
@@ -341,6 +436,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
                 "price": s["price"],
                 "reasons": list(s["reasons"]),
                 "also_on": list(s.get("also_on", [])),
+                "target_segments": s.get("target_segments", []),
                 "source_scores": dict(s["source_scores"]),
             }
         else:
@@ -394,6 +490,13 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
             if blocked:
                 all_reasons.append(f"BLOCKED: {strike_note}")
 
+            active_sigs = _active_signals(
+                d, weather["score"], air["score"], holidays, seasonal, 0,
+            )
+            top_segments = _per_segment_scores(
+                combined, active_sigs, hotel, settings,
+            )
+
             day_result["sources"][city["name"]] = {
                 "combined_score": round(combined, 3),
                 "fires": combined >= settings.get("min_score_to_fire", 0.5) and not blocked,
@@ -403,6 +506,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
                 "seasonal": {"score": seasonal["score"], "reasons": seasonal["reasons"]},
                 "also_on": seasonal.get("also_on", []),
                 "availability": {"free_rooms": free_rooms, "total_rooms": hotel["rooms"]},
+                "target_segments": top_segments,
                 "strike_blocked": blocked,
                 "all_reasons": all_reasons,
             }
