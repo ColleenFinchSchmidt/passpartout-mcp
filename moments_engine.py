@@ -142,12 +142,13 @@ def _compute_segment_package(
     public_rate = hotel["public_rate_eur"]
     public_total = public_rate * nights
     max_giveaway = public_rate * hotel["max_discount_pct"] / 100 * nights
-    score_disc_pct = base_price["discount_pct"]
+
+    score_disc_pct = min(base_price["discount_pct"], hotel["max_discount_pct"])
+    total_budget = public_rate * score_disc_pct / 100 * nights
 
     min_disc_pct = min(mix["min_discount_pct"], hotel["max_discount_pct"])
-    headline_disc_pct = max(min_disc_pct, min(score_disc_pct, hotel["max_discount_pct"]))
 
-    headline_rate = round(public_rate * (1 - headline_disc_pct / 100))
+    headline_rate = round(public_rate * (1 - min_disc_pct / 100))
     headline_rate = max(headline_rate, hotel["lowest_price_eur"])
     headline_discount_total = (public_rate - headline_rate) * nights
 
@@ -189,7 +190,7 @@ def _compute_segment_package(
                     "is_preferred": False,
                 })
 
-    extras_budget = max_giveaway - headline_discount_total
+    extras_budget = max(0, total_budget - headline_discount_total)
 
     free_extras = [c for c in candidates if c["stay_cost"] == 0]
     paid_preferred = sorted(
@@ -214,15 +215,20 @@ def _compute_segment_package(
 
     leftover = extras_budget - total_extras_cost
     if leftover > 0:
-        extra_disc_per_night = leftover / nights
-        final_rate = headline_rate - round(extra_disc_per_night)
+        final_rate = headline_rate - int(leftover / nights)
         final_rate = max(final_rate, hotel["lowest_price_eur"])
     else:
         final_rate = headline_rate
 
-    private_total = final_rate * nights
-    disc_pct = round((1 - final_rate / public_rate) * 100, 1)
     discount_total = (public_rate - final_rate) * nights
+    if discount_total + total_extras_cost > max_giveaway:
+        final_rate = -(-int(public_rate * nights - max_giveaway + total_extras_cost) // nights)
+        final_rate = max(final_rate, hotel["lowest_price_eur"])
+        discount_total = (public_rate - final_rate) * nights
+
+    private_total = final_rate * nights
+
+    disc_pct = round((1 - final_rate / public_rate) * 100, 1)
     total_giveaway = discount_total + total_extras_cost
 
     return {
