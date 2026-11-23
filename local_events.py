@@ -75,9 +75,9 @@ TOURISM_URLS: dict[str, list[str]] = {
         "https://www.menaggio.com/en/",
     ],
     "bristol-stresa": [
-        "https://www.distrettolaghi.it/it/eventi/natale_capodanno_epifania_25_26",
+        "https://www.distrettolaghi.it/en/events",
         "https://www.distrettolaghi.it/it/eventi",
-        "https://www.stresa.com/en/events",
+        "https://www.illagomaggiore.com/it/eventi/",
     ],
 }
 

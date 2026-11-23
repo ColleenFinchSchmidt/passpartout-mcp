@@ -91,8 +91,10 @@ def _refresh_paid_caches():
             result = discover_events(hotel, MOMENTS_DATA)
             if result.get("_from_cache"):
                 _log.info("Local events cache fresh for %s", hotel["name"])
-            elif "error" not in result:
-                _log.info("Local events refreshed for %s (%d events)", hotel["name"], len(result.get("events", [])))
+            elif "error" in result:
+                _log.warning("Local events discovery error for %s: %s", hotel["name"], result["error"])
+            else:
+                _log.warning("Local events refreshed for %s (%d events)", hotel["name"], len(result.get("events", [])))
         except Exception as exc:
             _log.warning("Local events refresh failed for %s: %s", hotel["name"], exc)
 

@@ -353,10 +353,14 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
 
 def explain_moments(hotel: dict, settings: dict, data_dir: Path,
                     start_date: date, end_date: date) -> list[dict]:
+    min_free = settings.get("min_free_rooms", 1)
+    avail = _build_availability(hotel, data_dir, start_date, end_date)
+
     results = []
     d = start_date
     while d <= end_date:
         day_result = {"date": d.isoformat(), "weekday": d.strftime("%A"), "sources": {}}
+        free_rooms = avail["free_rooms"].get(d.isoformat(), hotel["rooms"])
 
         for city in hotel["guest_cities"]:
             weather = score_weather(hotel, city, settings)
@@ -369,9 +373,10 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
                 weather["score"],
                 air["score"],
                 seasonal["score"],
-                hotel["rooms"],
+                free_rooms,
                 hotel["rooms"],
                 holidays,
+                min_free,
                 hotel_weather_penalty=weather.get("hotel_weather_penalty", 0.0),
             )
 
@@ -389,6 +394,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
                 "air_quality": {"score": air["score"], "reasons": air["reasons"]},
                 "holidays": {"score": holidays["score"], "reasons": holidays["reasons"]},
                 "seasonal": {"score": seasonal["score"], "reasons": seasonal["reasons"]},
+                "availability": {"free_rooms": free_rooms, "total_rooms": hotel["rooms"]},
                 "strike_blocked": blocked,
                 "all_reasons": all_reasons,
             }
