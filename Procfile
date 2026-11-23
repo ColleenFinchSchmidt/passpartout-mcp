@@ -1,1 +1,1 @@
-web: HOST=0.0.0.0 python server.py
+web: PYTHONIOENCODING=utf-8 PYTHONDONTWRITEBYTECODE=1 HOST=0.0.0.0 python server.py

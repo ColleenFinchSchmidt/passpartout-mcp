@@ -50,18 +50,19 @@ def _ask_claude(system: str, user: str) -> str | None:
     if not ANTHROPIC_API_KEY:
         return None
     try:
-        payload = json.dumps({
+        body = {
             "model": ANTHROPIC_MODEL,
             "max_tokens": 4000,
             "system": system,
             "messages": [{"role": "user", "content": user}],
-        }, ensure_ascii=False).encode("utf-8")
-        resp = _http.post(
+        }
+        payload = json.dumps(body).encode("utf-8")
+        resp = httpx.post(
             "https://api.anthropic.com/v1/messages",
             headers={
                 "x-api-key": ANTHROPIC_API_KEY,
                 "anthropic-version": "2023-06-01",
-                "content-type": "application/json; charset=utf-8",
+                "content-type": "application/json",
             },
             content=payload,
             timeout=60,
@@ -73,7 +74,7 @@ def _ask_claude(system: str, user: str) -> str | None:
                 return block["text"]
         return None
     except Exception as exc:
-        logger.error("Claude API error: %s", exc)
+        logger.error("Claude API error (%s): %s", type(exc).__name__, exc)
         return None
 
 
