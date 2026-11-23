@@ -12,10 +12,13 @@ MCP endpoint:    http://127.0.0.1:8000/mcp
 """
 
 import hashlib
+import logging
 import os
 import sys
-from datetime import date, timedelta
+import threading
+from datetime import date, datetime, time as dtime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import uvicorn
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
@@ -50,15 +53,16 @@ MOMENTS_HOTELS = load_json(MOMENTS_DATA / "hotels.json")
 MOMENTS_HOTEL_BY_ID = {h["id"]: h for h in MOMENTS_HOTELS}
 
 
+ROME_TZ = ZoneInfo("Europe/Rome")
+_log = logging.getLogger(__name__)
+
+
 def _refresh_paid_caches():
-    """Refresh stale paid-API caches at startup (once per day max).
+    """Refresh stale paid-API caches (once per day max per cache key).
 
-    This ensures MCP tools always have data to serve from cache,
-    without needing to make live API calls on individual requests.
+    Called at startup and daily at 06:00 Rome time by the background scheduler.
+    Each function's own 24-hour TTL prevents duplicate API calls.
     """
-    import logging
-    log = logging.getLogger(__name__)
-
     for hotel in MOMENTS_HOTELS:
         lat = hotel.get("lat", 46.01)
         lon = hotel.get("lon", 9.28)
@@ -68,32 +72,56 @@ def _refresh_paid_caches():
         try:
             result = fetch_predicthq_events(lat, lon, radius_km=30, days_ahead=90)
             if result.get("_from_cache"):
-                log.info("PredictHQ cache fresh for %s", hotel["name"])
+                _log.info("PredictHQ cache fresh for %s", hotel["name"])
             elif "error" not in result:
-                log.info("PredictHQ cache refreshed for %s (%d events)", hotel["name"], len(result.get("events", [])))
+                _log.info("PredictHQ cache refreshed for %s (%d events)", hotel["name"], len(result.get("events", [])))
         except Exception as exc:
-            log.warning("PredictHQ refresh failed for %s: %s", hotel["name"], exc)
+            _log.warning("PredictHQ refresh failed for %s: %s", hotel["name"], exc)
 
         try:
             result = fetch_competitor_prices(location_name=region, keyword=f"hotel {town} lake como")
             if result.get("_from_cache"):
-                log.info("DataForSEO cache fresh for %s", hotel["name"])
+                _log.info("DataForSEO cache fresh for %s", hotel["name"])
             elif "error" not in result:
-                log.info("DataForSEO cache refreshed for %s (%d hotels)", hotel["name"], result.get("hotels_found", 0))
+                _log.info("DataForSEO cache refreshed for %s (%d hotels)", hotel["name"], result.get("hotels_found", 0))
         except Exception as exc:
-            log.warning("DataForSEO refresh failed for %s: %s", hotel["name"], exc)
+            _log.warning("DataForSEO refresh failed for %s: %s", hotel["name"], exc)
 
         try:
             result = discover_events(hotel, MOMENTS_DATA)
             if result.get("_from_cache"):
-                log.info("Local events cache fresh for %s", hotel["name"])
+                _log.info("Local events cache fresh for %s", hotel["name"])
             elif "error" not in result:
-                log.info("Local events refreshed for %s (%d events)", hotel["name"], len(result.get("events", [])))
+                _log.info("Local events refreshed for %s (%d events)", hotel["name"], len(result.get("events", [])))
         except Exception as exc:
-            log.warning("Local events refresh failed for %s: %s", hotel["name"], exc)
+            _log.warning("Local events refresh failed for %s: %s", hotel["name"], exc)
+
+
+def _start_daily_scheduler():
+    """Background thread: run _refresh_paid_caches() every day at 06:00 Rome time."""
+    def _loop():
+        while True:
+            now = datetime.now(ROME_TZ)
+            target = datetime.combine(now.date(), dtime(6, 0), tzinfo=ROME_TZ)
+            if now >= target:
+                target += timedelta(days=1)
+            wait_secs = (target - now).total_seconds()
+            _log.info("Daily cache refresh scheduled for %s (in %.0f min)",
+                       target.strftime("%Y-%m-%d %H:%M %Z"), wait_secs / 60)
+            threading.Event().wait(wait_secs)
+            _log.info("Daily cache refresh starting")
+            try:
+                _refresh_paid_caches()
+                _log.info("Daily cache refresh complete")
+            except Exception as exc:
+                _log.error("Daily cache refresh failed: %s", exc)
+
+    t = threading.Thread(target=_loop, daemon=True, name="daily-cache-refresh")
+    t.start()
 
 
 _refresh_paid_caches()
+_start_daily_scheduler()
 
 HOTEL_API_KEY = os.environ.get("HOTEL_API_KEY", "")
 
