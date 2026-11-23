@@ -32,5 +32,63 @@
     "base_discount_pct": 15,
     "high_score_discount_pct": 25,
     "score_for_max_discount": 0.8
+  },
+
+  "segments": {
+    "young_couples": {
+      "label": "Young couples",
+      "when": "Weekends, short notice",
+      "appeals": "Spa, aperitivo, photogenic places, nightlife",
+      "price_behaviour": "Responds to a visible % off and urgency",
+      "channels": ["instagram", "ai_assistants"],
+      "starting_mix": "Bigger headline % + spa or aperitivo; urgency ('this weekend only')"
+    },
+    "retirees": {
+      "label": "Retirees / empty nesters",
+      "when": "Midweek, flexible, avoid crowds",
+      "appeals": "Calm, gardens, food, culture",
+      "price_behaviour": "Prefers added value (dinner, late check-out) over deep %",
+      "channels": ["email", "whatsapp"],
+      "starting_mix": "Moderate % + dinner / late check-out / garden tour"
+    },
+    "families": {
+      "label": "Families",
+      "when": "School holidays, long weekends",
+      "appeals": "Pool, space, easy logistics",
+      "price_behaviour": "Budget-aware; 'kids free' / 4-for-3 beats % off",
+      "channels": ["email"],
+      "starting_mix": "'Kids stay free' or 4-for-3 nights rather than %"
+    },
+    "remote_workers": {
+      "label": "Remote workers",
+      "when": "Sunday-Thursday, longer stays",
+      "appeals": "Wi-Fi, desk, quiet, long-stay rate",
+      "price_behaviour": "Responds to multi-night deals",
+      "channels": ["email", "linkedin"],
+      "starting_mix": "Long-stay rate (e.g. 4 nights for 3) + workspace"
+    },
+    "friends_groups": {
+      "label": "Friends' groups",
+      "when": "Weekends, long weekends",
+      "appeals": "Events, wine, activities",
+      "price_behaviour": "Per-person price matters",
+      "channels": ["instagram", "whatsapp"],
+      "starting_mix": "Per-person pricing + group activity"
+    }
+  },
+
+  "signal_segment_weights": {
+    "rainy_weekend":        { "young_couples": 0.9, "retirees": 0.3, "families": 0.6, "remote_workers": 0.3 },
+    "smog_grey_week":       { "young_couples": 0.6, "retirees": 0.6, "families": 0.9, "remote_workers": 0.6 },
+    "midweek_dates":        { "young_couples": 0.2, "retirees": 0.9, "families": 0.0, "remote_workers": 0.9 },
+    "long_weekend":         { "young_couples": 0.9, "retirees": 0.3, "families": 0.9, "remote_workers": 0.3 },
+    "school_holidays":      { "young_couples": 0.3, "retirees": 0.0, "families": 1.0, "remote_workers": 0.3 },
+    "short_notice":         { "young_couples": 0.9, "retirees": 0.6, "families": 0.2, "remote_workers": 0.9 },
+    "competitors_cheap":    { "young_couples": 0.6, "retirees": 0.3, "families": 0.9, "remote_workers": 0.6 },
+    "event_indie_music":    { "young_couples": 0.9, "retirees": 0.0, "families": 0.0, "remote_workers": 0.6 },
+    "event_classical_art":  { "young_couples": 0.3, "retirees": 0.9, "families": 0.3, "remote_workers": 0.3 },
+    "event_market_fair":    { "young_couples": 0.6, "retirees": 0.6, "families": 0.9, "remote_workers": 0.3 },
+    "event_food_wine":      { "young_couples": 0.9, "retirees": 0.9, "families": 0.3, "remote_workers": 0.6 },
+    "seasonal_gardens":     { "young_couples": 0.6, "retirees": 0.9, "families": 0.3, "remote_workers": 0.6 }
   }
 }
