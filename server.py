@@ -811,6 +811,43 @@ def api_event_debug(
     else:
         result["steps"]["claude_api"] = {"ok": False, "error": "No API key"}
 
+    # Step 4: mini extraction with real page text
+    if _ak and fetch_results and any(f.get("ok") for f in fetch_results):
+        try:
+            from local_events import EXTRACTION_SYSTEM, HOTEL_LOCATION_LABEL
+            from datetime import date as d, timedelta
+            location = HOTEL_LOCATION_LABEL.get(hid, "Italy")
+            page_text = fetch_results[0].get("preview", "")[:1000]
+            today = d.today()
+            end_d = today + timedelta(days=90)
+            sys_prompt = EXTRACTION_SYSTEM.format(location=location)
+            user_prompt = (
+                f"Hotel: {hotel['name']} in {hotel.get('town', 'Stresa')}, {location}.\n"
+                f"Today: {today.isoformat()}. Events between {today.isoformat()} and {end_d.isoformat()}.\n\n"
+                f"--- Source: {fetch_results[0]['url']} ---\n{page_text}"
+            )
+            resp = _ask_claude(sys_prompt, user_prompt)
+            result["steps"]["mini_extraction"] = {
+                "ok": resp is not None,
+                "response_preview": resp[:500] if resp else None,
+                "prompt_chars": len(user_prompt),
+            }
+        except Exception as exc:
+            result["steps"]["mini_extraction"] = {"ok": False, "error": str(exc)}
+
+    # Step 5: run full discovery and capture result
+    try:
+        disc_result = discover_events(hotel, MOMENTS_DATA, force=True)
+        result["steps"]["full_discovery"] = {
+            "event_count": len(disc_result.get("events", [])),
+            "has_error": "error" in disc_result,
+            "note": disc_result.get("note"),
+            "error": disc_result.get("error"),
+            "raw_preview": disc_result.get("raw", "")[:300] if disc_result.get("raw") else None,
+        }
+    except Exception as exc:
+        result["steps"]["full_discovery"] = {"ok": False, "error": str(exc)}
+
     return result
 
 
