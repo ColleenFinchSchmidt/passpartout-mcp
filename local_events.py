@@ -58,7 +58,7 @@ def _ask_claude(system: str, user: str) -> str | None:
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         message = client.messages.create(
             model=ANTHROPIC_MODEL,
-            max_tokens=4000,
+            max_tokens=8000,
             system=system,
             messages=[{"role": "user", "content": user}],
         )
@@ -213,10 +213,17 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False,
         return {"events": [], "note": "Claude API call failed."}
 
     try:
-        start = response.find("[")
-        end_idx = response.rfind("]") + 1
-        events = json.loads(response[start:end_idx])
-    except (json.JSONDecodeError, ValueError):
+        cleaned = response.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```\w*\n?", "", cleaned)
+            cleaned = re.sub(r"\n?```\s*$", "", cleaned)
+        start = cleaned.find("[")
+        end_idx = cleaned.rfind("]") + 1
+        if start < 0 or end_idx <= 0:
+            raise ValueError("No JSON array found")
+        events = json.loads(cleaned[start:end_idx])
+    except (json.JSONDecodeError, ValueError) as exc:
+        logger.warning("JSON parse failed for %s: %s — raw[:200]: %s", hotel_id, exc, response[:200])
         return {"events": [], "note": "Could not parse Claude response.", "raw": response[:500]}
 
     # Store in Postgres (never overwrites with empty)
