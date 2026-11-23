@@ -34,6 +34,7 @@ from moments_engine import evaluate_hotel, explain_moments, run_backtest, load_j
 from data_refresh import refresh_holidays
 from local_events import discover_events, get_approved_events
 from demand_signals import fetch_predicthq_events, fetch_competitor_prices
+from inventory import store as inventory_store
 
 # ---------- shared state ----------
 
@@ -772,6 +773,102 @@ def api_backtest(
     result = run_backtest(hotel, MOMENTS_SETTINGS, months, MOMENTS_DATA)
     if "error" in result:
         raise HTTPException(status_code=502, detail=result["error"])
+    return result
+
+
+# ---------- Inventory REST endpoints ----------
+
+class CreateOfferRequest(BaseModel):
+    hotel_id: str
+    check_in: str
+    nights: int
+    rooms_allocated: int
+    city_segments: list[dict]
+    auto_waves: bool = False
+    booking_rate: float = 0.03
+
+
+@api.post("/api/hotel/inventory", tags=["Inventory"], dependencies=[Depends(require_hotel_api_key)])
+def api_create_offer(req: CreateOfferRequest):
+    """Create an offer with room allocation and wave plan. Wave 1 sends immediately (simulated)."""
+    offer = inventory_store.create_offer(
+        hotel_id=req.hotel_id,
+        check_in=req.check_in,
+        nights=req.nights,
+        rooms_allocated=req.rooms_allocated,
+        city_segments=req.city_segments,
+        auto_waves=req.auto_waves,
+        booking_rate=req.booking_rate,
+    )
+    return offer.to_dict()
+
+
+@api.get("/api/hotel/inventory", tags=["Inventory"], dependencies=[Depends(require_hotel_api_key)])
+def api_list_offers(hotel_id: str | None = Query(None, description="Filter by hotel")):
+    """List all offers with their inventory and wave status."""
+    return {"offers": inventory_store.list_offers(hotel_id)}
+
+
+@api.get("/api/hotel/inventory/{offer_id}", tags=["Inventory"], dependencies=[Depends(require_hotel_api_key)])
+def api_get_inventory(offer_id: str):
+    """Get inventory and wave detail for one offer."""
+    data = inventory_store.get_offer(offer_id)
+    if not data:
+        raise HTTPException(status_code=404, detail=f"Offer not found: {offer_id}")
+    return data
+
+
+class SendWaveRequest(BaseModel):
+    extra_to_add: str | None = None
+
+
+@api.post("/api/hotel/inventory/{offer_id}/wave", tags=["Inventory"], dependencies=[Depends(require_hotel_api_key)])
+def api_send_wave(offer_id: str, req: SendWaveRequest | None = None):
+    """Send the next wave for an offer (optionally add an extra, not more discount)."""
+    result = inventory_store.send_next_wave(offer_id, extra_to_add=req.extra_to_add if req else None)
+    if "error" in result:
+        raise HTTPException(status_code=409, detail=result["error"])
+    return result
+
+
+class HoldRequest(BaseModel):
+    guest_ref: str
+
+
+@api.post("/api/hotel/inventory/{offer_id}/hold", tags=["Inventory"], dependencies=[Depends(require_hotel_api_key)])
+def api_add_hold(offer_id: str, req: HoldRequest):
+    """Place a 10-minute hold on a room at checkout."""
+    result = inventory_store.add_hold(offer_id, req.guest_ref)
+    if "error" in result:
+        status = 410 if result.get("sold_out") else 404
+        raise HTTPException(status_code=status, detail=result["error"])
+    return result
+
+
+class BookRequest(BaseModel):
+    guest_ref: str
+
+
+@api.post("/api/hotel/inventory/{offer_id}/book", tags=["Inventory"], dependencies=[Depends(require_hotel_api_key)])
+def api_book_room(offer_id: str, req: BookRequest):
+    """Confirm a booking (removes hold, increments booked count)."""
+    result = inventory_store.book_room(offer_id, req.guest_ref)
+    if "error" in result:
+        status = 410 if result.get("sold_out") else 404
+        raise HTTPException(status_code=status, detail=result["error"])
+    return result
+
+
+class NotifyRequest(BaseModel):
+    email: str
+
+
+@api.post("/api/hotel/inventory/{offer_id}/notify", tags=["Inventory"], dependencies=[Depends(require_hotel_api_key)])
+def api_add_notify(offer_id: str, req: NotifyRequest):
+    """Add an email to the sold-out waitlist."""
+    result = inventory_store.add_to_notify(offer_id, req.email)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
     return result
 
 

@@ -22,6 +22,12 @@ import {
   ToggleLeft,
   ToggleRight,
   Gift,
+  Send,
+  Bell,
+  Eye,
+  MousePointer,
+  BedDouble,
+  Loader2,
 } from "lucide-react";
 
 type Extra = {
@@ -85,6 +91,43 @@ type Suggestion = {
   event_sources?: { name: string; place: string; source_url: string }[];
   target_segments?: TargetSegment[];
   source_scores: Record<string, number>;
+};
+
+type WaveMetrics = {
+  sent: number;
+  opened: number;
+  clicked: number;
+  booked: number;
+};
+
+type WaveData = {
+  wave_number: number;
+  city: string;
+  segment: string;
+  segment_label: string;
+  recipients: number;
+  status: string;
+  sent_at: string | null;
+  extra_added: string | null;
+  metrics: WaveMetrics;
+};
+
+type InventoryData = {
+  offer_id: string;
+  hotel_id: string;
+  check_in: string;
+  nights: number;
+  rooms_allocated: number;
+  rooms_booked: number;
+  rooms_held: number;
+  rooms_left: number;
+  status: string;
+  auto_waves: boolean;
+  booking_rate: number;
+  waves: WaveData[];
+  created_at: string | null;
+  expires_at: string;
+  notify_waitlist: number;
 };
 
 type RowKey = string;
@@ -157,6 +200,172 @@ function rowKey(city: string, seg: string): RowKey {
   return `${city}|${seg}`;
 }
 
+function statusColor(status: string): string {
+  switch (status) {
+    case "active": return "text-emerald-600";
+    case "sold_out": return "text-red-600";
+    case "expired": return "text-amber-600";
+    default: return "text-[var(--color-text-muted)]";
+  }
+}
+
+function statusLabel(status: string): string {
+  switch (status) {
+    case "active": return "Active";
+    case "sold_out": return "Sold out";
+    case "expired": return "Expired";
+    case "closed": return "Closed";
+    default: return status;
+  }
+}
+
+function InventoryPanel({
+  inv,
+  onSendWave,
+  sendingWave,
+}: {
+  inv: InventoryData;
+  onSendWave: () => void;
+  sendingWave: boolean;
+}) {
+  const hasPending = inv.waves.some(w => w.status === "pending");
+
+  return (
+    <div className="space-y-3">
+      {/* Allocation bar */}
+      <div className="flex items-center gap-3 text-sm">
+        <span className="font-medium text-[var(--color-text)]">
+          {inv.rooms_allocated} allocated
+        </span>
+        <span className="text-[var(--color-text-muted)]">·</span>
+        <span className="text-emerald-600 font-medium">{inv.rooms_booked} booked</span>
+        <span className="text-[var(--color-text-muted)]">·</span>
+        <span className="text-amber-600">{inv.rooms_held} held</span>
+        <span className="text-[var(--color-text-muted)]">·</span>
+        <span className={inv.rooms_left === 0 ? "text-red-600 font-medium" : "text-[var(--color-text)]"}>
+          {inv.rooms_left} left
+        </span>
+        <Badge variant="default" className={`ml-auto ${statusColor(inv.status)}`}>
+          {statusLabel(inv.status)}
+        </Badge>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-2 bg-[var(--color-bg-hover)] rounded-full overflow-hidden flex">
+        <div
+          className="bg-emerald-500 transition-all"
+          style={{ width: `${(inv.rooms_booked / inv.rooms_allocated) * 100}%` }}
+        />
+        <div
+          className="bg-amber-400 transition-all"
+          style={{ width: `${(inv.rooms_held / inv.rooms_allocated) * 100}%` }}
+        />
+      </div>
+
+      {/* Waves table */}
+      <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="bg-[var(--color-bg-hover)] text-[var(--color-text-muted)]">
+              <th className="text-left p-2 font-medium">Wave</th>
+              <th className="text-left p-2 font-medium">Target</th>
+              <th className="text-right p-2 font-medium">
+                <span className="inline-flex items-center gap-1"><Send className="w-3 h-3" />Sent</span>
+              </th>
+              <th className="text-right p-2 font-medium">
+                <span className="inline-flex items-center gap-1"><Eye className="w-3 h-3" />Opened</span>
+              </th>
+              <th className="text-right p-2 font-medium">
+                <span className="inline-flex items-center gap-1"><MousePointer className="w-3 h-3" />Clicked</span>
+              </th>
+              <th className="text-right p-2 font-medium">
+                <span className="inline-flex items-center gap-1"><BedDouble className="w-3 h-3" />Booked</span>
+              </th>
+              <th className="text-right p-2 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--color-border)]">
+            {inv.waves.map(w => (
+              <tr key={w.wave_number} className={w.status === "pending" ? "opacity-50" : ""}>
+                <td className="p-2 font-medium">{w.wave_number}</td>
+                <td className="p-2">
+                  {w.city} × {w.segment_label}
+                  {w.extra_added && (
+                    <span className="ml-1 text-emerald-600">+{w.extra_added}</span>
+                  )}
+                </td>
+                <td className="p-2 text-right tabular-nums">{w.metrics.sent}</td>
+                <td className="p-2 text-right tabular-nums">
+                  {w.metrics.opened}
+                  {w.metrics.sent > 0 && (
+                    <span className="text-[var(--color-text-muted)] ml-1">
+                      ({Math.round((w.metrics.opened / w.metrics.sent) * 100)}%)
+                    </span>
+                  )}
+                </td>
+                <td className="p-2 text-right tabular-nums">
+                  {w.metrics.clicked}
+                  {w.metrics.opened > 0 && (
+                    <span className="text-[var(--color-text-muted)] ml-1">
+                      ({Math.round((w.metrics.clicked / w.metrics.opened) * 100)}%)
+                    </span>
+                  )}
+                </td>
+                <td className="p-2 text-right tabular-nums font-medium text-emerald-600">
+                  {w.metrics.booked}
+                </td>
+                <td className="p-2 text-right">
+                  <Badge variant={w.status === "sent" ? "default" : "outline"} className="text-[10px]">
+                    {w.status === "sent" ? "Sent" : "Pending"}
+                  </Badge>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Send next wave button */}
+      {hasPending && inv.status === "active" && (
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSendWave}
+            disabled={sendingWave}
+          >
+            {sendingWave ? (
+              <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+            ) : (
+              <Send className="w-3.5 h-3.5 mr-1" />
+            )}
+            Send next wave
+          </Button>
+          <span className="text-xs text-[var(--color-text-muted)]">
+            {inv.rooms_left} rooms left · booking rate {Math.round(inv.booking_rate * 100)}%
+          </span>
+        </div>
+      )}
+
+      {/* Sold out + waitlist */}
+      {inv.status === "sold_out" && (
+        <div className="flex items-center gap-2 text-sm">
+          <Bell className="w-4 h-4 text-amber-500" />
+          <span className="text-[var(--color-text-muted)]">
+            Sold out · {inv.notify_waitlist} on waitlist
+          </span>
+        </div>
+      )}
+
+      <p className="text-[10px] text-[var(--color-text-muted)]">
+        Expires {new Date(inv.expires_at).toLocaleString("en-GB", {
+          day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+        })}
+      </p>
+    </div>
+  );
+}
+
 function OfferCard({ s }: { s: Suggestion }) {
   const { locale } = useLocale();
   const labels = t(locale).offers;
@@ -186,6 +395,8 @@ function OfferCard({ s }: { s: Suggestion }) {
   const [cardState, setCardState] = useState<"idle" | "done">("idle");
   const [doneAction, setDoneAction] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
+  const [inventory, setInventory] = useState<InventoryData | null>(null);
+  const [sendingWave, setSendingWave] = useState(false);
 
   const toggleRow = (key: RowKey) => {
     setRows(prev => ({
@@ -279,6 +490,41 @@ function OfferCard({ s }: { s: Suggestion }) {
         return;
       }
     }
+    // Create inventory record with wave plan
+    const activeRows = Object.entries(rows).filter(([, r]) => r.enabled);
+    const citySegments = activeRows.map(([key]) => {
+      const [city, segKey] = key.split("|");
+      const seg = segments.find(s => s.segment === segKey);
+      return {
+        city,
+        segment: segKey,
+        segment_label: seg?.label ?? segKey,
+        contact_limit: 500,
+      };
+    });
+
+    try {
+      const invRes = await fetch("/api/inventory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          hotel_id: s.hotel_id,
+          check_in: s.check_in,
+          nights: s.nights,
+          rooms_allocated: s.rooms_to_offer,
+          city_segments: citySegments,
+          auto_waves: false,
+          booking_rate: 0.03,
+        }),
+      });
+      if (invRes.ok) {
+        const invData = await invRes.json();
+        setInventory(invData);
+      }
+    } catch {
+      // inventory creation is best-effort for demo
+    }
+
     setDoneAction("approved");
     setCardState("done");
   }
@@ -314,10 +560,52 @@ function OfferCard({ s }: { s: Suggestion }) {
     setCardState("done");
   }
 
+  async function handleSendWave() {
+    if (!inventory) return;
+    setSendingWave(true);
+    try {
+      const res = await fetch("/api/inventory/wave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ offer_id: inventory.offer_id }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.offer) setInventory(data.offer);
+      }
+    } catch {
+      // best-effort
+    }
+    setSendingWave(false);
+  }
+
   const { icon, variant, label } = classifyReasons(s.reasons);
   const activeCount = Object.values(rows).filter(r => r.enabled).length;
 
   if (cardState === "done") {
+    if (doneAction === "approved" && inventory) {
+      return (
+        <Card>
+          <CardContent className="p-5 space-y-4">
+            <div className="flex items-center gap-3">
+              <Check className="w-5 h-5 text-green-600" />
+              <span className="text-sm font-medium text-[var(--color-text)]">
+                {cities.join(", ")} · {formatDate(s.check_in)} – {checkOutDate(s.check_in, s.nights)}
+              </span>
+              <span className="text-xs text-[var(--color-text-muted)] ml-auto">
+                {s.nights}n · Wave 1 sent
+              </span>
+            </div>
+            <InventoryPanel
+              inv={inventory}
+              onSendWave={handleSendWave}
+              sendingWave={sendingWave}
+            />
+          </CardContent>
+        </Card>
+      );
+    }
+
     return (
       <Card className="opacity-60">
         <CardContent className="p-5 flex items-center gap-3">
