@@ -111,11 +111,28 @@ SEGMENT_INCLUSIONS_FALLBACK = {
 }
 
 
+def _extra_stay_multiplier(unit: str, nights: int, guests: int = 2) -> int:
+    if unit == "per_night_per_person":
+        return nights * guests
+    elif unit == "per_stay_per_person":
+        return guests
+    elif unit == "per_night_per_room":
+        return nights
+    else:
+        return 1
+
+
 def _compute_segment_package(
     hotel: dict, nights: int, combined_score: float,
     segment: dict, settings: dict,
 ) -> dict:
-    """Build a per-segment package: discount + inclusions, within guardrails."""
+    """Build a per-segment package: discount + extras, within guardrails.
+
+    Guardrail: price discount + total extras cost for the stay must not
+    exceed max_discount_pct of the public total.  When the full extras
+    set would bust the budget, drop the lowest value-per-cost extras
+    until it fits.
+    """
     base_price = _compute_price(hotel, nights, combined_score, settings)
     seg_key = segment["segment"]
     pricing_mod = SEGMENT_PRICING.get(seg_key, {"discount_bias": 1.0, "value_bias": 1.0})
@@ -127,22 +144,24 @@ def _compute_segment_package(
     private_rate = max(private_rate, hotel["lowest_price_eur"])
     private_total = private_rate * nights
 
+    guests = 2
     hotel_extras = hotel.get("extras", [])
-    extras = []
-    extras_value = 0
-    extras_cost = 0
+    candidates = []
     if hotel_extras:
         for ex in hotel_extras:
             if seg_key in ex.get("segments", []):
-                extras.append({
+                unit = ex.get("unit", "per_stay_per_room")
+                mult = _extra_stay_multiplier(unit, nights, guests)
+                candidates.append({
                     "id": ex["id"],
                     "name": ex["name"],
                     "value_to_guest": ex["value_to_guest"],
                     "cost_to_hotel": ex["cost_to_hotel"],
+                    "unit": unit,
                     "limit": ex.get("limit", ""),
+                    "stay_value": ex["value_to_guest"] * mult,
+                    "stay_cost": ex["cost_to_hotel"] * mult,
                 })
-                extras_value += ex["value_to_guest"]
-                extras_cost += ex["cost_to_hotel"]
     else:
         hotel_experiences = set(hotel.get("experiences", []))
         possible = SEGMENT_INCLUSIONS_FALLBACK.get(seg_key, [])
@@ -151,11 +170,34 @@ def _compute_segment_package(
                 "kids_free", "extra_bed", "late_checkout", "workspace",
                 "long_stay_rate", "group_activity",
             ):
-                extras.append({"id": inc, "name": inc.replace("_", " ").title(),
-                               "value_to_guest": 0, "cost_to_hotel": 0, "limit": ""})
+                candidates.append({
+                    "id": inc, "name": inc.replace("_", " ").title(),
+                    "value_to_guest": 0, "cost_to_hotel": 0,
+                    "unit": "per_stay_per_room", "limit": "",
+                    "stay_value": 0, "stay_cost": 0,
+                })
 
-    discount_amount = (hotel["public_rate_eur"] - private_rate) * nights
-    total_giveaway = discount_amount + extras_cost * nights
+    discount_total = (hotel["public_rate_eur"] - private_rate) * nights
+    max_giveaway = hotel["public_rate_eur"] * hotel["max_discount_pct"] / 100 * nights
+    extras_budget = max_giveaway - discount_total
+
+    free_extras = [c for c in candidates if c["stay_cost"] == 0]
+    paid_extras = [c for c in candidates if c["stay_cost"] > 0]
+    paid_extras.sort(
+        key=lambda c: c["stay_value"] / max(c["stay_cost"], 0.01),
+        reverse=True,
+    )
+
+    extras = list(free_extras)
+    total_extras_cost = 0
+    total_extras_value = sum(c["stay_value"] for c in free_extras)
+    for c in paid_extras:
+        if total_extras_cost + c["stay_cost"] <= extras_budget:
+            extras.append(c)
+            total_extras_cost += c["stay_cost"]
+            total_extras_value += c["stay_value"]
+
+    total_giveaway = discount_total + total_extras_cost
 
     return {
         "public_rate_per_night": hotel["public_rate_eur"],
@@ -164,10 +206,19 @@ def _compute_segment_package(
         "private_total": private_total,
         "discount_pct": round(disc_pct, 1),
         "you_save": hotel["public_rate_eur"] * nights - private_total,
-        "extras": extras,
-        "extras_value_per_night": extras_value,
-        "extras_cost_per_night": extras_cost,
+        "extras": [{
+            "id": e["id"], "name": e["name"],
+            "value_to_guest": e["value_to_guest"],
+            "cost_to_hotel": e["cost_to_hotel"],
+            "unit": e["unit"], "limit": e["limit"],
+            "stay_value": e["stay_value"],
+            "stay_cost": e["stay_cost"],
+        } for e in extras],
+        "extras_value_total": round(total_extras_value),
+        "extras_cost_total": round(total_extras_cost),
         "total_giveaway": round(total_giveaway),
+        "nights": nights,
+        "guests": guests,
         "starting_mix": segment.get("starting_mix", ""),
     }
 

@@ -29,7 +29,10 @@ type Extra = {
   name: string;
   value_to_guest: number;
   cost_to_hotel: number;
+  unit: string;
   limit: string;
+  stay_value?: number;
+  stay_cost?: number;
 };
 
 type SegmentPackage = {
@@ -40,10 +43,11 @@ type SegmentPackage = {
   discount_pct: number;
   you_save: number;
   extras?: Extra[];
-  extras_value_per_night?: number;
-  extras_cost_per_night?: number;
+  extras_value_total?: number;
+  extras_cost_total?: number;
   total_giveaway?: number;
-  inclusions?: string[];
+  nights?: number;
+  guests?: number;
   starting_mix: string;
 };
 
@@ -88,6 +92,26 @@ type RowState = {
   price: number;
   extras: Set<string>;
 };
+
+const GUESTS = 2;
+
+function stayMultiplier(unit: string, nights: number): number {
+  switch (unit) {
+    case "per_night_per_person": return nights * GUESTS;
+    case "per_stay_per_person": return GUESTS;
+    case "per_night_per_room": return nights;
+    default: return 1;
+  }
+}
+
+function unitLabel(unit: string): string {
+  switch (unit) {
+    case "per_night_per_person": return "/night/person";
+    case "per_stay_per_person": return "/stay/person";
+    case "per_night_per_room": return "/night";
+    default: return "/stay";
+  }
+}
 
 function guestCities(s: Suggestion): string[] {
   if (s.guest_cities?.length) return s.guest_cities;
@@ -138,15 +162,15 @@ function OfferCard({ s }: { s: Suggestion }) {
   const cities = guestCities(s);
   const segments = s.target_segments ?? [];
   const publicRate = s.price.public_rate_per_night;
-  const maxGiveaway = publicRate * (25 / 100); // max_discount_pct as give-away cap
+  const nights = s.nights;
+  const maxGiveawayTotal = publicRate * (25 / 100) * nights;
 
   const initialRows: Record<RowKey, RowState> = {};
   for (const city of cities) {
     for (const seg of segments) {
       const pkg = seg.package;
       const extrasSet = new Set(
-        (pkg?.extras ?? pkg?.inclusions?.map(id => id) ?? [])
-          .map((e: Extra | string) => typeof e === "string" ? e : e.id)
+        (pkg?.extras ?? []).map((e: Extra) => e.id),
       );
       initialRows[rowKey(city, seg.segment)] = {
         enabled: true,
@@ -191,31 +215,28 @@ function OfferCard({ s }: { s: Suggestion }) {
     return seg.package?.extras ?? [];
   }
 
-  function computeGiveaway(key: RowKey, seg: TargetSegment): {
-    discountPerNight: number;
-    extrasCost: number;
-    extrasValue: number;
-    totalGiveaway: number;
-    overMax: boolean;
-  } {
+  function computeStayTotals(key: RowKey, seg: TargetSegment) {
     const r = rows[key];
     const extras = getExtrasForSegment(seg);
-    const discountPerNight = publicRate - r.price;
-    let extrasCost = 0;
-    let extrasValue = 0;
+    const discountTotal = (publicRate - r.price) * nights;
+    const roomTotal = r.price * nights;
+    let extrasCostTotal = 0;
+    let extrasValueTotal = 0;
     for (const ex of extras) {
       if (r.extras.has(ex.id)) {
-        extrasCost += ex.cost_to_hotel;
-        extrasValue += ex.value_to_guest;
+        const mult = stayMultiplier(ex.unit ?? "per_stay_per_room", nights);
+        extrasCostTotal += ex.cost_to_hotel * mult;
+        extrasValueTotal += ex.value_to_guest * mult;
       }
     }
-    const totalGiveaway = discountPerNight + extrasCost;
+    const totalGiveaway = discountTotal + extrasCostTotal;
     return {
-      discountPerNight,
-      extrasCost,
-      extrasValue,
+      roomTotal,
+      discountTotal,
+      extrasCostTotal,
+      extrasValueTotal,
       totalGiveaway,
-      overMax: totalGiveaway > maxGiveaway,
+      overMax: totalGiveaway > maxGiveawayTotal,
     };
   }
 
@@ -227,6 +248,7 @@ function OfferCard({ s }: { s: Suggestion }) {
       const [city, segKey] = key.split("|");
       const seg = segments.find(s => s.segment === segKey);
       const extras = getExtrasForSegment(seg!).filter(e => r.extras.has(e.id));
+      const totals = computeStayTotals(key, seg!);
       const body = {
         action: "approved",
         hotelId: s.hotel_id,
@@ -242,8 +264,8 @@ function OfferCard({ s }: { s: Suggestion }) {
         segmentScore: seg?.score ?? null,
         packageType: seg?.starting_mix ?? null,
         inclusions: extras.map(e => e.id),
-        extrasValue: extras.reduce((sum, e) => sum + e.value_to_guest, 0),
-        extrasCost: extras.reduce((sum, e) => sum + e.cost_to_hotel, 0),
+        extrasValue: totals.extrasValueTotal,
+        extrasCost: totals.extrasCostTotal,
       };
       const res = await fetch("/api/offers/action", {
         method: "POST",
@@ -342,7 +364,7 @@ function OfferCard({ s }: { s: Suggestion }) {
           </div>
           <div className="text-right">
             <div className="text-xs text-[var(--color-text-muted)]">
-              <span className="line-through">€{publicRate}</span> {labels.publicPrice}
+              <span className="line-through">€{publicRate * nights}</span> public ({nights}n)
             </div>
           </div>
         </div>
@@ -369,13 +391,13 @@ function OfferCard({ s }: { s: Suggestion }) {
                 const r = rows[key];
                 if (!r) return null;
                 const extras = getExtrasForSegment(seg);
-                const giveaway = computeGiveaway(key, seg);
+                const stay = computeStayTotals(key, seg);
                 const isEditing = editingRow === key;
                 const activeExtras = extras.filter(e => r.extras.has(e.id));
 
                 return (
                   <div key={key} className={`p-3 ${!r.enabled ? "opacity-40" : ""}`}>
-                    {/* Row header: toggle + city × segment + price */}
+                    {/* Row header: toggle + city × segment + stay price */}
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => toggleRow(key)}
@@ -398,9 +420,9 @@ function OfferCard({ s }: { s: Suggestion }) {
                       </div>
                       <div className="text-right shrink-0">
                         <span className="text-lg font-semibold text-[var(--color-text)]">
-                          €{r.price}
+                          €{stay.roomTotal}
                         </span>
-                        <span className="text-xs text-[var(--color-text-muted)]">/night</span>
+                        <span className="text-xs text-[var(--color-text-muted)]"> stay</span>
                         <Badge variant="default" className="ml-2 text-xs">
                           -{Math.round(((publicRate - r.price) / publicRate) * 100)}%
                         </Badge>
@@ -414,7 +436,7 @@ function OfferCard({ s }: { s: Suggestion }) {
                         <div className="text-xs text-[var(--color-text-muted)]">
                           <span>{activeExtras.map(e => e.name).join(", ")}</span>
                           <span className="ml-1.5 text-emerald-700 font-medium">
-                            worth €{giveaway.extrasValue}/night
+                            worth €{stay.extrasValueTotal} for {nights}n/{GUESTS} guests
                           </span>
                         </div>
                       </div>
@@ -447,65 +469,65 @@ function OfferCard({ s }: { s: Suggestion }) {
                             onChange={e => updateRowPrice(key, Number(e.target.value))}
                             className="w-20 h-7 text-xs"
                           />
-                          <span className="text-xs text-[var(--color-text-muted)]">/night</span>
+                          <span className="text-xs text-[var(--color-text-muted)]">/night × {nights} = €{r.price * nights}</span>
                         </div>
 
                         {/* Extras checkboxes */}
                         {extras.length > 0 && (
                           <div>
-                            <p className="text-xs font-medium mb-1.5">Extras</p>
+                            <p className="text-xs font-medium mb-1.5">Extras ({GUESTS} guests, {nights} nights)</p>
                             <div className="space-y-1.5">
-                              {extras.map(ex => (
-                                <label
-                                  key={ex.id}
-                                  className="flex items-center gap-2 text-xs cursor-pointer"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={r.extras.has(ex.id)}
-                                    onChange={() => toggleExtra(key, ex.id)}
-                                    className="rounded border-gray-300"
-                                  />
-                                  <span className="text-[var(--color-text)]">{ex.name}</span>
-                                  <span className="text-[var(--color-text-muted)]">
-                                    (€{ex.value_to_guest} value · €{ex.cost_to_hotel} cost)
-                                  </span>
-                                  {ex.limit && (
-                                    <span className="text-[var(--color-text-muted)] italic">
-                                      — {ex.limit}
+                              {extras.map(ex => {
+                                const mult = stayMultiplier(ex.unit ?? "per_stay_per_room", nights);
+                                return (
+                                  <label
+                                    key={ex.id}
+                                    className="flex items-center gap-2 text-xs cursor-pointer"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={r.extras.has(ex.id)}
+                                      onChange={() => toggleExtra(key, ex.id)}
+                                      className="rounded border-gray-300"
+                                    />
+                                    <span className="text-[var(--color-text)]">{ex.name}</span>
+                                    <span className="text-[var(--color-text-muted)]">
+                                      €{ex.value_to_guest}{unitLabel(ex.unit)}
+                                      {" "}= €{ex.value_to_guest * mult} value
+                                      {ex.cost_to_hotel > 0 && `, €${ex.cost_to_hotel * mult} cost`}
                                     </span>
-                                  )}
-                                </label>
-                              ))}
+                                  </label>
+                                );
+                              })}
                             </div>
                           </div>
                         )}
 
-                        {/* Live totals */}
+                        {/* Live totals — per stay */}
                         <div className="border-t border-[var(--color-border)] pt-2 space-y-1">
                           <div className="flex justify-between text-xs">
-                            <span className="text-[var(--color-text-muted)]">Guest sees</span>
+                            <span className="text-[var(--color-text-muted)]">Guest sees ({nights}n, {GUESTS} guests)</span>
                             <span className="text-[var(--color-text)]">
-                              €{r.price}/night
-                              {giveaway.extrasValue > 0 && (
+                              €{stay.roomTotal} room
+                              {stay.extrasValueTotal > 0 && (
                                 <span className="text-emerald-700">
-                                  {" "}+ €{giveaway.extrasValue} extras = worth €{r.price + giveaway.extrasValue}/night
+                                  {" "}+ €{stay.extrasValueTotal} extras = worth €{stay.roomTotal + stay.extrasValueTotal}
                                 </span>
                               )}
                             </span>
                           </div>
                           <div className="flex justify-between text-xs">
                             <span className="text-[var(--color-text-muted)]">Hotel gives away</span>
-                            <span className={giveaway.overMax ? "text-red-600 font-medium" : "text-[var(--color-text)]"}>
-                              €{giveaway.discountPerNight} discount
-                              {giveaway.extrasCost > 0 && ` + €${giveaway.extrasCost} extras cost`}
-                              {" "}= €{giveaway.totalGiveaway}/night
-                              {giveaway.overMax && " (over max!)"}
+                            <span className={stay.overMax ? "text-red-600 font-medium" : "text-[var(--color-text)]"}>
+                              €{stay.discountTotal} discount
+                              {stay.extrasCostTotal > 0 && ` + €${stay.extrasCostTotal} extras`}
+                              {" "}= €{stay.totalGiveaway}
+                              {stay.overMax && " (over max!)"}
                             </span>
                           </div>
                           <div className="flex justify-between text-xs text-[var(--color-text-muted)]">
                             <span>Max give-away</span>
-                            <span>€{maxGiveaway}/night (25%)</span>
+                            <span>€{maxGiveawayTotal} for stay (25%)</span>
                           </div>
                         </div>
 
@@ -531,7 +553,7 @@ function OfferCard({ s }: { s: Suggestion }) {
         {/* No segments fallback */}
         {segments.length === 0 && (
           <div className="text-sm text-[var(--color-text)]">
-            €{s.price.private_rate_per_night}/night (-{Math.round(s.price.discount_pct)}%)
+            €{s.price.private_total} ({s.nights}n, -{Math.round(s.price.discount_pct)}%)
           </div>
         )}
 

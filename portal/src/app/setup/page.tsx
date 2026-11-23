@@ -12,9 +12,19 @@ type ExtraItem = {
   name: string;
   value_to_guest: number;
   cost_to_hotel: number;
+  unit: string;
   limit: string;
   segments: string[];
 };
+
+function unitLabel(unit: string): string {
+  switch (unit) {
+    case "per_night_per_person": return "/night/person";
+    case "per_stay_per_person": return "/stay/person";
+    case "per_night_per_room": return "/night";
+    default: return "/stay";
+  }
+}
 
 type HotelData = {
   id: string;
@@ -246,10 +256,10 @@ export default async function SetupPage() {
                         </span>
                         <div className="flex items-center gap-3 text-xs">
                           <span className="text-emerald-700">
-                            &euro;{ex.value_to_guest} value
+                            &euro;{ex.value_to_guest}{unitLabel(ex.unit)} value
                           </span>
                           <span className="text-[var(--color-text-muted)]">
-                            &euro;{ex.cost_to_hotel} cost
+                            &euro;{ex.cost_to_hotel}{unitLabel(ex.unit)} cost
                           </span>
                         </div>
                       </div>
