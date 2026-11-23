@@ -199,9 +199,21 @@ def _free_rooms(hotel: dict, d: date, holidays_data: dict) -> int:
 # Live scoring
 # ---------------------------------------------------------------------------
 
+def _build_availability(hotel: dict, data_dir: Path, start: date, end: date) -> dict:
+    """Generate availability from the occupancy model for dates not in the JSON."""
+    holidays_path = data_dir / "holidays.json"
+    holidays_data = json.loads(holidays_path.read_text()) if holidays_path.exists() else {}
+    free = {}
+    d = start
+    while d <= end:
+        free[d.isoformat()] = _free_rooms(hotel, d, holidays_data)
+        d += timedelta(days=1)
+    return {"free_rooms": free}
+
+
 def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | None = None) -> list[dict]:
     today = today or date.today()
-    avail = load_json(data_dir / "availability.json")
+    avail_file = load_json(data_dir / "availability.json")
     contacts = load_json(data_dir / "contacts.json")
 
     window_lo, window_hi = settings["booking_window_days"]
@@ -209,6 +221,16 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
     cooldown = settings.get("contact_cooldown_days", 7)
     min_score = settings.get("min_score_to_fire", 0.5)
     min_free = settings.get("min_free_rooms", 1)
+
+    file_hotel = avail_file.get("hotel_id")
+    if file_hotel and file_hotel == hotel["id"]:
+        avail = avail_file
+    else:
+        avail = _build_availability(
+            hotel, data_dir,
+            today + timedelta(days=window_lo),
+            today + timedelta(days=window_hi + min_nights + 5),
+        )
 
     suggestions = []
 
