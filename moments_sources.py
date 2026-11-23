@@ -151,12 +151,25 @@ def score_weather(hotel: dict, city: dict, settings: dict) -> dict:
     hotel_penalty = 0.0
     hotel_rain_days = sum(1 for c in hotel_codes if is_rainy(c))
     hotel_grey_days = sum(1 for c in hotel_codes if is_grey(c))
+    amenities = set(hotel.get("amenities", []))
+    has_indoor = bool(amenities & {"spa", "pool", "restaurant", "gym"})
+
     if hotel_rain_days >= 3:
-        hotel_penalty = 0.30
-        reasons.append(f"Bad weather at {hotel['town']} ({hotel_rain_days} rainy days) — penalty applied")
+        if has_indoor:
+            hotel_penalty = 0.10
+            indoor = amenities & {"spa", "pool", "restaurant", "gym"}
+            reasons.append(f"Rain at {hotel['town']} but {', '.join(sorted(indoor))} available — reduced penalty")
+        else:
+            hotel_penalty = 0.30
+            reasons.append(f"Bad weather at {hotel['town']} ({hotel_rain_days} rainy days) — penalty applied")
     elif hotel_rain_days >= 2:
-        hotel_penalty = 0.20
-        reasons.append(f"Rain at {hotel['town']} ({hotel_rain_days} days) — penalty applied")
+        if has_indoor:
+            hotel_penalty = 0.05
+            indoor = amenities & {"spa", "pool", "restaurant", "gym"}
+            reasons.append(f"Light rain at {hotel['town']} — {', '.join(sorted(indoor))} makes it a plus")
+        else:
+            hotel_penalty = 0.20
+            reasons.append(f"Rain at {hotel['town']} ({hotel_rain_days} days) — penalty applied")
     elif hotel_grey_days >= 4:
         hotel_penalty = 0.10
         reasons.append(f"Grey skies at {hotel['town']} — small penalty")
