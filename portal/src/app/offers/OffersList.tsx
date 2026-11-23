@@ -491,8 +491,8 @@ function OfferCard({ s }: { s: Suggestion }) {
       }
     }
     // Create inventory record with wave plan
-    const activeRows = Object.entries(rows).filter(([, r]) => r.enabled);
-    const citySegments = activeRows.map(([key]) => {
+    const enabledRows = Object.entries(rows).filter(([, r]) => r.enabled);
+    const citySegments = enabledRows.map(([key]) => {
       const [city, segKey] = key.split("|");
       const seg = segments.find(s => s.segment === segKey);
       return {
