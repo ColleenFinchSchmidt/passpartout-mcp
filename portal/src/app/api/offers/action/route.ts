@@ -15,6 +15,10 @@ export async function POST(req: NextRequest) {
     discountPct,
     reasons,
     editedFields,
+    targetSegment,
+    segmentScore,
+    packageType,
+    inclusions,
   } = body;
 
   if (!["approved", "edited", "skipped"].includes(action)) {
@@ -49,6 +53,8 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const isHoldback = Math.random() < 0.10;
+
   const record = await prisma.offerAction.create({
     data: {
       hotelId,
@@ -62,6 +68,11 @@ export async function POST(req: NextRequest) {
       discountPct: editedFields?.discountPct ?? discountPct,
       reasons,
       editedFields: action === "edited" ? editedFields : undefined,
+      targetSegment: targetSegment ?? null,
+      segmentScore: segmentScore ?? null,
+      packageType: packageType ?? null,
+      inclusions: inclusions ?? [],
+      holdback: isHoldback,
     },
   });
 

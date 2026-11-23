@@ -119,6 +119,7 @@ function OfferCard({ s }: { s: Suggestion }) {
   const { icon, variant, label } = classifyReasons(s.reasons);
 
   async function handleAction(action: string, editedFields?: Record<string, number>) {
+    const topSeg = s.target_segments?.[0];
     const body = {
       action,
       hotelId: s.hotel_id,
@@ -131,6 +132,10 @@ function OfferCard({ s }: { s: Suggestion }) {
       discountPct: s.price.discount_pct,
       reasons: s.reasons,
       editedFields,
+      targetSegment: topSeg?.segment ?? null,
+      segmentScore: topSeg?.score ?? null,
+      packageType: topSeg?.starting_mix ?? null,
+      inclusions: topSeg?.package?.inclusions ?? [],
     };
     const res = await fetch("/api/offers/action", {
       method: "POST",

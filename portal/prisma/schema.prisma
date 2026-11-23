@@ -38,5 +38,10 @@ model OfferAction {
   discountPct     Float
   reasons         String[]
   editedFields    Json?
+  targetSegment   String?
+  segmentScore    Float?
+  packageType     String?
+  inclusions      String[]
+  holdback        Boolean  @default(false)
   createdAt       DateTime @default(now())
 }
