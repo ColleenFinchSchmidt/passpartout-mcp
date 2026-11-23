@@ -99,7 +99,12 @@ Return ONLY a JSON array of events. Each event:
   "category": "food" | "music" | "art" | "nature" | "market" | "sport" | "festival" | "light-show" | "experience" | "other",
   "who": "families" | "couples" | "everyone" | "food lovers" | etc.,
   "relevance": 0.0-1.0 (how likely to motivate a trip),
-  "summary": "One sentence description"
+  "summary": "One sentence description",
+  "audience": "adults" | "families" | "all_ages",
+  "event_type": "indie_music" | "classical_art" | "food_wine" | "market_fair" | "sport" | "nature" | "festival" | "other",
+  "timing": "daytime" | "evening" | "multi_day",
+  "price_level": "free" | "mid" | "premium",
+  "crowd_size": "small" | "medium" | "large"
 }}
 
 Only include events:
@@ -223,6 +228,48 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> di
         logger.warning("Could not write events file for %s: %s", hotel_id, exc)
 
     logger.info("Discovered %d events for %s (db=%s)", len(events), hotel["name"], saved_to_db)
+    return result
+
+
+EVENT_TYPE_TO_SIGNAL = {
+    "indie_music": "event_indie_music",
+    "classical_art": "event_classical_art",
+    "food_wine": "event_food_wine",
+    "market_fair": "event_market_fair",
+    "festival": "event_market_fair",
+    "sport": "event_indie_music",
+    "nature": "seasonal_gardens",
+    "other": "event_market_fair",
+}
+
+
+def event_segment_weights(event: dict, settings: dict) -> dict[str, float]:
+    """Convert an event's AI labels into per-segment weights (0-1).
+
+    Uses the event_type label to look up weights from signal_segment_weights,
+    then adjusts for audience (families-only events zero out non-family segments).
+    """
+    weights_table = settings.get("signal_segment_weights", {})
+    segments = settings.get("segments", {})
+
+    event_type = event.get("event_type", "other")
+    signal_key = EVENT_TYPE_TO_SIGNAL.get(event_type, "event_market_fair")
+    base = weights_table.get(signal_key, {})
+
+    result = {seg: base.get(seg, 0.3) for seg in segments}
+
+    audience = event.get("audience", "all_ages")
+    if audience == "families":
+        result["young_couples"] = min(result.get("young_couples", 0), 0.2)
+        result["remote_workers"] = min(result.get("remote_workers", 0), 0.2)
+    elif audience == "adults":
+        result["families"] = min(result.get("families", 0), 0.1)
+
+    timing = event.get("timing", "daytime")
+    if timing == "evening":
+        result["families"] = min(result.get("families", 0), 0.3)
+        result["young_couples"] = max(result.get("young_couples", 0), 0.6)
+
     return result
 
 
