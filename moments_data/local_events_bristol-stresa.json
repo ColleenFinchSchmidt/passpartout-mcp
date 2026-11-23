@@ -1,0 +1,84 @@
+{
+  "hotel_id": "bristol-stresa",
+  "sources": ["visitstresa.com", "distrettolaghi.it"],
+  "discovered": "2026-11-23",
+  "events": [
+    {
+      "name": "Stresa Christmas Market",
+      "place": "Stresa waterfront",
+      "dates": {"from": "2026-11-28", "to": "2027-01-06"},
+      "relevance": 0.7,
+      "audience": "all_ages",
+      "event_type": "market_fair",
+      "timing": "daytime",
+      "price_level": "free",
+      "crowd_size": "medium"
+    },
+    {
+      "name": "Natale sul Lago (Christmas on the Lake)",
+      "place": "Verbania, Lago Maggiore",
+      "dates": {"from": "2026-12-01", "to": "2026-12-31"},
+      "relevance": 0.8,
+      "audience": "all_ages",
+      "event_type": "market_fair",
+      "timing": "daytime",
+      "price_level": "free",
+      "crowd_size": "large"
+    },
+    {
+      "name": "Arona Christmas Village",
+      "place": "Arona, Lago Maggiore",
+      "dates": {"from": "2026-11-29", "to": "2026-12-24"},
+      "relevance": 0.6,
+      "audience": "families",
+      "event_type": "market_fair",
+      "timing": "daytime",
+      "price_level": "free",
+      "crowd_size": "medium"
+    },
+    {
+      "name": "Borromean Islands Winter Lights",
+      "place": "Isola Bella, Lago Maggiore",
+      "dates": {"from": "2026-12-06", "to": "2027-01-10"},
+      "relevance": 0.8,
+      "audience": "adults",
+      "event_type": "classical_art",
+      "timing": "evening",
+      "price_level": "mid",
+      "crowd_size": "medium"
+    },
+    {
+      "name": "Jazz Evening at Grand Hotel des Iles Borromées",
+      "place": "Stresa",
+      "dates": {"from": "2026-11-29", "to": "2026-11-29"},
+      "relevance": 0.5,
+      "audience": "adults",
+      "event_type": "indie_music",
+      "timing": "evening",
+      "price_level": "mid",
+      "crowd_size": "small"
+    },
+    {
+      "name": "Lago Maggiore Marathon",
+      "place": "Verbania to Stresa",
+      "dates": {"from": "2027-02-14", "to": "2027-02-14"},
+      "relevance": 0.5,
+      "audience": "adults",
+      "event_type": "outdoor_sport",
+      "timing": "daytime",
+      "price_level": "mid",
+      "crowd_size": "large"
+    },
+    {
+      "name": "Stresa Wine & Food Festival",
+      "place": "Stresa centro",
+      "dates": {"from": "2026-12-12", "to": "2026-12-14"},
+      "relevance": 0.7,
+      "audience": "adults",
+      "event_type": "food_wine",
+      "timing": "evening",
+      "price_level": "mid",
+      "crowd_size": "medium"
+    }
+  ]
+}

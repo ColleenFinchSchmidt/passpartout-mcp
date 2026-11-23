@@ -243,7 +243,7 @@ def _per_segment_scores(
         fit = hotel_fit.get(seg_key, 0.5)
         seg_score = moment_strength * avg_weight * fit
 
-        if seg_score >= 0.05:
+        if seg_score >= 0.3:
             results.append({
                 "segment": seg_key,
                 "label": seg_info.get("label", seg_key),
@@ -400,7 +400,8 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
             if blocked:
                 continue
 
-            holidays = score_holidays(check_in, settings, data_dir)
+            check_out = check_in + timedelta(days=min_nights)
+            holidays = score_holidays(check_in, settings, data_dir, stay_end=check_out)
             seasonal = score_seasonal(check_in, data_dir, hotel_id=hotel["id"])
             events = score_events(hotel, check_in, settings)
 
@@ -533,7 +534,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
         for city in hotel["guest_cities"]:
             weather = score_weather(hotel, city, settings)
             air = score_air_quality(city, settings)
-            holidays = score_holidays(d, settings, data_dir)
+            holidays = score_holidays(d, settings, data_dir, stay_end=d + timedelta(days=2))
             seasonal = score_seasonal(d, data_dir, hotel_id=hotel["id"])
             blocked, strike_note = is_strike_blocking(d, hotel.get("travel_modes", []), data_dir)
 

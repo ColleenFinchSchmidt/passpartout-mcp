@@ -174,6 +174,11 @@ def score_weather(hotel: dict, city: dict, settings: dict) -> dict:
         hotel_penalty = 0.10
         reasons.append(f"Grey skies at {hotel['town']} — small penalty")
 
+    if has_indoor and hotel_rain_days >= 2 and "spa" in amenities:
+        score = max(score, 0.5)
+        indoor = sorted(amenities & {"spa", "pool", "restaurant", "gym"})
+        reasons.append(f"Spa escape — rain at {hotel['town']} makes {', '.join(indoor)} even more appealing")
+
     if moments.get("empty_midweek") and hotel_penalty == 0:
         nice_midweek = [dates[i] for i in midweek_idx
                         if is_sunny(hotel_codes[i]) or hotel_codes[i] in (2, 3)]
@@ -247,10 +252,15 @@ def score_air_quality(city: dict, settings: dict) -> dict:
 
 # ---- 3. Holidays ----
 
-def score_holidays(target_date: date, settings: dict, data_dir: Path) -> dict:
+def score_holidays(target_date: date, settings: dict, data_dir: Path,
+                    stay_end: date | None = None) -> dict:
+    """Score holidays only when the stay overlaps them."""
     holidays_file = data_dir / "holidays.json"
     if not holidays_file.exists():
         return {"score": 0, "reasons": [], "details": {}}
+
+    if stay_end is None:
+        stay_end = target_date + timedelta(days=1)
 
     hdata = json.loads(holidays_file.read_text())
     score = 0.0
@@ -258,27 +268,23 @@ def score_holidays(target_date: date, settings: dict, data_dir: Path) -> dict:
 
     for h in hdata.get("public_holidays", []):
         hdate = date.fromisoformat(h["date"])
-        gap = abs((target_date - hdate).days)
-        if gap <= 3:
+        if target_date <= hdate <= stay_end:
             score = max(score, 0.7)
-            reasons.append(f"Near {h['name']} ({h['date']})")
+            reasons.append(f"{h['name']} ({h['date']}) during stay")
 
     for p in hdata.get("ponti", []):
         pfrom = date.fromisoformat(p["from"])
         pto = date.fromisoformat(p["to"])
-        if pfrom <= target_date <= pto:
+        if target_date <= pto and stay_end >= pfrom:
             score = max(score, 0.9)
             reasons.append(f"{p['name']}")
-        elif 0 < (pfrom - target_date).days <= 7:
-            score = max(score, 0.6)
-            reasons.append(f"{p['name']} coming up ({p['from']})")
 
     for period_name, period in hdata.get("school_holidays", {}).items():
         if period_name.startswith("_"):
             continue
         pfrom = date.fromisoformat(period["from"])
         pto = date.fromisoformat(period["to"])
-        if pfrom <= target_date <= pto:
+        if target_date <= pto and stay_end >= pfrom:
             score = max(score, 0.4)
             reasons.append(f"School holidays ({period_name.replace('_', ' ')})")
 
@@ -354,6 +360,7 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
         label = f"{ev['name']} ({ev.get('place', 'nearby')})"
         if duration is not None and duration > MAX_SPECIFIC_EVENT_DAYS:
             also_on.append(label)
+            score = max(score, min(ev.get("relevance", 0.3) * 0.4, 0.3))
         else:
             relevance = ev.get("relevance", 0.5)
             score = max(score, min(relevance, 0.8))
