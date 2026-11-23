@@ -292,6 +292,8 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
             price = _compute_price(hotel, best_window["nights"], combined, settings)
             empty_ratio = best_window["rooms_free"] / max(hotel["rooms"], 1)
 
+            also_on = seasonal.get("also_on", [])
+
             suggestion = {
                 "hotel": hotel["name"],
                 "hotel_id": hotel["id"],
@@ -303,6 +305,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
                 "score": round(combined, 3),
                 "price": price,
                 "reasons": all_reasons,
+                "also_on": also_on,
                 "source_scores": {
                     "weather": weather["score"],
                     "air_quality": air["score"],
@@ -337,6 +340,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
                 "score": s["score"],
                 "price": s["price"],
                 "reasons": list(s["reasons"]),
+                "also_on": list(s.get("also_on", [])),
                 "source_scores": dict(s["source_scores"]),
             }
         else:
@@ -347,6 +351,9 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
             for r in s["reasons"]:
                 if r not in m["reasons"]:
                     m["reasons"].append(r)
+            for a in s.get("also_on", []):
+                if a not in m["also_on"]:
+                    m["also_on"].append(a)
 
     return sorted(merged.values(), key=lambda s: -s["score"])
 
@@ -394,6 +401,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
                 "air_quality": {"score": air["score"], "reasons": air["reasons"]},
                 "holidays": {"score": holidays["score"], "reasons": holidays["reasons"]},
                 "seasonal": {"score": seasonal["score"], "reasons": seasonal["reasons"]},
+                "also_on": seasonal.get("also_on", []),
                 "availability": {"free_rooms": free_rooms, "total_rooms": hotel["rooms"]},
                 "strike_blocked": blocked,
                 "all_reasons": all_reasons,

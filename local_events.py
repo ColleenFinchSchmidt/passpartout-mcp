@@ -1,7 +1,7 @@
 """AI agent for discovering local events near each hotel.
 
 Reads official tourism pages and local news, then uses Claude to extract
-structured event data. Results are saved for the hotel to approve or hide.
+structured event data. Results are stored in Postgres (with file fallback).
 
 Requires ANTHROPIC_API_KEY environment variable.
 """
@@ -14,6 +14,8 @@ from pathlib import Path
 
 import anthropic
 import httpx
+
+from events_db import save_events, load_events, get_discovered_at
 
 logger = logging.getLogger(__name__)
 
@@ -109,39 +111,58 @@ Only include events:
 Return [] if no relevant events found. Return ONLY valid JSON, no other text."""
 
 
-def _events_file_for(hotel: dict, data_dir: Path) -> Path:
-    """Return the hotel-specific events file path."""
-    return data_dir / f"local_events_{hotel['id']}.json"
+def _load_cached(hotel_id: str, data_dir: Path) -> dict | None:
+    """Load from Postgres first, then fall back to file."""
+    db_data = load_events(hotel_id)
+    if db_data and db_data.get("events"):
+        return db_data
+    events_file = data_dir / f"local_events_{hotel_id}.json"
+    if events_file.exists():
+        try:
+            return json.loads(events_file.read_text())
+        except (json.JSONDecodeError, ValueError):
+            pass
+    return None
 
 
-def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> dict:
-    """Discover local events for a specific hotel.
-
-    Each hotel gets its own events file (local_events_{hotel_id}.json).
-    cache_only=True returns saved data, never calls APIs.
-    """
-    events_file = _events_file_for(hotel, data_dir)
-
-    if cache_only:
-        if events_file.exists():
-            try:
-                data = json.loads(events_file.read_text())
-                data["_from_cache"] = True
-                return data
-            except (json.JSONDecodeError, ValueError):
-                pass
-        return {"events": [], "_from_cache": True, "_empty": True,
-                "note": "No cached data yet. Data refreshes automatically once a day."}
-
+def _is_cache_fresh(hotel_id: str, data_dir: Path) -> bool:
+    """Check if the cache (DB or file) was refreshed today."""
+    db_date = get_discovered_at(hotel_id)
+    if db_date and (date.today() - db_date).days < 1:
+        return True
+    events_file = data_dir / f"local_events_{hotel_id}.json"
     if events_file.exists():
         try:
             data = json.loads(events_file.read_text())
             discovered = data.get("discovered", "")
             if discovered and (date.today() - date.fromisoformat(discovered[:10])).days < 1:
-                data["_from_cache"] = True
-                return data
+                return True
         except (json.JSONDecodeError, ValueError):
             pass
+    return False
+
+
+def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> dict:
+    """Discover local events for a specific hotel.
+
+    Stores results in Postgres (with file fallback).
+    cache_only=True returns saved data, never calls APIs.
+    """
+    hotel_id = hotel["id"]
+
+    if cache_only:
+        cached = _load_cached(hotel_id, data_dir)
+        if cached and cached.get("events"):
+            cached["_from_cache"] = True
+            return cached
+        return {"events": [], "_from_cache": True, "_empty": True,
+                "note": "No cached data yet. Data refreshes automatically once a day."}
+
+    if _is_cache_fresh(hotel_id, data_dir):
+        cached = _load_cached(hotel_id, data_dir)
+        if cached:
+            cached["_from_cache"] = True
+            return cached
 
     if not ANTHROPIC_API_KEY:
         return {
@@ -149,7 +170,6 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> di
             "cost_note": "Event discovery uses Claude Haiku — roughly $0.01-0.03 per hotel per run.",
         }
 
-    hotel_id = hotel["id"]
     urls = TOURISM_URLS.get(hotel_id, TOURISM_URLS.get("h-como-1", []))
     location = HOTEL_LOCATION_LABEL.get(hotel_id, hotel.get("town", "Italy"))
 
@@ -185,6 +205,10 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> di
     except (json.JSONDecodeError, ValueError):
         return {"events": [], "note": "Could not parse Claude response.", "raw": response[:500]}
 
+    # Store in Postgres (never overwrites with empty)
+    saved_to_db = save_events(hotel_id, events, sources_fetched)
+
+    # Also write file as fallback
     result = {
         "hotel": hotel["name"],
         "hotel_id": hotel_id,
@@ -192,20 +216,19 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> di
         "events": events,
         "sources": sources_fetched,
     }
+    try:
+        events_file = data_dir / f"local_events_{hotel_id}.json"
+        events_file.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+    except OSError as exc:
+        logger.warning("Could not write events file for %s: %s", hotel_id, exc)
 
-    events_file.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
-    logger.info("Discovered %d events for %s", len(events), hotel["name"])
-
+    logger.info("Discovered %d events for %s (db=%s)", len(events), hotel["name"], saved_to_db)
     return result
 
 
 def get_approved_events(hotel: dict, data_dir: Path) -> list[dict]:
     """Return non-hidden events for a specific hotel."""
-    events_file = _events_file_for(hotel, data_dir)
-    if not events_file.exists():
+    cached = _load_cached(hotel["id"], data_dir)
+    if not cached:
         return []
-    try:
-        data = json.loads(events_file.read_text())
-    except (json.JSONDecodeError, ValueError):
-        return []
-    return [e for e in data.get("events", []) if not e.get("hidden", False)]
+    return [e for e in cached.get("events", []) if not e.get("hidden", False)]

@@ -291,26 +291,60 @@ def is_strike_blocking(target_date: date, travel_modes: list[str], data_dir: Pat
 
 # ---- 5. Events from real sources (replaces hand-written seasonal calendar) ----
 
+MAX_SPECIFIC_EVENT_DAYS = 14
+
+def _event_duration_days(ev: dict) -> int | None:
+    """Return event duration in days, or None if dates are missing/invalid."""
+    dates = ev.get("dates", {})
+    efrom = dates.get("from", "")
+    eto = dates.get("to", efrom)
+    if not efrom:
+        return None
+    try:
+        return (date.fromisoformat(eto) - date.fromisoformat(efrom)).days + 1
+    except ValueError:
+        return None
+
+
+def _event_active_on(ev: dict, target_date: date) -> bool:
+    """Is this event running on target_date?"""
+    dates = ev.get("dates", {})
+    efrom = dates.get("from", "")
+    eto = dates.get("to", efrom)
+    return bool(efrom) and efrom <= target_date.isoformat() <= eto
+
+
 def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = None) -> dict:
+    from events_db import load_events
+
     score = 0.0
     reasons = []
+    also_on = []
 
-    hotel_events_file = data_dir / f"local_events_{hotel_id}.json" if hotel_id else None
-    if hotel_events_file and hotel_events_file.exists():
-        try:
-            edata = json.loads(hotel_events_file.read_text())
-            for ev in edata.get("events", []):
-                if ev.get("hidden"):
-                    continue
-                dates = ev.get("dates", {})
-                efrom = dates.get("from", "")
-                eto = dates.get("to", efrom)
-                if efrom and efrom <= target_date.isoformat() <= eto:
-                    relevance = ev.get("relevance", 0.5)
-                    score = max(score, min(relevance, 0.8))
-                    reasons.append(f"{ev['name']} ({ev.get('place', 'nearby')})")
-        except (json.JSONDecodeError, KeyError):
-            pass
+    events_list = []
+    db_data = load_events(hotel_id) if hotel_id else None
+    if db_data and db_data.get("events"):
+        events_list = db_data["events"]
+    else:
+        hotel_events_file = data_dir / f"local_events_{hotel_id}.json" if hotel_id else None
+        if hotel_events_file and hotel_events_file.exists():
+            try:
+                edata = json.loads(hotel_events_file.read_text())
+                events_list = edata.get("events", [])
+            except (json.JSONDecodeError, KeyError):
+                pass
+
+    for ev in events_list:
+        if ev.get("hidden") or not _event_active_on(ev, target_date):
+            continue
+        duration = _event_duration_days(ev)
+        label = f"{ev['name']} ({ev.get('place', 'nearby')})"
+        if duration is not None and duration > MAX_SPECIFIC_EVENT_DAYS:
+            also_on.append(label)
+        else:
+            relevance = ev.get("relevance", 0.5)
+            score = max(score, min(relevance, 0.8))
+            reasons.append(label)
 
     lat = None
     lon = None
@@ -334,13 +368,21 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
                     rank = ev.get("rank", 0)
                     local_rank = ev.get("local_rank", 0)
                     if rank >= 70 or local_rank >= 80:
-                        ev_score = min(rank / 100.0, 0.8)
-                        score = max(score, ev_score)
-                        reasons.append(f"{ev['name']} (PredictHQ rank {rank})")
+                        try:
+                            duration = (date.fromisoformat(end_str) - date.fromisoformat(start_str)).days + 1
+                        except ValueError:
+                            duration = 1
+                        label = f"{ev['name']} (PredictHQ rank {rank})"
+                        if duration > MAX_SPECIFIC_EVENT_DAYS:
+                            also_on.append(label)
+                        else:
+                            ev_score = min(rank / 100.0, 0.8)
+                            score = max(score, ev_score)
+                            reasons.append(label)
         except (json.JSONDecodeError, KeyError):
             pass
 
-    return {"score": round(score, 2), "reasons": reasons, "details": {}}
+    return {"score": round(score, 2), "reasons": reasons, "also_on": also_on, "details": {}}
 
 
 # ---- 6. Event sources (placeholder) ----
