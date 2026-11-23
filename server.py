@@ -57,11 +57,12 @@ ROME_TZ = ZoneInfo("Europe/Rome")
 _log = logging.getLogger(__name__)
 
 
-def _refresh_paid_caches():
+def _refresh_paid_caches(force_events: bool = False):
     """Refresh stale paid-API caches (once per day max per cache key).
 
     Called at startup and daily at 06:00 Rome time by the background scheduler.
-    Each function's own 24-hour TTL prevents duplicate API calls.
+    force_events=True: re-run AI event discovery regardless of cache freshness
+    (used on startup/deploy so new extraction prompts take effect immediately).
     """
     for hotel in MOMENTS_HOTELS:
         lat = hotel.get("lat", 46.01)
@@ -88,7 +89,7 @@ def _refresh_paid_caches():
             _log.warning("DataForSEO refresh failed for %s: %s", hotel["name"], exc)
 
         try:
-            result = discover_events(hotel, MOMENTS_DATA)
+            result = discover_events(hotel, MOMENTS_DATA, force=force_events)
             if result.get("_from_cache"):
                 _log.info("Local events cache fresh for %s", hotel["name"])
             elif "error" in result:
@@ -122,7 +123,7 @@ def _start_daily_scheduler():
     t.start()
 
 
-_refresh_paid_caches()
+_refresh_paid_caches(force_events=True)
 _start_daily_scheduler()
 
 HOTEL_API_KEY = os.environ.get("HOTEL_API_KEY", "")

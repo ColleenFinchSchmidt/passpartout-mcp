@@ -515,7 +515,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
 
             check_out = check_in + timedelta(days=min_nights)
             holidays = score_holidays(check_in, settings, data_dir, stay_end=check_out)
-            seasonal = score_seasonal(check_in, data_dir, hotel_id=hotel["id"])
+            seasonal = score_seasonal(check_in, data_dir, hotel_id=hotel["id"], hotel=hotel)
             events = score_events(hotel, check_in, settings)
 
             windows = _available_nights(
@@ -656,7 +656,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
             weather = score_weather(hotel, city, settings)
             air = score_air_quality(city, settings)
             holidays = score_holidays(d, settings, data_dir, stay_end=d + timedelta(days=2))
-            seasonal = score_seasonal(d, data_dir, hotel_id=hotel["id"])
+            seasonal = score_seasonal(d, data_dir, hotel_id=hotel["id"], hotel=hotel)
             blocked, strike_note = is_strike_blocking(d, hotel.get("travel_modes", []), data_dir)
 
             combined = _additive_score(

@@ -151,11 +151,13 @@ def _is_cache_fresh(hotel_id: str, data_dir: Path) -> bool:
     return False
 
 
-def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> dict:
+def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False,
+                     force: bool = False) -> dict:
     """Discover local events for a specific hotel.
 
     Stores results in Postgres (with file fallback).
     cache_only=True returns saved data, never calls APIs.
+    force=True skips the cache freshness check (used on deploy).
     """
     hotel_id = hotel["id"]
 
@@ -167,7 +169,7 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> di
         return {"events": [], "_from_cache": True, "_empty": True,
                 "note": "No cached data yet. Data refreshes automatically once a day."}
 
-    if _is_cache_fresh(hotel_id, data_dir):
+    if not force and _is_cache_fresh(hotel_id, data_dir):
         cached = _load_cached(hotel_id, data_dir)
         if cached:
             cached["_from_cache"] = True

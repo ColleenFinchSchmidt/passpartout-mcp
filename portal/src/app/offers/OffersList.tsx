@@ -380,15 +380,17 @@ function OfferCard({ s }: { s: Suggestion }) {
             <p className="text-xs text-[var(--color-text-muted)] italic mt-1">
               Also on: {s.also_on.map((a, i) => {
                 const src = s.event_sources?.find(e => a.startsWith(e.name));
-                return <span key={i}>{i > 0 ? ", " : ""}{src ? <a href={src.source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--color-text)]">{a}</a> : a}</span>;
+                const isUrl = src && (src.source_url.startsWith("http://") || src.source_url.startsWith("https://"));
+                return <span key={i}>{i > 0 ? ", " : ""}{isUrl ? <a href={src.source_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--color-text)]">{a}</a> : a}</span>;
               })}
             </p>
           )}
           {s.event_sources && s.event_sources.length > 0 && (
             <p className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
-              Sources: {[...new Set(s.event_sources.map(e => e.source_url))].map((url, i) => (
-                <span key={i}>{i > 0 ? ", " : ""}<a href={url} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--color-text)]">{new URL(url).hostname}</a></span>
-              ))}
+              Sources: {[...new Set(s.event_sources.map(e => e.source_url))].map((url, i) => {
+                const isUrl = url.startsWith("http://") || url.startsWith("https://");
+                return <span key={i}>{i > 0 ? ", " : ""}{isUrl ? <a href={url} target="_blank" rel="noopener noreferrer" className="underline hover:text-[var(--color-text)]">{new URL(url).hostname}</a> : <span>{url}</span>}</span>;
+              })}
             </p>
           )}
         </div>

@@ -333,13 +333,16 @@ def _event_active_on(ev: dict, target_date: date) -> bool:
     return bool(efrom) and efrom <= target_date.isoformat() <= eto
 
 
-def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = None) -> dict:
+def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = None,
+                    hotel: dict | None = None) -> dict:
     from events_db import load_events
+    from demand_signals import fetch_predicthq_events
 
     score = 0.0
     reasons = []
     also_on = []
     event_sources = []
+    seen_names: set[str] = set()
 
     events_list = []
     fallback_source = None
@@ -376,7 +379,38 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
             relevance = ev.get("relevance", 0.5)
             score = max(score, min(relevance, 0.8))
             reasons.append(label)
+        seen_names.add(ev["name"].lower())
         event_sources.append({"name": ev["name"], "place": ev.get("place", ""), "source_url": source_url})
+
+    # PredictHQ events (labelled "Source: PredictHQ")
+    if hotel:
+        lat = hotel.get("lat", hotel.get("coords", {}).get("lat"))
+        lon = hotel.get("lon", hotel.get("coords", {}).get("lon"))
+        if lat and lon:
+            phq = fetch_predicthq_events(lat, lon, cache_only=True)
+            for ev in phq.get("events", []):
+                start_str = ev.get("start", "")[:10]
+                end_str = (ev.get("end") or start_str)[:10]
+                if not start_str or ev["name"].lower() in seen_names:
+                    continue
+                if not (start_str <= target_date.isoformat() <= end_str):
+                    continue
+                name = ev["name"]
+                rank = ev.get("rank") or ev.get("local_rank") or 50
+                relevance = min(rank / 100, 0.8)
+                try:
+                    duration = (date.fromisoformat(end_str) - date.fromisoformat(start_str)).days + 1
+                except ValueError:
+                    duration = 1
+                label = f"{name} (nearby)"
+                if duration > MAX_SPECIFIC_EVENT_DAYS:
+                    also_on.append(label)
+                    score = max(score, min(relevance * 0.4, 0.3))
+                else:
+                    score = max(score, min(relevance, 0.8))
+                    reasons.append(label)
+                seen_names.add(name.lower())
+                event_sources.append({"name": name, "place": "", "source_url": "Source: PredictHQ"})
 
     return {"score": round(score, 2), "reasons": reasons, "also_on": also_on, "event_sources": event_sources, "details": {}}
 
