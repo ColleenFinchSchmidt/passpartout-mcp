@@ -123,7 +123,15 @@ def _start_daily_scheduler():
     t.start()
 
 
-_refresh_paid_caches(force_events=True)
+def _run_startup_refresh():
+    """Run the initial cache refresh in a background thread so the server starts fast."""
+    try:
+        _refresh_paid_caches(force_events=True)
+        _log.info("Startup cache refresh complete")
+    except Exception as exc:
+        _log.error("Startup cache refresh failed: %s", exc)
+
+threading.Thread(target=_run_startup_refresh, daemon=True, name="startup-refresh").start()
 _start_daily_scheduler()
 
 HOTEL_API_KEY = os.environ.get("HOTEL_API_KEY", "")
