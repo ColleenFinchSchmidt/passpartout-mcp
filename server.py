@@ -763,6 +763,57 @@ def api_event_status():
     return status
 
 
+@api.get("/api/hotel/event-debug", tags=["Hotel tools"])
+def api_event_debug(
+    hotel_id: str | None = Query("bristol-stresa", description="Hotel ID"),
+):
+    """Debug: test each step of the event discovery pipeline."""
+    from local_events import _fetch_page_text, _ask_claude, TOURISM_URLS, ANTHROPIC_API_KEY as _ak, ANTHROPIC_MODEL
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+
+    hid = hotel["id"]
+    result = {"hotel_id": hid, "steps": {}}
+
+    # Step 1: check key
+    result["steps"]["anthropic_key"] = {"set": bool(_ak), "length": len(_ak) if _ak else 0, "model": ANTHROPIC_MODEL}
+
+    # Step 2: test page fetch
+    urls = TOURISM_URLS.get(hid, [])
+    fetch_results = []
+    for url in urls[:2]:
+        try:
+            text = _fetch_page_text(url, max_chars=5000)
+            fetch_results.append({
+                "url": url,
+                "ok": text is not None,
+                "length": len(text) if text else 0,
+                "preview": text[:200] if text else None,
+            })
+        except Exception as exc:
+            fetch_results.append({"url": url, "ok": False, "error": str(exc)})
+    result["steps"]["page_fetch"] = fetch_results
+
+    # Step 3: test Claude API with minimal prompt
+    if _ak:
+        try:
+            test_resp = _ask_claude(
+                "Return exactly: []. Nothing else.",
+                "Test ping."
+            )
+            result["steps"]["claude_api"] = {
+                "ok": test_resp is not None,
+                "response_preview": test_resp[:100] if test_resp else None,
+            }
+        except Exception as exc:
+            result["steps"]["claude_api"] = {"ok": False, "error": str(exc)}
+    else:
+        result["steps"]["claude_api"] = {"ok": False, "error": "No API key"}
+
+    return result
+
+
 @api.get("/api/hotel/demand-events", tags=["Demand signals"], dependencies=[Depends(require_hotel_api_key)])
 def api_demand_events(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
