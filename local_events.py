@@ -9,6 +9,7 @@ Requires ANTHROPIC_API_KEY environment variable.
 import json
 import logging
 import os
+import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -57,18 +58,18 @@ def _ask_claude(system: str, user: str) -> str | None:
             "messages": [{"role": "user", "content": user}],
         }
         payload = json.dumps(body).encode("utf-8")
-        resp = httpx.post(
+        req = urllib.request.Request(
             "https://api.anthropic.com/v1/messages",
+            data=payload,
             headers={
-                "x-api-key": ANTHROPIC_API_KEY,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json",
+                "X-Api-Key": ANTHROPIC_API_KEY,
+                "Anthropic-Version": "2023-06-01",
+                "Content-Type": "application/json",
             },
-            content=payload,
-            timeout=60,
+            method="POST",
         )
-        resp.raise_for_status()
-        data = resp.json()
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
         for block in data["content"]:
             if block.get("type") == "text":
                 return block["text"]
