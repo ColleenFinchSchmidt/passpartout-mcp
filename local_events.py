@@ -17,7 +17,9 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+if not ANTHROPIC_API_KEY.isascii():
+    ANTHROPIC_API_KEY = ANTHROPIC_API_KEY.encode("ascii", errors="ignore").decode("ascii").strip()
 ANTHROPIC_MODEL = "claude-haiku-5-5"
 
 _http = httpx.Client(
