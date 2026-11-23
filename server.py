@@ -643,7 +643,30 @@ def api_suggest_offers(
         "hotel_id": hotel["id"],
         "date": date.today().isoformat(),
         "suggestions": suggestions,
+        "_hotel_profile": {
+            "id": hotel["id"],
+            "name": hotel["name"],
+            "town": hotel.get("town", ""),
+            "amenities": hotel.get("amenities", []),
+            "segments_wanted": hotel.get("segments_wanted", []),
+            "segments_excluded": hotel.get("segments_excluded", []),
+            "experiences": hotel.get("experiences", []),
+            "rooms": hotel.get("rooms", 0),
+            "public_rate_eur": hotel.get("public_rate_eur", 0),
+            "lowest_price_eur": hotel.get("lowest_price_eur", 0),
+            "max_discount_pct": hotel.get("max_discount_pct", 0),
+        },
         "demo": True,
+    }
+
+
+@api.get("/api/hotel/settings", tags=["Hotel tools"])
+def api_hotel_settings():
+    """Return segment definitions and configuration for the portal."""
+    return {
+        "segments": MOMENTS_SETTINGS.get("segments", {}),
+        "amenity_segment_fit": MOMENTS_SETTINGS.get("amenity_segment_fit", {}),
+        "signal_segment_weights": MOMENTS_SETTINGS.get("signal_segment_weights", {}),
     }
 
 

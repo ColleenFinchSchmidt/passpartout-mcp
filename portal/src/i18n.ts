@@ -27,7 +27,7 @@ type TranslationStrings = {
   };
   calendar: { title: string; comingSoon: string };
   results: { title: string; comingSoon: string };
-  setup: { title: string; comingSoon: string };
+  setup: { title: string; comingSoon: string; amenities: string; segments: string; experiences: string; guardrails: string };
 };
 
 const translations: Record<Locale, TranslationStrings> = {
@@ -71,7 +71,11 @@ const translations: Record<Locale, TranslationStrings> = {
     },
     setup: {
       title: "Set-up",
-      comingSoon: "Hotel set-up coming in Phase 6.",
+      comingSoon: "",
+      amenities: "Amenities",
+      segments: "Target segments",
+      experiences: "Experiences",
+      guardrails: "Pricing guardrails",
     },
   },
   it: {
@@ -114,7 +118,11 @@ const translations: Record<Locale, TranslationStrings> = {
     },
     setup: {
       title: "Impostazioni",
-      comingSoon: "Configurazione hotel in arrivo nella Fase 6.",
+      comingSoon: "",
+      amenities: "Servizi",
+      segments: "Segmenti target",
+      experiences: "Esperienze",
+      guardrails: "Regole di prezzo",
     },
   },
 };

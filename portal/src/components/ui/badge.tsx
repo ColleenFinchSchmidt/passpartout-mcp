@@ -13,6 +13,7 @@ const badgeVariants = cva(
         weather: "bg-blue-50 text-blue-700",
         event: "bg-purple-50 text-purple-700",
         occupancy: "bg-orange-50 text-orange-700",
+        segment: "bg-emerald-50 text-emerald-700",
       },
     },
     defaultVariants: { variant: "default" },

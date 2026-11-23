@@ -18,7 +18,30 @@ import {
   Check,
   X,
   Pencil,
+  Users,
 } from "lucide-react";
+
+type SegmentPackage = {
+  public_rate_per_night: number;
+  public_total: number;
+  private_rate_per_night: number;
+  private_total: number;
+  discount_pct: number;
+  you_save: number;
+  inclusions: string[];
+  starting_mix: string;
+};
+
+type TargetSegment = {
+  segment: string;
+  label: string;
+  score: number;
+  segment_weight: number;
+  hotel_fit: number;
+  channels: string[];
+  starting_mix: string;
+  package?: SegmentPackage;
+};
 
 type Suggestion = {
   hotel: string;
@@ -39,6 +62,7 @@ type Suggestion = {
     you_save: number;
   };
   reasons: string[];
+  target_segments?: TargetSegment[];
   source_scores: Record<string, number>;
 };
 
@@ -189,6 +213,43 @@ function OfferCard({ s }: { s: Suggestion }) {
                 ))}
               </ul>
             </div>
+
+            {s.target_segments && s.target_segments.length > 0 && (
+              <div className="space-y-1.5">
+                <p className="text-xs font-medium text-[var(--color-text-muted)]">
+                  {labels.target}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {s.target_segments.map((seg) => (
+                    <Badge key={seg.segment} variant="segment">
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />
+                        {seg.label}
+                      </span>
+                    </Badge>
+                  ))}
+                </div>
+                {s.target_segments.map((seg) =>
+                  seg.package ? (
+                    <div
+                      key={seg.segment}
+                      className="text-xs text-[var(--color-text-muted)] pl-1"
+                    >
+                      <span className="font-medium text-[var(--color-text)]">
+                        {seg.label}:
+                      </span>{" "}
+                      €{seg.package.private_rate_per_night}/night
+                      {" "}(-{Math.round(seg.package.discount_pct)}%)
+                      {seg.package.inclusions.length > 0 && (
+                        <span>
+                          {" "}+ {seg.package.inclusions.join(", ").replace(/_/g, " ")}
+                        </span>
+                      )}
+                    </div>
+                  ) : null
+                )}
+              </div>
+            )}
           </div>
 
           <div className="text-right shrink-0 space-y-3">
