@@ -77,6 +77,21 @@
     }
   },
 
+  "amenity_segment_fit": {
+    "spa":          { "young_couples": 0.8, "retirees": 0.7, "families": 0.2, "remote_workers": 0.3, "friends_groups": 0.4 },
+    "pool":         { "young_couples": 0.5, "retirees": 0.3, "families": 0.9, "remote_workers": 0.3, "friends_groups": 0.6 },
+    "restaurant":   { "young_couples": 0.6, "retirees": 0.8, "families": 0.5, "remote_workers": 0.5, "friends_groups": 0.6 },
+    "garden":       { "young_couples": 0.4, "retirees": 0.9, "families": 0.5, "remote_workers": 0.4, "friends_groups": 0.3 },
+    "family_rooms": { "young_couples": 0.1, "retirees": 0.0, "families": 0.9, "remote_workers": 0.1, "friends_groups": 0.3 },
+    "wifi":         { "young_couples": 0.4, "retirees": 0.2, "families": 0.3, "remote_workers": 0.9, "friends_groups": 0.3 },
+    "desk":         { "young_couples": 0.1, "retirees": 0.1, "families": 0.0, "remote_workers": 0.9, "friends_groups": 0.0 },
+    "gym":          { "young_couples": 0.5, "retirees": 0.2, "families": 0.1, "remote_workers": 0.6, "friends_groups": 0.4 },
+    "lake_view":    { "young_couples": 0.7, "retirees": 0.7, "families": 0.4, "remote_workers": 0.5, "friends_groups": 0.5 },
+    "terrace":      { "young_couples": 0.7, "retirees": 0.6, "families": 0.3, "remote_workers": 0.4, "friends_groups": 0.6 },
+    "parking":      { "young_couples": 0.3, "retirees": 0.5, "families": 0.7, "remote_workers": 0.3, "friends_groups": 0.4 },
+    "near_station": { "young_couples": 0.6, "retirees": 0.5, "families": 0.6, "remote_workers": 0.7, "friends_groups": 0.5 }
+  },
+
   "signal_segment_weights": {
     "rainy_weekend":        { "young_couples": 0.9, "retirees": 0.3, "families": 0.6, "remote_workers": 0.3 },
     "smog_grey_week":       { "young_couples": 0.6, "retirees": 0.6, "families": 0.9, "remote_workers": 0.6 },

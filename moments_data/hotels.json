@@ -25,7 +25,11 @@
       "empty_midweek": true,
       "smog_in_guest_city": true,
       "local_events": false
-    }
+    },
+    "amenities": ["spa", "restaurant", "garden", "terrace", "lake_view", "parking"],
+    "segments_wanted": ["young_couples", "retirees", "remote_workers"],
+    "segments_excluded": [],
+    "experiences": ["spa_access", "aperitivo", "boat_trip", "cooking_class"]
   },
   {
     "id": "bristol-stresa",
@@ -53,6 +57,10 @@
       "empty_midweek": true,
       "smog_in_guest_city": true,
       "local_events": false
-    }
+    },
+    "amenities": ["spa", "pool", "restaurant", "garden", "lake_view", "terrace", "family_rooms", "parking", "gym"],
+    "segments_wanted": ["young_couples", "retirees", "families", "remote_workers", "friends_groups"],
+    "segments_excluded": [],
+    "experiences": ["spa_access", "boat_trip", "dinner", "garden_tour", "wine_tasting"]
   }
 ]
