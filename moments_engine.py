@@ -254,7 +254,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
                 continue
 
             holidays = score_holidays(check_in, settings, data_dir)
-            seasonal = score_seasonal(check_in, data_dir)
+            seasonal = score_seasonal(check_in, data_dir, hotel_id=hotel["id"])
             events = score_events(hotel, check_in, settings)
 
             windows = _available_nights(
@@ -320,7 +320,35 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
         if key not in best_per_city or s["score"] > best_per_city[key]["score"]:
             best_per_city[key] = s
 
-    return sorted(best_per_city.values(), key=lambda s: -s["score"])
+    per_city = sorted(best_per_city.values(), key=lambda s: -s["score"])
+
+    merged: dict[str, dict] = {}
+    for s in per_city:
+        key = f"{s['check_in']}|{s['nights']}"
+        if key not in merged:
+            merged[key] = {
+                "hotel": s["hotel"],
+                "hotel_id": s["hotel_id"],
+                "guest_cities": [s["guest_city"]],
+                "check_in": s["check_in"],
+                "nights": s["nights"],
+                "rooms_to_offer": s["rooms_to_offer"],
+                "rooms_free": s["rooms_free"],
+                "score": s["score"],
+                "price": s["price"],
+                "reasons": list(s["reasons"]),
+                "source_scores": dict(s["source_scores"]),
+            }
+        else:
+            m = merged[key]
+            m["guest_cities"].append(s["guest_city"])
+            if s["score"] > m["score"]:
+                m["score"] = s["score"]
+            for r in s["reasons"]:
+                if r not in m["reasons"]:
+                    m["reasons"].append(r)
+
+    return sorted(merged.values(), key=lambda s: -s["score"])
 
 
 def explain_moments(hotel: dict, settings: dict, data_dir: Path,
@@ -334,7 +362,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
             weather = score_weather(hotel, city, settings)
             air = score_air_quality(city, settings)
             holidays = score_holidays(d, settings, data_dir)
-            seasonal = score_seasonal(d, data_dir)
+            seasonal = score_seasonal(d, data_dir, hotel_id=hotel["id"])
             blocked, strike_note = is_strike_blocking(d, hotel.get("travel_modes", []), data_dir)
 
             combined = _additive_score(

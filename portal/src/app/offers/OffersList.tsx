@@ -23,7 +23,8 @@ import {
 type Suggestion = {
   hotel: string;
   hotel_id: string;
-  guest_city: string;
+  guest_city?: string;
+  guest_cities?: string[];
   check_in: string;
   nights: number;
   rooms_to_offer: number;
@@ -40,6 +41,12 @@ type Suggestion = {
   reasons: string[];
   source_scores: Record<string, number>;
 };
+
+function guestCities(s: Suggestion): string[] {
+  if (s.guest_cities?.length) return s.guest_cities;
+  if (s.guest_city) return [s.guest_city];
+  return [];
+}
 
 function classifyReasons(reasons: string[]): {
   icon: React.ReactNode;
@@ -91,7 +98,7 @@ function OfferCard({ s }: { s: Suggestion }) {
     const body = {
       action,
       hotelId: s.hotel_id,
-      guestCity: s.guest_city,
+      guestCity: cities.join(", "),
       checkIn: s.check_in,
       nights: s.nights,
       roomsToOffer: s.rooms_to_offer,
@@ -116,6 +123,8 @@ function OfferCard({ s }: { s: Suggestion }) {
     return true;
   }
 
+  const cities = guestCities(s);
+
   if (state === "done") {
     const icons: Record<string, React.ReactNode> = {
       approved: <Check className="w-5 h-5 text-green-600" />,
@@ -133,7 +142,7 @@ function OfferCard({ s }: { s: Suggestion }) {
           {icons[result!]}
           <span className="text-sm font-medium">{msgs[result!]}</span>
           <span className="text-sm text-[var(--color-text-muted)] ml-auto">
-            {s.guest_city} · {formatDate(s.check_in)}
+            {cities.join(", ")} · {formatDate(s.check_in)}
           </span>
         </CardContent>
       </Card>
@@ -159,7 +168,7 @@ function OfferCard({ s }: { s: Suggestion }) {
 
             <div>
               <h3 className="font-medium text-[var(--color-text)]">
-                {s.guest_city} getaway
+                {cities.join(" & ")} getaway
               </h3>
               <p className="text-sm text-[var(--color-text-muted)] mt-0.5">
                 {formatDate(s.check_in)} – {checkOutDate(s.check_in, s.nights)}
@@ -334,7 +343,7 @@ export default function OffersList({
 
       <div className="space-y-3">
         {typed.map((s, i) => (
-          <OfferCard key={`${s.guest_city}-${s.check_in}-${i}`} s={s} />
+          <OfferCard key={`${(s.guest_cities ?? [s.guest_city]).join("-")}-${s.check_in}-${i}`} s={s} />
         ))}
       </div>
     </div>

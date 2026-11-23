@@ -148,13 +148,6 @@ def score_weather(hotel: dict, city: dict, settings: dict) -> dict:
                     f"after {rain_streak} rainy days in {city['name']}"
                 )
 
-    if moments.get("empty_midweek"):
-        nice_midweek = [dates[i] for i in midweek_idx
-                        if is_sunny(hotel_codes[i]) or hotel_codes[i] in (2, 3)]
-        if nice_midweek:
-            score = max(score, 0.3)
-            reasons.append(f"Nice midweek weather at {hotel['town']} ({', '.join(nice_midweek[:3])})")
-
     hotel_penalty = 0.0
     hotel_rain_days = sum(1 for c in hotel_codes if is_rainy(c))
     hotel_grey_days = sum(1 for c in hotel_codes if is_grey(c))
@@ -167,6 +160,13 @@ def score_weather(hotel: dict, city: dict, settings: dict) -> dict:
     elif hotel_grey_days >= 4:
         hotel_penalty = 0.10
         reasons.append(f"Grey skies at {hotel['town']} — small penalty")
+
+    if moments.get("empty_midweek") and hotel_penalty == 0:
+        nice_midweek = [dates[i] for i in midweek_idx
+                        if is_sunny(hotel_codes[i]) or hotel_codes[i] in (2, 3)]
+        if nice_midweek:
+            score = max(score, 0.3)
+            reasons.append(f"Nice midweek weather at {hotel['town']} ({', '.join(nice_midweek[:3])})")
 
     return {
         "score": round(score, 2),
@@ -291,7 +291,7 @@ def is_strike_blocking(target_date: date, travel_modes: list[str], data_dir: Pat
 
 # ---- 5. Events from real sources (replaces hand-written seasonal calendar) ----
 
-def score_seasonal(target_date: date, data_dir: Path) -> dict:
+def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = None) -> dict:
     score = 0.0
     reasons = []
 
@@ -299,6 +299,30 @@ def score_seasonal(target_date: date, data_dir: Path) -> dict:
     if events_file.exists():
         try:
             edata = json.loads(events_file.read_text())
+            file_hotel = edata.get("hotel_id")
+            if hotel_id and file_hotel and file_hotel != hotel_id:
+                pass
+            else:
+                for ev in edata.get("events", []):
+                    if ev.get("hidden"):
+                        continue
+                    dates = ev.get("dates", {})
+                    efrom = dates.get("from", "")
+                    eto = dates.get("to", efrom)
+                    if efrom and efrom <= target_date.isoformat() <= eto:
+                        relevance = ev.get("relevance", 0.5)
+                        score = max(score, min(relevance, 0.8))
+                        reasons.append(f"{ev['name']} ({ev.get('place', 'nearby')})")
+        except (json.JSONDecodeError, KeyError):
+            pass
+
+    if hotel_id:
+        hotel_events_file = data_dir / f"local_events_{hotel_id}.json"
+    else:
+        hotel_events_file = None
+    if hotel_events_file and hotel_events_file.exists():
+        try:
+            edata = json.loads(hotel_events_file.read_text())
             for ev in edata.get("events", []):
                 if ev.get("hidden"):
                     continue
@@ -312,7 +336,18 @@ def score_seasonal(target_date: date, data_dir: Path) -> dict:
         except (json.JSONDecodeError, KeyError):
             pass
 
-    cache_file = data_dir / "cache" / "predicthq_46.01_9.28_30_90.json"
+    lat = None
+    lon = None
+    if hotel_id:
+        hotels_file = data_dir / "hotels.json"
+        if hotels_file.exists():
+            for h in json.loads(hotels_file.read_text()):
+                if h["id"] == hotel_id:
+                    lat, lon = h["coords"]["lat"], h["coords"]["lon"]
+                    break
+    if lat is None:
+        lat, lon = 46.01, 9.28
+    cache_file = data_dir / "cache" / f"predicthq_{lat}_{lon}_30_90.json"
     if cache_file.exists():
         try:
             pdata = json.loads(cache_file.read_text())
