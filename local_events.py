@@ -9,10 +9,10 @@ Requires ANTHROPIC_API_KEY environment variable.
 import json
 import logging
 import os
-import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
 
+import anthropic
 import httpx
 
 logger = logging.getLogger(__name__)
@@ -51,35 +51,16 @@ def _ask_claude(system: str, user: str) -> str | None:
     if not ANTHROPIC_API_KEY:
         return None
     try:
-        body = {
-            "model": ANTHROPIC_MODEL,
-            "max_tokens": 4000,
-            "system": system,
-            "messages": [{"role": "user", "content": user}],
-        }
-        payload_str = json.dumps(body, ensure_ascii=True)
-        if not payload_str.isascii():
-            logger.error("json.dumps produced non-ASCII despite ensure_ascii=True")
-        payload = payload_str.encode("ascii")
-        logger.info("_ask_claude: payload %d bytes, is_bytes=%s", len(payload), isinstance(payload, bytes))
-        req = urllib.request.Request(
-            "https://api.anthropic.com/v1/messages",
-            data=payload,
-            headers={
-                "X-Api-Key": ANTHROPIC_API_KEY,
-                "Anthropic-Version": "2023-06-01",
-                "Content-Type": "application/json",
-            },
-            method="POST",
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        message = client.messages.create(
+            model=ANTHROPIC_MODEL,
+            max_tokens=4000,
+            system=system,
+            messages=[{"role": "user", "content": user}],
         )
-        logger.info("_ask_claude: request built, data type=%s", type(req.data).__name__)
-        with urllib.request.urlopen(req, timeout=60) as resp:
-            raw = resp.read()
-            data = json.loads(raw.decode("utf-8"))
-        logger.info("_ask_claude: response OK")
-        for block in data["content"]:
-            if block.get("type") == "text":
-                return block["text"]
+        for block in message.content:
+            if block.type == "text":
+                return block.text
         return None
     except Exception as exc:
         logger.error("Claude API error (%s): %s", type(exc).__name__, exc)
