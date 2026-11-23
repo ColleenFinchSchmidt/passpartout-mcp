@@ -90,12 +90,15 @@ HOTEL_LOCATION_LABEL: dict[str, str] = {
 
 EXTRACTION_SYSTEM = """You extract local events from web page text for a hotel in {location}, Italy.
 
+Each source page is prefixed with "--- Source: <URL> ---". Use that URL as the source_url.
+
 Return ONLY a JSON array of events. Each event:
 {{
   "name": "Event name",
   "dates": {{"from": "YYYY-MM-DD", "to": "YYYY-MM-DD"}},
   "place": "Town or venue name",
   "distance_km": estimated km from the hotel,
+  "source_url": "the URL of the page where you found this event",
   "category": "food" | "music" | "art" | "nature" | "market" | "sport" | "festival" | "light-show" | "experience" | "other",
   "who": "families" | "couples" | "everyone" | "food lovers" | etc.,
   "relevance": 0.0-1.0 (how likely to motivate a trip),
@@ -112,6 +115,7 @@ Only include events:
 - In the next 3 months
 - That a tourist would travel for
 - Confirmed by the source page (do NOT invent events)
+- That have a source_url (drop any event you cannot attribute to a specific page)
 
 Return [] if no relevant events found. Return ONLY valid JSON, no other text."""
 

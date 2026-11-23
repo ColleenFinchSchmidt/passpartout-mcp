@@ -15,6 +15,7 @@ type ExtraItem = {
   unit: string;
   limit: string;
   segments: string[];
+  available_months?: number[];
 };
 
 function unitLabel(unit: string): string {
@@ -264,7 +265,14 @@ export default async function SetupPage() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-xs text-[var(--color-text-muted)]">
-                        <span>{ex.limit}</span>
+                        <span>
+                          {ex.limit}
+                          {ex.available_months && ex.available_months.length > 0 && (
+                            <span className="ml-2 text-amber-600">
+                              ({["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][ex.available_months[0] - 1]}–{["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][ex.available_months[ex.available_months.length - 1] - 1]} only)
+                            </span>
+                          )}
+                        </span>
                         <div className="flex gap-1">
                           {ex.segments.map((s) => (
                             <Badge key={s} variant="segment" className="text-[10px] px-1.5 py-0">

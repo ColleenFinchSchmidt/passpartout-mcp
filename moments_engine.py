@@ -95,7 +95,7 @@ def _compute_price(hotel: dict, nights: int, combined_score: float, settings: di
 
 
 SEGMENT_MIX = {
-    "young_couples":  {"min_discount_pct": 15, "preferred": ["spa_pass", "welcome_prosecco"]},
+    "young_couples":  {"min_discount_pct": 15, "preferred": ["spa_day", "welcome_prosecco"]},
     "retirees":       {"min_discount_pct": 10, "preferred": ["dinner", "late_checkout"]},
     "families":       {"min_discount_pct":  8, "preferred": ["parking", "boat_borromean"]},
     "remote_workers": {"min_discount_pct": 12, "preferred": ["late_checkout", "spa_pass"]},
@@ -124,7 +124,7 @@ def _extra_stay_multiplier(unit: str, nights: int, guests: int = 2) -> int:
 
 def _compute_segment_package(
     hotel: dict, nights: int, combined_score: float,
-    segment: dict, settings: dict,
+    segment: dict, settings: dict, check_in: date | None = None,
 ) -> dict:
     """Build a per-segment package that maximises guest-perceived value.
 
@@ -158,22 +158,26 @@ def _compute_segment_package(
     if hotel_extras:
         preferred_ids = set(mix.get("preferred", []))
         for ex in hotel_extras:
-            if seg_key in ex.get("segments", []):
-                unit = ex.get("unit", "per_stay_per_room")
-                mult = _extra_stay_multiplier(unit, nights, guests)
-                cost = ex["cost_to_hotel"] * mult
-                value = ex["value_to_guest"] * mult
-                candidates.append({
-                    "id": ex["id"],
-                    "name": ex["name"],
-                    "value_to_guest": ex["value_to_guest"],
-                    "cost_to_hotel": ex["cost_to_hotel"],
-                    "unit": unit,
-                    "limit": ex.get("limit", ""),
-                    "stay_value": value,
-                    "stay_cost": cost,
-                    "is_preferred": ex["id"] in preferred_ids,
-                })
+            if seg_key not in ex.get("segments", []):
+                continue
+            avail = ex.get("available_months")
+            if avail and check_in and check_in.month not in avail:
+                continue
+            unit = ex.get("unit", "per_stay_per_room")
+            mult = _extra_stay_multiplier(unit, nights, guests)
+            cost = ex["cost_to_hotel"] * mult
+            value = ex["value_to_guest"] * mult
+            candidates.append({
+                "id": ex["id"],
+                "name": ex["name"],
+                "value_to_guest": ex["value_to_guest"],
+                "cost_to_hotel": ex["cost_to_hotel"],
+                "unit": unit,
+                "limit": ex.get("limit", ""),
+                "stay_value": value,
+                "stay_cost": cost,
+                "is_preferred": ex["id"] in preferred_ids,
+            })
     else:
         hotel_experiences = set(hotel.get("experiences", []))
         possible = SEGMENT_INCLUSIONS_FALLBACK.get(seg_key, [])
@@ -550,6 +554,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
             empty_ratio = best_window["rooms_free"] / max(hotel["rooms"], 1)
 
             also_on = seasonal.get("also_on", [])
+            event_sources = seasonal.get("event_sources", [])
 
             active_sigs = _active_signals(
                 check_in, weather["score"], air["score"],
@@ -561,6 +566,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
             for seg in top_segments:
                 seg["package"] = _compute_segment_package(
                     hotel, best_window["nights"], combined, seg, settings,
+                    check_in=check_in,
                 )
 
             suggestion = {
@@ -575,6 +581,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
                 "price": price,
                 "reasons": all_reasons,
                 "also_on": also_on,
+                "event_sources": event_sources,
                 "target_segments": top_segments,
                 "source_scores": {
                     "weather": weather["score"],
@@ -611,6 +618,7 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
                 "price": s["price"],
                 "reasons": list(s["reasons"]),
                 "also_on": list(s.get("also_on", [])),
+                "event_sources": list(s.get("event_sources", [])),
                 "target_segments": s.get("target_segments", []),
                 "source_scores": dict(s["source_scores"]),
             }
@@ -625,6 +633,10 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
             for a in s.get("also_on", []):
                 if a not in m["also_on"]:
                     m["also_on"].append(a)
+            existing_names = {e["name"] for e in m["event_sources"]}
+            for e in s.get("event_sources", []):
+                if e["name"] not in existing_names:
+                    m["event_sources"].append(e)
 
     return sorted(merged.values(), key=lambda s: -s["score"])
 
@@ -680,6 +692,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
                 "holidays": {"score": holidays["score"], "reasons": holidays["reasons"]},
                 "seasonal": {"score": seasonal["score"], "reasons": seasonal["reasons"]},
                 "also_on": seasonal.get("also_on", []),
+                "event_sources": seasonal.get("event_sources", []),
                 "availability": {"free_rooms": free_rooms, "total_rooms": hotel["rooms"]},
                 "target_segments": top_segments,
                 "strike_blocked": blocked,

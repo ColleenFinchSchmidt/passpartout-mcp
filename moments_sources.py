@@ -339,22 +339,33 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
     score = 0.0
     reasons = []
     also_on = []
+    event_sources = []
 
     events_list = []
+    fallback_source = None
     db_data = load_events(hotel_id) if hotel_id else None
     if db_data and db_data.get("events"):
         events_list = db_data["events"]
+        sources = db_data.get("sources", [])
+        if sources:
+            fallback_source = sources[0]
     else:
         hotel_events_file = data_dir / f"local_events_{hotel_id}.json" if hotel_id else None
         if hotel_events_file and hotel_events_file.exists():
             try:
                 edata = json.loads(hotel_events_file.read_text())
                 events_list = edata.get("events", [])
+                sources = edata.get("sources", [])
+                if sources:
+                    fallback_source = sources[0] if isinstance(sources[0], str) else None
             except (json.JSONDecodeError, KeyError):
                 pass
 
     for ev in events_list:
         if ev.get("hidden") or not _event_active_on(ev, target_date):
+            continue
+        source_url = ev.get("source_url") or fallback_source
+        if not source_url:
             continue
         duration = _event_duration_days(ev)
         label = f"{ev['name']} ({ev.get('place', 'nearby')})"
@@ -365,44 +376,9 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
             relevance = ev.get("relevance", 0.5)
             score = max(score, min(relevance, 0.8))
             reasons.append(label)
+        event_sources.append({"name": ev["name"], "place": ev.get("place", ""), "source_url": source_url})
 
-    lat = None
-    lon = None
-    if hotel_id:
-        hotels_file = data_dir / "hotels.json"
-        if hotels_file.exists():
-            for h in json.loads(hotels_file.read_text()):
-                if h["id"] == hotel_id:
-                    lat, lon = h["coords"]["lat"], h["coords"]["lon"]
-                    break
-    if lat is None:
-        lat, lon = 46.01, 9.28
-    cache_file = data_dir / "cache" / f"predicthq_{lat}_{lon}_30_90.json"
-    if cache_file.exists():
-        try:
-            pdata = json.loads(cache_file.read_text())
-            for ev in pdata.get("events", []):
-                start_str = ev.get("start", "")[:10]
-                end_str = ev.get("end", start_str)[:10]
-                if start_str and start_str <= target_date.isoformat() <= end_str:
-                    rank = ev.get("rank", 0)
-                    local_rank = ev.get("local_rank", 0)
-                    if rank >= 70 or local_rank >= 80:
-                        try:
-                            duration = (date.fromisoformat(end_str) - date.fromisoformat(start_str)).days + 1
-                        except ValueError:
-                            duration = 1
-                        label = f"{ev['name']} (PredictHQ rank {rank})"
-                        if duration > MAX_SPECIFIC_EVENT_DAYS:
-                            also_on.append(label)
-                        else:
-                            ev_score = min(rank / 100.0, 0.8)
-                            score = max(score, ev_score)
-                            reasons.append(label)
-        except (json.JSONDecodeError, KeyError):
-            pass
-
-    return {"score": round(score, 2), "reasons": reasons, "also_on": also_on, "details": {}}
+    return {"score": round(score, 2), "reasons": reasons, "also_on": also_on, "event_sources": event_sources, "details": {}}
 
 
 # ---- 6. Event sources (placeholder) ----
