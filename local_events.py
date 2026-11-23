@@ -9,6 +9,7 @@ Requires ANTHROPIC_API_KEY environment variable.
 import json
 import logging
 import os
+import re
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -40,7 +41,6 @@ def _fetch_page_text(url: str, max_chars: int = 15000) -> str | None:
             return None
         text = resp.text
         if "<html" in text.lower()[:200]:
-            import re
             text = re.sub(r"<script[^>]*>.*?</script>", "", text, flags=re.DOTALL | re.IGNORECASE)
             text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL | re.IGNORECASE)
             text = re.sub(r"<[^>]+>", " ", text)
