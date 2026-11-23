@@ -57,7 +57,11 @@ def _ask_claude(system: str, user: str) -> str | None:
             "system": system,
             "messages": [{"role": "user", "content": user}],
         }
-        payload = json.dumps(body).encode("utf-8")
+        payload_str = json.dumps(body, ensure_ascii=True)
+        if not payload_str.isascii():
+            logger.error("json.dumps produced non-ASCII despite ensure_ascii=True")
+        payload = payload_str.encode("ascii")
+        logger.info("_ask_claude: payload %d bytes, is_bytes=%s", len(payload), isinstance(payload, bytes))
         req = urllib.request.Request(
             "https://api.anthropic.com/v1/messages",
             data=payload,
@@ -68,8 +72,11 @@ def _ask_claude(system: str, user: str) -> str | None:
             },
             method="POST",
         )
+        logger.info("_ask_claude: request built, data type=%s", type(req.data).__name__)
         with urllib.request.urlopen(req, timeout=60) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+            raw = resp.read()
+            data = json.loads(raw.decode("utf-8"))
+        logger.info("_ask_claude: response OK")
         for block in data["content"]:
             if block.get("type") == "text":
                 return block["text"]
