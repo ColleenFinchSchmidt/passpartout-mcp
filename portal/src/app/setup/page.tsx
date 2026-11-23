@@ -5,6 +5,7 @@ export const instant = false;
 
 const ENGINE_URL =
   process.env.ENGINE_URL || "https://web-production-eb412a2e.up.railway.app";
+const API_KEY = process.env.HOTEL_API_KEY || "";
 
 type HotelData = {
   id: string;
@@ -36,13 +37,18 @@ async function fetchHotelAndSettings(): Promise<{
   settings: SettingsData | null;
 }> {
   try {
+    const headers: Record<string, string> = {};
+    if (API_KEY) headers["x-api-key"] = API_KEY;
+
     const [hRes, sRes] = await Promise.all([
       fetch(`${ENGINE_URL}/api/hotel/suggest?hotel_id=bristol-stresa`, {
         cache: "no-store",
+        headers,
       }),
-      fetch(`${ENGINE_URL}/api/hotel/settings`, { cache: "no-store" }).catch(
-        () => null
-      ),
+      fetch(`${ENGINE_URL}/api/hotel/settings`, {
+        cache: "no-store",
+        headers,
+      }).catch(() => null),
     ]);
 
     let hotel: HotelData | null = null;
