@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import OffersList from "./OffersList";
 
+export const instant = false;
+
 export default async function OffersPage() {
   const offers = await prisma.offer.findMany({
     orderBy: { checkIn: "asc" },
