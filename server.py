@@ -848,6 +848,21 @@ def api_event_debug(
     except Exception as exc:
         result["steps"]["full_discovery"] = {"ok": False, "error": str(exc)}
 
+    # Step 6: verify DB save
+    try:
+        from events_db import _get_conn as _ev_get_conn, load_events
+        conn = _ev_get_conn()
+        result["steps"]["db_check"] = {
+            "conn_ok": conn is not None,
+            "db_url_set": bool(os.environ.get("DATABASE_URL", "")),
+        }
+        if conn:
+            cached = load_events(hid)
+            result["steps"]["db_check"]["loaded_events"] = len(cached["events"]) if cached and cached.get("events") else 0
+            result["steps"]["db_check"]["discovered_at"] = cached.get("discovered") if cached else None
+    except Exception as exc:
+        result["steps"]["db_check"] = {"ok": False, "error": str(exc)}
+
     return result
 
 
