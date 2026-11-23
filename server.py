@@ -741,7 +741,7 @@ def api_discover_events(
     return discover_events(hotel, MOMENTS_DATA, force=force)
 
 
-@api.get("/api/hotel/event-status", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+@api.get("/api/hotel/event-status", tags=["Hotel tools"])
 def api_event_status():
     """Diagnostic: check event discovery configuration and status."""
     from local_events import ANTHROPIC_API_KEY as _ak, TOURISM_URLS
