@@ -1,18 +1,29 @@
-"use client";
+import { prisma } from "@/lib/db";
+import OffersList from "./OffersList";
 
-import { useLocale } from "@/components/LocaleProvider";
-import { t } from "@/i18n";
+export default async function OffersPage() {
+  const offers = await prisma.offer.findMany({
+    orderBy: { checkIn: "asc" },
+    include: { hotel: true },
+  });
 
-export default function OffersPage() {
-  const { locale } = useLocale();
-  const labels = t(locale).offers;
+  const plain = offers.map((o) => ({
+    id: o.id,
+    hotelName: o.hotel.name,
+    status: o.status,
+    roomType: o.roomType,
+    checkIn: o.checkIn.toISOString(),
+    checkOut: o.checkOut.toISOString(),
+    nights: o.nights,
+    roomsAvailable: o.roomsAvailable,
+    publicPriceEur: o.publicPriceEur,
+    privatePriceEur: o.privatePriceEur,
+    discountPct: o.discountPct,
+    triggerType: o.triggerType,
+    triggerLabel: o.triggerLabel,
+    triggerDetail: o.triggerDetail,
+    targetGuests: o.targetGuests,
+  }));
 
-  return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">{labels.title}</h1>
-      <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-[var(--radius-card)] p-6">
-        <p className="text-[var(--color-text-muted)]">{labels.empty}</p>
-      </div>
-    </div>
-  );
+  return <OffersList offers={plain} />;
 }

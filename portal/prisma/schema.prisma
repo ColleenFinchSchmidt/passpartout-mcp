@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Hotel {
+  id             String   @id
+  name           String
+  town           String
+  region         String
+  lat            Float
+  lon            Float
+  totalRooms     Int
+  publicRateEur  Int
+  lowestPriceEur Int
+  maxDiscountPct Int
+  createdAt      DateTime @default(now())
+  offers         Offer[]
+}
+
+model Offer {
+  id              String   @id
+  hotelId         String
+  hotel           Hotel    @relation(fields: [hotelId], references: [id])
+  status          String   @default("pending")
+  roomType        String
+  checkIn         DateTime
+  checkOut        DateTime
+  nights          Int
+  roomsAvailable  Int
+  publicPriceEur  Int
+  privatePriceEur Int
+  discountPct     Int
+  triggerType     String
+  triggerLabel    String
+  triggerDetail   String?
+  targetGuests    String?
+  createdAt       DateTime @default(now())
+}

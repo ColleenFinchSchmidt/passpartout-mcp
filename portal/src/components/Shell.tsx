@@ -1,10 +1,18 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import Nav from "./Nav";
 import { LocaleProvider, useLocale } from "./LocaleProvider";
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const { locale, toggle } = useLocale();
+  const pathname = usePathname();
+  const isLogin = pathname === "/login";
+
+  if (isLogin) {
+    return <>{children}</>;
+  }
+
   return (
     <>
       <Nav locale={locale} onToggleLocale={toggle} />
