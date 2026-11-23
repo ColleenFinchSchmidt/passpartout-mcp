@@ -94,6 +94,58 @@ def _compute_price(hotel: dict, nights: int, combined_score: float, settings: di
     }
 
 
+SEGMENT_PRICING = {
+    "young_couples": {"discount_bias": 1.2, "value_bias": 0.8},
+    "retirees": {"discount_bias": 0.7, "value_bias": 1.3},
+    "families": {"discount_bias": 0.6, "value_bias": 1.4},
+    "remote_workers": {"discount_bias": 0.9, "value_bias": 1.1},
+    "friends_groups": {"discount_bias": 1.0, "value_bias": 1.0},
+}
+
+SEGMENT_INCLUSIONS = {
+    "young_couples": ["spa_access", "aperitivo"],
+    "retirees": ["dinner", "late_checkout", "garden_tour"],
+    "families": ["kids_free", "extra_bed"],
+    "remote_workers": ["workspace", "long_stay_rate"],
+    "friends_groups": ["group_activity", "wine_tasting"],
+}
+
+
+def _compute_segment_package(
+    hotel: dict, nights: int, combined_score: float,
+    segment: dict, settings: dict,
+) -> dict:
+    """Build a per-segment package: discount + inclusions, within guardrails."""
+    base_price = _compute_price(hotel, nights, combined_score, settings)
+    seg_key = segment["segment"]
+    pricing_mod = SEGMENT_PRICING.get(seg_key, {"discount_bias": 1.0, "value_bias": 1.0})
+
+    disc_pct = base_price["discount_pct"] * pricing_mod["discount_bias"]
+    disc_pct = min(disc_pct, hotel["max_discount_pct"])
+
+    private_rate = round(hotel["public_rate_eur"] * (1 - disc_pct / 100))
+    private_rate = max(private_rate, hotel["lowest_price_eur"])
+    private_total = private_rate * nights
+
+    hotel_experiences = set(hotel.get("experiences", []))
+    possible = SEGMENT_INCLUSIONS.get(seg_key, [])
+    inclusions = [inc for inc in possible if inc in hotel_experiences or inc in (
+        "kids_free", "extra_bed", "late_checkout", "workspace", "long_stay_rate",
+        "group_activity",
+    )]
+
+    return {
+        "public_rate_per_night": hotel["public_rate_eur"],
+        "public_total": hotel["public_rate_eur"] * nights,
+        "private_rate_per_night": private_rate,
+        "private_total": private_total,
+        "discount_pct": round(disc_pct, 1),
+        "you_save": hotel["public_rate_eur"] * nights - private_total,
+        "inclusions": inclusions,
+        "starting_mix": segment.get("starting_mix", ""),
+    }
+
+
 def _was_contacted_recently(city_name: str, contacts: dict, cooldown: int, today: date) -> bool:
     last = contacts.get("last_contact", {}).get(city_name)
     if not last:
@@ -396,6 +448,10 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
             top_segments = _per_segment_scores(
                 combined, active_sigs, hotel, settings,
             )
+            for seg in top_segments:
+                seg["package"] = _compute_segment_package(
+                    hotel, best_window["nights"], combined, seg, settings,
+                )
 
             suggestion = {
                 "hotel": hotel["name"],
