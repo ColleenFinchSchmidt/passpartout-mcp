@@ -485,7 +485,10 @@ def list_local_events(hotel_id: str | None = None) -> dict:
     by the hotel are excluded.
 
     hotel_id: hotel to check (defaults to demo hotel)."""
-    events = get_approved_events(MOMENTS_DATA)
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        return {"error": f"Hotel not found: {hotel_id}"}
+    events = get_approved_events(hotel, MOMENTS_DATA)
     return {"events": events, "count": len(events)}
 
 
@@ -670,7 +673,10 @@ def api_events(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
 ):
     """List discovered local events near the hotel."""
-    events = get_approved_events(MOMENTS_DATA)
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    events = get_approved_events(hotel, MOMENTS_DATA)
     return {"events": events, "count": len(events)}
 
 

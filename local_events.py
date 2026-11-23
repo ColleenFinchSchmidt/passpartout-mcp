@@ -76,42 +76,58 @@ def _ask_claude(system: str, user: str) -> str | None:
         return None
 
 
-TOURISM_URLS = {
-    "varenna": [
+TOURISM_URLS: dict[str, list[str]] = {
+    "h-como-1": [
         "https://labreva.com/en/events",
         "https://www.menaggio.com/en/",
     ],
-    "bellagio": [
-        "https://labreva.com/en/events",
-        "https://www.menaggio.com/en/",
+    "bristol-stresa": [
+        "https://www.distrettolaghi.it/it/eventi/natale_capodanno_epifania_25_26",
+        "https://www.distrettolaghi.it/it/eventi",
+        "https://www.stresa.com/en/events",
     ],
 }
 
-EXTRACTION_SYSTEM = """You extract local events from web page text for a hotel near Lake Como, Italy.
+HOTEL_LOCATION_LABEL: dict[str, str] = {
+    "h-como-1": "Lake Como",
+    "bristol-stresa": "Lago Maggiore (Stresa)",
+}
+
+EXTRACTION_SYSTEM = """You extract local events from web page text for a hotel in {location}, Italy.
 
 Return ONLY a JSON array of events. Each event:
-{
+{{
   "name": "Event name",
-  "dates": {"from": "YYYY-MM-DD", "to": "YYYY-MM-DD"},
-  "place": "Town or venue",
+  "dates": {{"from": "YYYY-MM-DD", "to": "YYYY-MM-DD"}},
+  "place": "Town or venue name",
   "distance_km": estimated km from the hotel,
-  "category": "food" | "music" | "art" | "nature" | "market" | "sport" | "festival" | "other",
+  "category": "food" | "music" | "art" | "nature" | "market" | "sport" | "festival" | "light-show" | "experience" | "other",
   "who": "families" | "couples" | "everyone" | "food lovers" | etc.,
   "relevance": 0.0-1.0 (how likely to motivate a trip),
   "summary": "One sentence description"
-}
+}}
 
 Only include events:
-- Within 30km of the hotel
+- Within 25km of the hotel (include the distance_km for each)
 - In the next 3 months
 - That a tourist would travel for
+- Confirmed by the source page (do NOT invent events)
 
 Return [] if no relevant events found. Return ONLY valid JSON, no other text."""
 
 
+def _events_file_for(hotel: dict, data_dir: Path) -> Path:
+    """Return the hotel-specific events file path."""
+    return data_dir / f"local_events_{hotel['id']}.json"
+
+
 def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> dict:
-    """Discover local events. cache_only=True returns saved data, never calls APIs."""
-    events_file = data_dir / "local_events.json"
+    """Discover local events for a specific hotel.
+
+    Each hotel gets its own events file (local_events_{hotel_id}.json).
+    cache_only=True returns saved data, never calls APIs.
+    """
+    events_file = _events_file_for(hotel, data_dir)
 
     if cache_only:
         if events_file.exists():
@@ -137,30 +153,35 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> di
     if not ANTHROPIC_API_KEY:
         return {
             "error": "ANTHROPIC_API_KEY not set. Set it in your environment to enable event discovery.",
-            "cost_note": "Event discovery uses Claude Sonnet — roughly $0.01-0.03 per hotel per run.",
+            "cost_note": "Event discovery uses Claude Haiku — roughly $0.01-0.03 per hotel per run.",
         }
 
-    town = hotel.get("town", "").lower()
-    urls = TOURISM_URLS.get(town, TOURISM_URLS.get("varenna", []))
+    hotel_id = hotel["id"]
+    urls = TOURISM_URLS.get(hotel_id, TOURISM_URLS.get("h-como-1", []))
+    location = HOTEL_LOCATION_LABEL.get(hotel_id, hotel.get("town", "Italy"))
 
     all_text = []
+    sources_fetched = []
     for url in urls:
         text = _fetch_page_text(url)
         if text:
             all_text.append(f"--- Source: {url} ---\n{text}")
+            sources_fetched.append(url)
 
     if not all_text:
         return {"events": [], "note": "Could not fetch any tourism pages."}
 
     today = date.today()
     end = today + timedelta(days=90)
+    system_prompt = EXTRACTION_SYSTEM.format(location=location)
     prompt = (
-        f"Hotel: {hotel['name']} in {hotel.get('town', 'Varenna')}, Lake Como.\n"
+        f"Hotel: {hotel['name']} in {hotel.get('town', 'Varenna')}, {location}.\n"
+        f"Hotel coordinates: {hotel.get('lat', 45.88)}, {hotel.get('lon', 8.53)}.\n"
         f"Today: {today.isoformat()}. Look for events between {today.isoformat()} and {end.isoformat()}.\n\n"
         + "\n\n".join(all_text)
     )
 
-    response = _ask_claude(EXTRACTION_SYSTEM, prompt)
+    response = _ask_claude(system_prompt, prompt)
     if not response:
         return {"events": [], "note": "Claude API call failed."}
 
@@ -173,21 +194,25 @@ def discover_events(hotel: dict, data_dir: Path, cache_only: bool = False) -> di
 
     result = {
         "hotel": hotel["name"],
+        "hotel_id": hotel_id,
         "discovered": today.isoformat(),
         "events": events,
-        "sources": urls,
+        "sources": sources_fetched,
     }
 
-    events_file = data_dir / "local_events.json"
     events_file.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
     logger.info("Discovered %d events for %s", len(events), hotel["name"])
 
     return result
 
 
-def get_approved_events(data_dir: Path) -> list[dict]:
-    events_file = data_dir / "local_events.json"
+def get_approved_events(hotel: dict, data_dir: Path) -> list[dict]:
+    """Return non-hidden events for a specific hotel."""
+    events_file = _events_file_for(hotel, data_dir)
     if not events_file.exists():
         return []
-    data = json.loads(events_file.read_text())
+    try:
+        data = json.loads(events_file.read_text())
+    except (json.JSONDecodeError, ValueError):
+        return []
     return [e for e in data.get("events", []) if not e.get("hidden", False)]

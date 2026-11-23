@@ -295,31 +295,7 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
     score = 0.0
     reasons = []
 
-    events_file = data_dir / "local_events.json"
-    if events_file.exists():
-        try:
-            edata = json.loads(events_file.read_text())
-            file_hotel = edata.get("hotel_id")
-            if hotel_id and file_hotel and file_hotel != hotel_id:
-                pass
-            else:
-                for ev in edata.get("events", []):
-                    if ev.get("hidden"):
-                        continue
-                    dates = ev.get("dates", {})
-                    efrom = dates.get("from", "")
-                    eto = dates.get("to", efrom)
-                    if efrom and efrom <= target_date.isoformat() <= eto:
-                        relevance = ev.get("relevance", 0.5)
-                        score = max(score, min(relevance, 0.8))
-                        reasons.append(f"{ev['name']} ({ev.get('place', 'nearby')})")
-        except (json.JSONDecodeError, KeyError):
-            pass
-
-    if hotel_id:
-        hotel_events_file = data_dir / f"local_events_{hotel_id}.json"
-    else:
-        hotel_events_file = None
+    hotel_events_file = data_dir / f"local_events_{hotel_id}.json" if hotel_id else None
     if hotel_events_file and hotel_events_file.exists():
         try:
             edata = json.loads(hotel_events_file.read_text())
