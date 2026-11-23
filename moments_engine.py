@@ -25,8 +25,12 @@ from moments_sources import (
     score_seasonal,
     score_weather,
 )
-from hotel_profile import compute_hotel_segment_fit
-from local_events import event_segment_weights
+try:
+    from hotel_profile import compute_hotel_segment_fit
+    from local_events import event_segment_weights
+except ImportError:
+    compute_hotel_segment_fit = None
+    event_segment_weights = None
 
 
 def load_json(path: Path) -> dict | list:
@@ -156,8 +160,13 @@ def _per_segment_scores(
     above 0.3 threshold, top 2 max.
     """
     segments = settings.get("segments", {})
+    if not segments:
+        return []
     weight_table = settings.get("signal_segment_weights", {})
-    hotel_fit = compute_hotel_segment_fit(hotel, settings)
+    if compute_hotel_segment_fit:
+        hotel_fit = compute_hotel_segment_fit(hotel, settings)
+    else:
+        hotel_fit = {seg: 0.5 for seg in segments}
     excluded = set(hotel.get("segments_excluded", []))
 
     results = []
@@ -170,7 +179,7 @@ def _per_segment_scores(
             w = weight_table.get(signal, {}).get(seg_key, 0.3)
             signal_weights.append(w)
 
-        if seasonal_events:
+        if seasonal_events and event_segment_weights:
             for ev in seasonal_events:
                 ev_weights = event_segment_weights(ev, settings)
                 signal_weights.append(ev_weights.get(seg_key, 0.3))
