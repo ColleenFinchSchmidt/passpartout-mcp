@@ -50,19 +50,20 @@ def _ask_claude(system: str, user: str) -> str | None:
     if not ANTHROPIC_API_KEY:
         return None
     try:
+        payload = json.dumps({
+            "model": ANTHROPIC_MODEL,
+            "max_tokens": 4000,
+            "system": system,
+            "messages": [{"role": "user", "content": user}],
+        }, ensure_ascii=False).encode("utf-8")
         resp = _http.post(
             "https://api.anthropic.com/v1/messages",
             headers={
                 "x-api-key": ANTHROPIC_API_KEY,
                 "anthropic-version": "2023-06-01",
-                "content-type": "application/json",
+                "content-type": "application/json; charset=utf-8",
             },
-            json={
-                "model": ANTHROPIC_MODEL,
-                "max_tokens": 4000,
-                "system": system,
-                "messages": [{"role": "user", "content": user}],
-            },
+            content=payload,
             timeout=60,
         )
         resp.raise_for_status()
