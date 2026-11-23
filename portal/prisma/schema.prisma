@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Hotel {
-  id             String   @id
+  id             String        @id
   name           String
   town           String
   region         String
@@ -19,26 +19,24 @@ model Hotel {
   publicRateEur  Int
   lowestPriceEur Int
   maxDiscountPct Int
-  createdAt      DateTime @default(now())
-  offers         Offer[]
+  blackoutDates  String[]
+  createdAt      DateTime      @default(now())
+  actions        OfferAction[]
 }
 
-model Offer {
-  id              String   @id
+model OfferAction {
+  id              String   @id @default(cuid())
   hotelId         String
   hotel           Hotel    @relation(fields: [hotelId], references: [id])
-  status          String   @default("pending")
-  roomType        String
-  checkIn         DateTime
-  checkOut        DateTime
+  action          String
+  guestCity       String
+  checkIn         String
   nights          Int
-  roomsAvailable  Int
+  roomsToOffer    Int
   publicPriceEur  Int
   privatePriceEur Int
-  discountPct     Int
-  triggerType     String
-  triggerLabel    String
-  triggerDetail   String?
-  targetGuests    String?
+  discountPct     Float
+  reasons         String[]
+  editedFields    Json?
   createdAt       DateTime @default(now())
 }

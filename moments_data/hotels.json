@@ -26,5 +26,33 @@
       "smog_in_guest_city": true,
       "local_events": false
     }
+  },
+  {
+    "id": "bristol-stresa",
+    "name": "Grand Hotel Bristol",
+    "town": "Stresa",
+    "region": "Verbano-Cusio-Ossola,Piedmont,Italy",
+    "lat": 45.8833,
+    "lon": 8.5333,
+    "coords": { "lat": 45.8833, "lon": 8.5333 },
+    "rooms": 85,
+    "public_rate_eur": 280,
+    "lowest_price_eur": 210,
+    "max_discount_pct": 25,
+    "max_rooms_per_offer": 6,
+    "blackout_dates": ["2026-12-24", "2026-12-25", "2026-12-26", "2026-12-31", "2027-01-01"],
+    "guest_cities": [
+      { "name": "Milan", "coords": { "lat": 45.46, "lon": 9.19 } },
+      { "name": "Turin", "coords": { "lat": 45.07, "lon": 7.69 } }
+    ],
+    "travel_modes": ["train", "car"],
+    "moments_enabled": {
+      "rain_in_guest_city": true,
+      "snow_in_alps": true,
+      "sunny_weekend_after_rain": true,
+      "empty_midweek": true,
+      "smog_in_guest_city": true,
+      "local_events": false
+    }
   }
 ]

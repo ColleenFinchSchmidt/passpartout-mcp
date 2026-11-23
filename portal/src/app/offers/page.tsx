@@ -1,31 +1,35 @@
-import { prisma } from "@/lib/db";
 import OffersList from "./OffersList";
 
 export const instant = false;
 
+const ENGINE_URL =
+  process.env.ENGINE_URL || "https://web-production-eb412a2e.up.railway.app";
+const API_KEY = process.env.HOTEL_API_KEY || "";
+
 export default async function OffersPage() {
-  const offers = await prisma.offer.findMany({
-    orderBy: { checkIn: "asc" },
-    include: { hotel: true },
-  });
+  let suggestions: Array<Record<string, unknown>> = [];
+  let engineError = "";
 
-  const plain = offers.map((o) => ({
-    id: o.id,
-    hotelName: o.hotel.name,
-    status: o.status,
-    roomType: o.roomType,
-    checkIn: o.checkIn.toISOString(),
-    checkOut: o.checkOut.toISOString(),
-    nights: o.nights,
-    roomsAvailable: o.roomsAvailable,
-    publicPriceEur: o.publicPriceEur,
-    privatePriceEur: o.privatePriceEur,
-    discountPct: o.discountPct,
-    triggerType: o.triggerType,
-    triggerLabel: o.triggerLabel,
-    triggerDetail: o.triggerDetail,
-    targetGuests: o.targetGuests,
-  }));
+  try {
+    const url = `${ENGINE_URL}/api/hotel/suggest?hotel_id=bristol-stresa`;
+    const headers: Record<string, string> = {};
+    if (API_KEY) headers["x-api-key"] = API_KEY;
 
-  return <OffersList offers={plain} />;
+    const res = await fetch(url, { cache: "no-store", headers });
+    if (res.ok) {
+      const data = await res.json();
+      suggestions = data.suggestions ?? [];
+    } else {
+      engineError = `Engine returned ${res.status}`;
+    }
+  } catch (e) {
+    engineError = e instanceof Error ? e.message : "Engine unreachable";
+  }
+
+  return (
+    <OffersList
+      suggestions={suggestions}
+      engineError={engineError}
+    />
+  );
 }
