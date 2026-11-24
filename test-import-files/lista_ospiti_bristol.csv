@@ -1,0 +1,13 @@
+Nome;Cognome;Email;Telefono;Città;Soggiorni;Ultimo Soggiorno;Consenso Marketing;Data Consenso
+Marco;Rossi;m.rossi@example.it;+39 333 1234567;Milano;5;2025-08-15;Sì;2024-01-10
+Anna;Bianchi;anna.bianchi@example.com;+39 335 7654321;Torino;3;2025-07-22;Sì;2023-06-15
+Giovanni;Verdi;g.verdi@example.de;+49 170 1234567;München;2;2025-09-01;;
+Sophie;Dupont;sophie.d@example.fr;+33 6 12345678;Lyon;1;2025-06-10;Sì;2025-06-10
+Thomas;Weber;t.weber@example.ch;+41 79 1234567;Zürich;7;2025-10-05;Sì;2022-03-20
+;Colombo;colombo@example.it;;Como;2;2025-04-18;No;
+Laura;Ferrari;l.ferrari@example.it;+39 340 9876543;Roma;4;2025-11-20;Sì;2024-05-01
+Hans;Müller;;+41 76 9876543;Basel;1;2024-12-28;Sì;2024-12-28
+Elena;Conti;elena.conti@example.it;+39 347 1111222;Bergamo;6;2025-09-30;Sì;2023-09-15
+Pierre;Martin;p.martin@example.fr;+33 7 98765432;Paris;2;2025-07-14;;
+Lucia;Moretti;lucia.m@example.it;+39 329 3334444;Firenze;3;2025-08-25;Sì;2024-08-01
+James;Smith;j.smith@example.co.uk;+44 7700 123456;London;1;2025-05-02;Sì;2025-05-02
