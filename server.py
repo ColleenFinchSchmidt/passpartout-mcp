@@ -1072,26 +1072,17 @@ async def api_import_parse(file: UploadFile = File(...)):
     if len(text) > 100_000:
         text = text[:100_000] + "\n\n[... truncated ...]"
 
-    # Call Claude
-    import anthropic
+    # Call Claude via the shared helper
+    from local_events import _ask_claude
     import json as _json
-    client = anthropic.Anthropic(api_key=_ak)
-    input_tokens = len(text) // 4  # rough estimate
-    try:
-        response = client.messages.create(
-            model="claude-haiku-5-5",
-            max_tokens=4096,
-            system=IMPORT_SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": f"File name: {file.filename}\n\n{text}"}],
-        )
-        raw = response.content[0].text
-        # Calculate cost: Haiku input $0.25/MTok, output $1.25/MTok
-        in_tok = response.usage.input_tokens
-        out_tok = response.usage.output_tokens
-        cost_usd = (in_tok * 0.25 + out_tok * 1.25) / 1_000_000
-    except Exception as exc:
-        _log.error("Claude API failed during import parse: %s — %s", type(exc).__name__, exc)
-        raise HTTPException(status_code=502, detail=f"AI extraction failed: {type(exc).__name__}: {exc}")
+
+    user_msg = f"File name: {file.filename}\n\n{text}"
+    est_tokens = (len(IMPORT_SYSTEM_PROMPT) + len(user_msg)) // 4
+    raw = _ask_claude(IMPORT_SYSTEM_PROMPT, user_msg)
+    cost_usd = round(est_tokens * 0.25 / 1_000_000, 4)
+
+    if raw is None:
+        raise HTTPException(status_code=502, detail="AI extraction failed — Claude returned no response")
 
     # Parse Claude's response
     try:
