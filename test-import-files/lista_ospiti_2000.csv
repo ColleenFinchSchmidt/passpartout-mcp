@@ -1,0 +1,2001 @@
+Nome;Cognome;Email;Telefono;Città;Soggiorni;Ultimo soggiorno;Consenso marketing;Data consenso
+Francesca;Rossi;francesca.rossi14@email.com;;Geneva;6;2023-09-07;true;2023-01-03
+Silvia;De Luca;silvia.de luca1@email.com;+39 354 6708456;Munich;3;2025-01-24;yes;2023-02-13
+Riccardo;Rizzo;riccardo.rizzo38@email.com;+39 346 4226067;London;7;2025-08-21;si;2024-02-28
+Anna;Romano;anna.romano88@email.com;+39 321 9961380;Roma;7;2024-01-26;true;2024-11-23
+Giovanni;Conti;;;Palermo;4;2025-12-19;true;2024-11-15
+Valentina;Lombardi;;+39 311 1790481;Geneva;2;2026-09-09;si;2025-07-20
+Silvia;Rossi;silvia.rossi97@email.com;+39 314 5924115;Verona;3;2024-03-12;yes;2025-03-17
+Sara;Rizzo;sara.rizzo77@email.com;+39 346 6159230;Barcelona;2;2024-03-22;sì;2023-12-16
+Marta;Rizzo;marta.rizzo28@email.com;+39 388 4374754;Torino;3;2025-01-19;yes;2024-09-15
+Silvia;;silvia.8@email.com;;Genova;8;2024-12-19;no;
+Fabio;Giordano;fabio.giordano13@email.com;+39 354 7897151;Zurich;3;2023-04-07;;
+Alessandro;Rizzo;alessandro.rizzo32@email.com;+39 370 2642635;Palermo;2;2024-07-16;;
+Marta;Colombo;marta.colombo1@email.com;+39 358 5785687;Verona;15;2024-01-19;;
+Silvia;Russo;silvia.russo65@email.com;+39 307 9519948;Prague;3;2024-10-20;sì;2025-04-13
+Giulia;Moretti;giulia.moretti41@email.com;+39 391 6271130;;2;2023-02-18;yes;2024-06-25
+Alessandro;Mancini;alessandro.mancini32@email.com;+39 369 6075395;Barcelona;0;;;
+Chiara;Esposito;chiara.esposito14@email.com;+39 336 4533779;Paris;1;2025-01-01;yes;2025-08-09
+Giovanni;Bianchi;giovanni.bianchi71@email.com;+39 314 2262382;Napoli;11;2026-03-02;si;2025-01-27
+Chiara;Gallo;chiara.gallo46@email.com;+39 313 6933742;Bologna;7;2026-01-06;no;
+Giovanni;De Luca;giovanni.de luca35@email.com;+39 348 1649691;Genova;7;2026-06-09;true;2024-05-27
+Luca;Marino;luca.marino69@email.com;+39 333 3995870;Zurich;11;2026-10-17;false;
+Francesca;Conti;chiara.esposito14@email.com;+39 394 4305700;Verona;3;2025-11-14;yes;2025-06-22
+Giovanni;Conti;giovanni.conti86@email.com;+39 322 6049101;Geneva;13;2025-08-15;no;
+Riccardo;Colombo;;+39 384 2422633;Genova;9;2024-01-02;yes;2023-04-22
+Elena;Giordano;elena.giordano81@email.com;+39 349 9294272;Berlin;5;2026-01-18;sì;2023-07-08
+Elena;Esposito;elena.esposito72@email.com;;Barcelona;13;2026-03-24;;
+Marta;Costa;marta.costa99@email.com;+39 330 5606980;Torino;10;2024-03-08;false;
+Matteo;Bianchi;matteo.bianchi70@email.com;+39 353 7534336;Verona;0;;sì;2025-07-16
+Matteo;De Luca;matteo.de luca29@email.com;+39 362 1486955;Geneva;14;2023-07-19;true;2025-03-27
+Fabio;Rossi;anna.romano88@email.com;+39 358 6483562;Amsterdam;8;2023-12-18;false;
+Giulia;Gallo;;+39 303 5148725;Genova;3;2026-12-09;si;2023-03-16
+Anna;Romano;anna.romano21@email.com;+39 303 6233774;Palermo;2;2023-12-25;no;
+Chiara;Moretti;chiara.moretti6@email.com;+39 347 2156902;Vienna;11;2024-07-06;true;2024-02-14
+Davide;Marino;davide.marino60@email.com;+39 334 6407373;Prague;7;2026-06-01;false;
+Marta;Bruno;marta.bruno44@email.com;+39 335 1170307;Amsterdam;7;2026-01-03;si;2025-07-16
+Chiara;Ricci;chiara.ricci48@email.com;+39 354 6549757;Barcelona;6;2024-04-07;yes;2024-04-04
+Marta;Marino;marta.marino37@email.com;+39 337 4816534;Napoli;9;2026-02-28;si;2024-01-02
+Marco;Lombardi;marco.lombardi7@email.com;;Prague;1;2025-02-08;sì;2024-08-03
+Francesca;Rizzo;francesca.rizzo29@email.com;+39 356 5988757;Genova;3;2024-05-22;no;
+Luca;Romano;luca.romano53@email.com;+39 337 1547605;Palermo;14;2025-11-19;;
+Alessandro;De Luca;alessandro.de luca35@email.com;+39 321 6160869;Verona;14;2026-05-17;;
+Silvia;Giordano;silvia.giordano95@email.com;+39 311 4840714;Venezia;0;;;
+Fabio;Russo;fabio.russo57@email.com;+39 374 8312936;Firenze;10;2024-06-14;sì;2024-06-14
+Marta;Greco;marta.greco5@email.com;+39 341 2944841;Berlin;13;2025-10-25;sì;2025-09-15
+Marta;Costa;marta.costa37@email.com;+39 315 1484348;Torino;0;;si;2025-03-10
+Elena;Esposito;elena.esposito64@email.com;+39 390 5587308;Geneva;4;2024-02-09;true;2023-08-18
+Valentina;Bruno;valentina.bruno37@email.com;+39 374 9214801;Zurich;12;2024-12-08;true;2024-06-18
+Fabio;Conti;fabio.conti96@email.com;;Vienna;10;2023-09-15;si;2024-01-05
+Marco;Bianchi;marco.bianchi61@email.com;+39 379 7668663;Amsterdam;12;2023-10-03;;
+Elena;Greco;elena.greco13@email.com;+39 312 8443690;Munich;1;2026-03-08;sì;2023-06-26
+Davide;De Luca;davide.de luca11@email.com;+39 387 5040453;Milano;14;2026-05-22;si;2024-11-09
+Silvia;Romano;;+39 354 5195951;Prague;12;2025-12-10;true;2024-02-08
+Marco;Conti;marco.conti96@email.com;;Palermo;9;2025-04-21;;
+Alessandro;Moretti;alessandro.moretti88@email.com;+39 380 1661401;Paris;9;2024-04-05;yes;2025-03-03
+Silvia;Gallo;silvia.gallo33@email.com;;Torino;3;2024-04-28;false;
+Matteo;Rizzo;matteo.rizzo69@email.com;+39 395 5398338;Amsterdam;3;2023-10-18;;
+Giovanni;Moretti;giovanni.moretti90@email.com;+39 317 1760793;Munich;4;2026-10-24;true;2023-02-08
+Andrea;De Luca;marco.conti96@email.com;+39 356 4961312;Genova;1;2023-08-03;yes;2025-11-12
+Alessandro;Moretti;alessandro.moretti17@email.com;+39 397 4475523;Napoli;0;;no;
+Andrea;Rizzo;andrea.rizzo4@email.com;+39 346 6159230;Munich;2;2023-08-17;true;2025-02-24
+Elena;Moretti;elena.moretti67@email.com;+39 303 2020480;Vienna;15;2023-02-11;no;
+Laura;Bianchi;laura.bianchi71@email.com;+39 376 9901266;Palermo;6;2026-06-27;true;2023-12-04
+Riccardo;Conti;riccardo.conti86@email.com;;Firenze;2;2025-03-18;true;2023-02-27
+Giulia;Lombardi;giulia.lombardi53@email.com;+39 396 8095702;Prague;9;2024-03-22;;
+Marta;Ricci;marta.ricci15@email.com;+39 354 1440466;Munich;9;2023-03-28;yes;2023-03-09
+Andrea;Lombardi;andrea.lombardi4@email.com;+39 348 8043620;Napoli;2;2024-10-02;yes;2025-06-25
+Luca;Marino;luca.marino54@email.com;+39 314 6791039;Geneva;1;2023-01-07;true;2025-11-10
+Chiara;Colombo;chiara.ricci48@email.com;+39 316 7378822;Vienna;1;2023-06-19;yes;2023-07-28
+Valentina;Lombardi;andrea.lombardi4@email.com;+39 379 8719145;London;7;2023-07-28;no;
+Chiara;Bruno;chiara.bruno82@email.com;+39 399 6861544;Napoli;4;2025-04-06;;
+Laura;Bianchi;laura.bianchi99@email.com;+39 372 8531380;Zurich;10;2024-08-03;;
+Marta;Costa;marta.costa46@email.com;+39 357 1630944;Barcelona;12;2023-08-26;no;
+Fabio;Colombo;fabio.colombo8@email.com;+39 343 2414808;Verona;5;2026-07-25;si;2025-08-15
+Giovanni;Moretti;giovanni.moretti43@email.com;+39 336 5227787;Verona;4;2026-03-20;si;2024-02-19
+Luca;Greco;luca.greco17@email.com;+39 394 9831414;Zurich;5;2026-04-08;yes;2023-06-10
+Andrea;Bianchi;andrea.bianchi99@email.com;+39 367 1633297;Bologna;12;2024-12-15;;
+Giulia;De Luca;;+39 396 8531761;Verona;14;2026-09-17;true;2023-06-22
+Valentina;Romano;luca.marino69@email.com;;Bologna;3;2025-08-17;sì;2025-09-28
+Andrea;De Luca;andrea.de luca45@email.com;+39 350 9422281;Zurich;10;2024-03-02;sì;2024-04-01
+Chiara;Giordano;chiara.giordano58@email.com;;Verona;13;2024-05-04;si;2023-09-24
+Giulia;Ricci;giulia.ricci15@email.com;+39 368 1275739;Paris;11;2024-11-22;si;2024-07-01
+Luca;Mancini;luca.mancini65@email.com;+39 302 7550726;Torino;0;;true;2024-05-24
+Anna;Ricci;anna.ricci95@email.com;+39 345 6679880;Torino;5;2026-01-10;true;2025-08-21
+Alessandro;Russo;alessandro.russo40@email.com;;Roma;9;2025-05-04;yes;2023-11-07
+Anna;De Luca;anna.de luca50@email.com;+39 388 9347057;Geneva;13;2024-09-10;no;
+Giovanni;Esposito;giovanni.esposito78@email.com;+39 356 6897979;Roma;13;2023-11-21;;
+Matteo;Gallo;matteo.gallo4@email.com;+39 356 1583829;Vienna;1;2025-06-15;yes;2024-07-19
+Luca;Lombardi;luca.lombardi36@email.com;+39 394 4121368;Geneva;14;2025-12-16;sì;2024-05-23
+Alessandro;Esposito;alessandro.esposito92@email.com;+39 387 6361793;Bologna;9;2024-06-17;;
+Elena;Esposito;luca.lombardi36@email.com;+39 359 3177199;Paris;15;2023-03-11;yes;2024-12-24
+Luca;Costa;luca.costa71@email.com;+39 316 8258130;Bologna;4;2025-12-08;;
+Anna;Mancini;anna.mancini82@email.com;+39 380 6080553;Geneva;5;2025-10-02;si;2025-10-05
+Marco;Ferrari;marco.ferrari84@email.com;+39 379 1508113;London;7;2025-08-03;yes;2025-05-16
+Giulia;Romano;giulia.romano78@email.com;;Firenze;11;2025-04-15;yes;2024-03-25
+Francesca;Marino;francesca.marino50@email.com;+39 320 6493461;Vienna;15;2026-05-16;no;
+Marco;Ferrari;;+39 345 1816348;Venezia;3;2025-07-12;true;2024-09-01
+Giulia;Conti;francesca.marino50@email.com;+39 370 5692934;Zurich;11;2025-03-07;sì;2023-02-13
+Laura;Mancini;laura.mancini92@email.com;+39 358 3498809;Verona;12;2025-09-27;yes;2025-06-06
+Davide;Rizzo;davide.rizzo3@email.com;+39 353 6161977;Venezia;0;;;
+Fabio;Lombardi;fabio.lombardi68@email.com;+39 348 3479264;Paris;10;2024-07-17;sì;2023-01-15
+Laura;Giordano;laura.giordano18@email.com;+39 384 9025733;Venezia;11;2026-04-08;si;2024-09-11
+Lorenzo;Rizzo;;+39 390 4477544;Prague;8;2026-07-27;true;2024-09-26
+Anna;Bianchi;anna.bianchi45@email.com;+39 395 9037616;Prague;4;2024-04-02;false;
+Davide;Ricci;davide.ricci92@email.com;+39 317 1086930;Verona;15;2025-05-21;false;
+Giulia;Ferrari;giulia.ferrari5@email.com;+39 322 1609681;Milano;9;2025-10-20;true;2023-12-28
+Francesca;Bruno;francesca.bruno64@email.com;+39 364 8852085;Milano;8;2025-05-19;false;
+Alessandro;Romano;alessandro.romano55@email.com;+39 385 2600296;Venezia;12;2025-05-19;yes;2023-01-09
+Fabio;Rossi;fabio.rossi86@email.com;+39 351 9430894;Verona;3;2025-10-08;;
+Elena;Bianchi;;+39 389 8899184;Geneva;7;2023-09-15;;
+Davide;Gallo;davide.gallo71@email.com;+39 368 3514105;Berlin;15;2026-01-15;no;
+Andrea;Mancini;andrea.mancini87@email.com;+39 350 5269083;Torino;1;2023-02-16;;
+Giulia;Greco;giulia.greco94@email.com;+39 348 8525204;Barcelona;11;2026-09-05;no;
+Elena;Rossi;elena.rossi93@email.com;+39 329 5152562;Milano;13;2024-04-03;si;2025-02-02
+Francesca;Moretti;francesca.moretti7@email.com;+39 356 4931560;Verona;4;2024-12-19;;
+Giovanni;Lombardi;giovanni.lombardi39@email.com;;Paris;5;2026-01-12;true;2024-05-02
+Matteo;Mancini;matteo.mancini49@email.com;+39 330 4780654;Paris;1;2024-07-08;;
+Lorenzo;Colombo;lorenzo.colombo48@email.com;+39 324 1864641;Zurich;6;2025-01-07;sì;2023-04-26
+Alessandro;Esposito;alessandro.esposito90@email.com;+39 330 6395804;Amsterdam;15;2025-04-12;yes;2024-05-12
+Giovanni;De Luca;giovanni.de luca3@email.com;;Prague;10;2024-08-18;true;2024-03-07
+Giovanni;Marino;giovanni.marino95@email.com;+39 345 3839807;Torino;1;2023-01-14;si;2025-11-02
+Andrea;Ricci;andrea.ricci59@email.com;+39 385 9106820;Verona;8;2023-09-27;true;2023-01-17
+Valentina;Romano;valentina.romano25@email.com;+39 345 5484964;Torino;7;2023-02-13;true;2024-10-08
+Matteo;Conti;matteo.conti22@email.com;+39 382 6557798;Prague;7;2026-05-02;no;
+Luca;Marino;sara.rizzo77@email.com;+39 396 7682298;Napoli;10;2023-09-24;si;2025-07-22
+Anna;Russo;anna.russo78@email.com;;Munich;14;2026-07-06;yes;2023-11-09
+Fabio;Conti;silvia.8@email.com;+39 391 3588336;Venezia;14;2023-03-03;sì;2023-01-10
+Sara;De Luca;sara.de luca4@email.com;+39 376 6443037;Bologna;7;2026-03-05;true;2024-02-24
+Lorenzo;Greco;lorenzo.greco36@email.com;+39 309 7058670;Verona;14;2023-07-11;true;2025-10-07
+Laura;Conti;laura.conti84@email.com;+39 341 4369728;Palermo;15;2025-07-09;true;2024-05-24
+Matteo;Gallo;matteo.gallo70@email.com;+39 303 8744735;Napoli;13;2025-04-09;yes;2025-02-27
+Andrea;De Luca;;+39 351 9965197;Munich;1;2023-02-25;;
+Elena;Gallo;elena.gallo83@email.com;+39 396 6563269;London;7;2026-11-19;sì;2023-05-08
+Davide;Bianchi;davide.bianchi54@email.com;+39 393 3376915;Vienna;15;2025-02-10;si;2025-08-12
+;Esposito;.esposito22@email.com;+39 366 3926839;Bologna;12;2026-07-01;true;2024-04-26
+Laura;Colombo;laura.colombo28@email.com;+39 308 2707116;Amsterdam;3;2025-10-13;yes;2024-04-15
+Laura;Conti;laura.conti80@email.com;+39 338 2421902;Berlin;11;2026-07-20;si;2024-02-06
+Andrea;Lombardi;andrea.lombardi89@email.com;;Vienna;5;2023-06-01;si;2024-05-05
+Marta;Bianchi;marta.bianchi84@email.com;+39 353 8446596;Verona;8;2024-08-19;sì;2023-05-02
+Marta;Rizzo;marta.rizzo70@email.com;+39 396 1698108;Roma;7;2026-05-12;si;2024-02-24
+Luca;Costa;luca.costa27@email.com;+39 344 8183451;Geneva;11;2024-06-23;si;2023-01-19
+Chiara;Greco;chiara.greco87@email.com;+39 396 7905438;Napoli;4;2024-03-23;;
+Giovanni;Ricci;giovanni.ricci74@email.com;+39 348 8583162;Venezia;12;2025-08-16;;
+;Lombardi;.lombardi94@email.com;+39 389 7009980;Zurich;6;2025-06-18;false;
+Fabio;Bianchi;fabio.bianchi88@email.com;+39 303 8744735;Napoli;13;2025-03-28;no;
+Lorenzo;Ferrari;lorenzo.ferrari84@email.com;+39 339 4928281;Palermo;2;2026-01-01;sì;2023-04-16
+Giovanni;Esposito;giovanni.esposito10@email.com;+39 313 2731434;Prague;4;2023-10-21;no;
+Sara;Costa;sara.costa53@email.com;+39 327 2454383;Zurich;11;2024-04-09;sì;2025-12-13
+Luca;Ricci;giulia.ricci15@email.com;+39 338 4446807;Firenze;7;2024-08-21;true;2024-11-02
+Laura;Ferrari;;;Torino;5;2023-10-03;true;2024-09-22
+Marco;Marino;;+39 336 9406206;Verona;4;2023-09-07;true;2023-11-18
+Andrea;Rizzo;andrea.rizzo84@email.com;+39 389 8339797;Geneva;13;2023-05-22;no;
+;Esposito;.esposito64@email.com;+39 392 5349442;Paris;0;;yes;2025-02-25
+Lorenzo;Mancini;lorenzo.mancini10@email.com;+39 307 9382064;Berlin;3;2023-01-28;si;2024-02-19
+Marco;Ricci;;+39 304 8035849;Roma;11;2024-04-26;yes;2024-02-19
+Davide;Russo;davide.russo37@email.com;+39 336 5227787;Amsterdam;14;2024-12-18;yes;2025-10-08
+;Bianchi;.bianchi45@email.com;+39 351 9430894;Palermo;3;2026-08-02;;
+Andrea;Marino;andrea.marino67@email.com;;London;4;2023-10-19;sì;2025-02-17
+Giulia;De Luca;giulia.de luca41@email.com;+39 394 6473593;Bologna;3;2026-08-11;sì;2023-03-25
+Valentina;Esposito;valentina.esposito40@email.com;;Zurich;1;2024-02-23;yes;2025-12-20
+Elena;Gallo;fabio.rossi86@email.com;;Roma;4;2024-03-07;si;2023-08-04
+Matteo;Gallo;matteo.gallo76@email.com;+39 302 2081661;Roma;1;2024-10-14;si;2023-06-04
+;Giordano;.giordano28@email.com;+39 370 2642635;London;1;2024-07-07;true;2024-09-16
+Davide;Ricci;davide.ricci49@email.com;+39 369 9131572;Palermo;0;;yes;2024-05-06
+Marco;Marino;marco.marino99@email.com;+39 320 2679975;Bologna;12;2024-04-19;sì;2023-10-28
+Giovanni;Gallo;giovanni.gallo73@email.com;+39 324 9258194;;7;2026-01-11;sì;2023-01-08
+Laura;Colombo;giulia.romano78@email.com;+39 318 2860938;London;11;2023-06-10;;
+Giovanni;Bianchi;giovanni.bianchi82@email.com;+39 322 6986539;Milano;9;2026-10-02;si;2024-05-24
+Sara;Moretti;sara.moretti82@email.com;;Torino;5;2025-08-01;sì;2023-06-11
+Lorenzo;Colombo;lorenzo.colombo14@email.com;+39 356 8040612;Firenze;11;2026-10-21;false;
+Elena;Romano;elena.romano3@email.com;;Torino;2;2025-10-20;si;2024-03-24
+Marta;Rossi;marta.rossi56@email.com;+39 326 4187406;London;7;2026-03-02;yes;2025-05-10
+Anna;Rossi;anna.rossi77@email.com;+39 326 3866088;Amsterdam;9;2026-11-09;no;
+Luca;Rizzo;luca.rizzo24@email.com;+39 359 5419132;Munich;3;2026-10-08;sì;2023-12-22
+Silvia;Russo;silvia.russo69@email.com;;Roma;12;2024-02-25;si;2024-05-03
+Riccardo;Romano;riccardo.romano25@email.com;+39 387 8304686;Torino;10;2023-07-18;false;
+Matteo;Rizzo;matteo.rizzo2@email.com;+39 366 8039616;Barcelona;3;2025-07-09;sì;2023-10-25
+Matteo;Giordano;matteo.giordano52@email.com;+39 346 6159230;;11;2025-05-09;sì;2025-08-09
+Marta;Esposito;marta.esposito96@email.com;+39 334 7992286;Munich;15;2023-09-26;true;2023-07-24
+Sara;Ferrari;sara.ferrari68@email.com;+39 324 4367636;Vienna;6;2026-11-04;true;2023-06-23
+Marco;Ricci;marco.ricci61@email.com;+39 320 5339593;Genova;5;2024-11-08;yes;2023-07-02
+Alessandro;Marino;alessandro.marino99@email.com;+39 316 3905824;London;8;2025-08-09;yes;2025-05-23
+Alessandro;Costa;alessandro.costa75@email.com;+39 384 7278533;Venezia;15;2025-05-09;yes;2024-11-04
+Chiara;Colombo;chiara.colombo77@email.com;+39 317 1427068;Roma;12;2024-06-24;false;
+Elena;Rizzo;;+39 338 3851902;Venezia;15;2024-11-11;no;
+Luca;Ricci;luca.ricci43@email.com;+39 359 2976045;Genova;2;2023-11-13;;
+Davide;Greco;davide.greco26@email.com;;Bologna;4;2023-08-11;;
+Sara;;sara.98@email.com;+39 320 9213740;Amsterdam;13;2026-01-02;false;
+Silvia;Colombo;silvia.colombo97@email.com;+39 386 1069186;Verona;12;2024-02-27;yes;2024-03-04
+Giulia;Greco;giulia.greco68@email.com;;Bologna;11;2026-01-08;false;
+Elena;Bianchi;elena.bianchi16@email.com;+39 304 7294684;Milano;3;2023-12-04;sì;2025-01-22
+Valentina;Costa;valentina.costa20@email.com;+39 301 6051895;Firenze;4;2023-05-04;yes;2025-10-23
+Francesca;Giordano;francesca.giordano67@email.com;+39 352 5955170;;7;2023-02-27;si;2025-08-11
+Fabio;Giordano;fabio.giordano93@email.com;;Bologna;1;2023-05-12;true;2024-05-15
+Giovanni;De Luca;francesca.moretti7@email.com;+39 321 6514013;London;10;2026-08-09;yes;2025-02-12
+Matteo;Giordano;matteo.giordano15@email.com;+39 320 2740017;Napoli;11;2026-08-04;true;2023-10-13
+Valentina;Costa;valentina.costa91@email.com;+39 395 4757843;Palermo;3;2026-06-22;yes;2025-09-23
+Matteo;Bianchi;;+39 382 3632804;Zurich;15;2025-01-17;true;2023-02-25
+Elena;Rizzo;elena.rizzo59@email.com;+39 311 9362706;Roma;3;2023-02-26;true;2025-11-01
+Laura;Moretti;laura.moretti84@email.com;;Munich;15;2026-02-04;sì;2023-08-11
+Elena;Rossi;;+39 366 7272839;Geneva;13;2024-04-04;si;2024-03-27
+Matteo;Colombo;matteo.colombo14@email.com;+39 381 3067274;Paris;1;2026-09-25;si;2024-01-17
+Sara;Lombardi;sara.lombardi85@email.com;;Zurich;7;2025-08-26;true;2024-10-23
+Andrea;Bianchi;andrea.bianchi39@email.com;+39 340 4646403;Bologna;4;2025-12-04;yes;2025-06-22
+Anna;Rizzo;anna.rizzo54@email.com;;Roma;0;;true;2023-09-04
+Giulia;Colombo;;+39 318 2040738;Barcelona;7;2026-04-17;sì;2024-08-04
+Chiara;Russo;;;Vienna;6;2024-11-23;sì;2023-12-09
+Anna;Lombardi;anna.lombardi25@email.com;+39 387 2249382;Napoli;8;2024-10-28;sì;2024-01-14
+Lorenzo;Rossi;lorenzo.rossi20@email.com;+39 399 6052539;Berlin;7;2023-09-06;yes;2023-12-11
+Valentina;Rizzo;valentina.rizzo28@email.com;+39 337 4664903;Vienna;3;2024-11-20;true;2025-11-01
+Laura;Ricci;laura.ricci15@email.com;+39 336 1414493;;15;2024-06-17;false;
+Luca;Esposito;luca.esposito1@email.com;+39 380 4576485;Torino;13;2024-01-15;sì;2023-09-27
+Giovanni;Russo;elena.gallo83@email.com;;;10;2023-09-01;true;2025-07-14
+Laura;Ferrari;laura.ferrari10@email.com;+39 337 6055825;Barcelona;0;;true;2024-07-27
+Elena;Bianchi;elena.bianchi38@email.com;+39 386 7260091;Torino;12;2025-04-24;si;2023-01-01
+Anna;Colombo;anna.colombo21@email.com;+39 332 4260252;Torino;2;2025-02-07;sì;2025-08-21
+Fabio;Giordano;fabio.giordano31@email.com;+39 324 6331563;Paris;11;2024-01-11;yes;2025-10-05
+Elena;Ricci;elena.ricci47@email.com;+39 361 8765307;Torino;5;2025-03-18;no;
+Alessandro;Marino;alessandro.marino3@email.com;+39 374 7797028;Napoli;15;2025-07-08;sì;2025-05-18
+Fabio;Greco;fabio.greco47@email.com;+39 378 3782393;Amsterdam;4;2025-01-08;si;2023-10-19
+Marta;Ricci;marta.ricci27@email.com;+39 349 8879825;Berlin;3;2025-12-09;false;
+Fabio;Rizzo;fabio.rizzo76@email.com;+39 366 5220919;Munich;11;2026-08-20;;
+Marco;Mancini;marco.mancini66@email.com;+39 323 3640018;Firenze;13;2026-11-16;no;
+Marta;Colombo;fabio.giordano93@email.com;+39 370 5692934;Prague;12;2023-12-24;si;2024-03-17
+Chiara;Ferrari;chiara.ferrari62@email.com;+39 376 3394312;Zurich;5;2026-10-19;false;
+Luca;Ricci;luca.ricci67@email.com;+39 353 3509220;Napoli;3;2023-11-21;sì;2025-09-25
+Valentina;Mancini;valentina.mancini55@email.com;+39 398 7396087;Venezia;3;2026-04-28;;
+Luca;Greco;luca.greco1@email.com;+39 373 9766777;Paris;11;2025-05-28;si;2025-06-14
+Silvia;De Luca;;+39 326 7932818;Verona;15;2025-12-13;si;2024-09-18
+Andrea;Esposito;andrea.esposito21@email.com;+39 343 1873301;Geneva;4;2026-02-03;no;
+Lorenzo;Ricci;lorenzo.ricci52@email.com;+39 391 1964069;;14;2025-04-02;;
+Laura;Mancini;laura.mancini5@email.com;+39 320 2456980;Berlin;12;2023-12-23;false;
+Luca;Ferrari;luca.ferrari75@email.com;;Paris;0;;si;2024-07-19
+Davide;Esposito;davide.esposito15@email.com;;London;8;2026-04-25;;
+Giovanni;Costa;giovanni.costa62@email.com;+39 381 4697401;Venezia;0;;yes;2024-06-17
+Elena;Greco;elena.greco10@email.com;+39 340 6931382;Palermo;15;2024-05-07;si;2025-11-07
+Elena;Colombo;elena.colombo14@email.com;+39 384 9265544;Munich;1;2025-08-19;;
+Lorenzo;Giordano;lorenzo.giordano51@email.com;+39 306 9820377;Firenze;5;2026-06-23;sì;2025-06-13
+Marco;Rossi;marco.rossi47@email.com;+39 370 5409875;Munich;13;2025-07-09;yes;2024-03-16
+Riccardo;Romano;riccardo.romano13@email.com;+39 371 8251427;Berlin;13;2025-08-10;si;2024-01-06
+Lorenzo;Rizzo;laura.mancini92@email.com;+39 380 2615677;Paris;8;2023-06-28;yes;2024-09-18
+Laura;Colombo;laura.colombo37@email.com;+39 362 8498243;Zurich;5;2026-11-20;yes;2024-11-05
+Fabio;Conti;fabio.conti30@email.com;+39 390 5487442;Bologna;14;2023-03-24;true;2024-12-19
+Elena;Marino;elena.marino22@email.com;+39 347 2156902;London;4;2025-04-08;sì;2023-05-20
+Chiara;Costa;chiara.ferrari62@email.com;;Barcelona;14;2024-10-20;true;2024-09-09
+Riccardo;Lombardi;riccardo.lombardi45@email.com;+39 311 8413185;Amsterdam;4;2023-12-16;si;2024-01-01
+;Greco;.greco30@email.com;+39 324 7907781;Palermo;12;2025-02-14;si;2023-12-24
+Elena;Mancini;elena.mancini88@email.com;+39 368 5510085;Geneva;3;2026-05-23;false;
+Laura;;giovanni.conti86@email.com;+39 316 8355410;Amsterdam;10;2025-08-23;si;2023-08-07
+Giulia;Bruno;giulia.bruno35@email.com;+39 360 4046805;Palermo;0;;;
+Matteo;Costa;matteo.costa95@email.com;+39 326 8932696;Roma;5;2023-05-16;;
+Chiara;Colombo;chiara.colombo15@email.com;+39 301 3807840;Napoli;15;2025-02-08;true;2023-01-02
+Sara;Giordano;;;Palermo;3;2025-09-26;sì;2024-11-05
+Anna;Costa;anna.costa93@email.com;;Bologna;15;2025-06-24;true;2025-05-18
+Riccardo;Marino;.bianchi45@email.com;+39 333 7159129;Geneva;5;2025-10-08;;
+Giovanni;Ferrari;giovanni.ferrari68@email.com;+39 319 5750117;;2;2024-03-28;sì;2023-09-22
+Giulia;Colombo;giulia.colombo83@email.com;+39 315 1484348;Torino;15;2026-11-02;sì;2023-04-21
+Anna;Rizzo;valentina.bruno37@email.com;+39 305 2180916;Genova;7;2024-09-22;si;2025-02-04
+Elena;Lombardi;elena.lombardi54@email.com;+39 373 7005628;Barcelona;5;2026-09-11;no;
+Sara;Rizzo;sara.rizzo41@email.com;;Prague;10;2024-07-25;false;
+Silvia;Marino;;+39 304 5772818;Milano;6;2025-09-17;yes;2023-05-08
+Silvia;Lombardi;silvia.lombardi46@email.com;+39 374 5191903;Zurich;6;2026-03-16;false;
+Fabio;Esposito;fabio.esposito74@email.com;+39 398 6610127;Geneva;7;2023-11-25;no;
+Matteo;Russo;matteo.russo20@email.com;+39 319 1847581;Verona;2;2026-03-05;;
+Giovanni;Ferrari;giovanni.ferrari34@email.com;+39 399 3187332;Berlin;6;2024-04-03;si;2024-07-21
+Lorenzo;De Luca;lorenzo.de luca86@email.com;+39 324 6381096;Vienna;14;2023-04-07;yes;2023-06-20
+Anna;Bianchi;anna.bianchi7@email.com;+39 384 7278533;Barcelona;0;;false;
+Alessandro;Colombo;alessandro.colombo80@email.com;+39 389 1308508;Verona;8;2024-12-20;;
+Lorenzo;Russo;lorenzo.russo85@email.com;;London;12;2023-06-16;sì;2023-05-28
+Laura;Rizzo;;+39 345 6679880;Munich;0;;true;2024-12-06
+Anna;Greco;anna.greco8@email.com;;Venezia;0;;;
+Elena;Bianchi;elena.bianchi94@email.com;;Verona;4;2025-08-18;si;2024-04-19
+Andrea;Colombo;andrea.colombo26@email.com;+39 390 9787997;Barcelona;10;2023-03-11;si;2025-10-06
+Andrea;Rossi;andrea.rossi53@email.com;+39 381 5593537;Geneva;8;2024-10-08;si;2023-01-25
+Elena;Rossi;elena.rossi65@email.com;+39 383 7273997;;7;2023-05-14;true;2023-03-07
+Elena;Colombo;;;Paris;14;2026-01-20;false;
+Matteo;Bruno;matteo.bruno69@email.com;;Roma;14;2024-09-18;;
+Matteo;Russo;matteo.russo7@email.com;+39 338 5796850;Vienna;14;2023-12-17;sì;2025-09-05
+Francesca;Romano;francesca.romano18@email.com;+39 303 4001084;Zurich;14;2024-12-24;;
+Francesca;Ferrari;francesca.ferrari68@email.com;+39 365 3682671;Napoli;4;2024-12-02;si;2024-10-28
+Valentina;Greco;valentina.greco81@email.com;;Amsterdam;0;;false;
+Silvia;Rossi;silvia.rossi85@email.com;+39 310 1110277;Roma;1;2024-01-22;si;2023-03-05
+Fabio;Moretti;fabio.moretti54@email.com;+39 336 3976601;Zurich;2;2025-07-27;no;
+Luca;De Luca;luca.de luca16@email.com;+39 367 7941705;Geneva;2;2025-07-20;sì;2023-10-24
+Giovanni;Marino;giovanni.marino17@email.com;+39 393 9350710;Vienna;0;;si;2025-05-07
+Francesca;Colombo;francesca.colombo43@email.com;+39 327 1189536;Firenze;10;2025-06-13;yes;2023-05-10
+Fabio;Moretti;fabio.moretti44@email.com;+39 360 1596568;Roma;13;2025-10-24;true;2025-06-15
+Giovanni;Rizzo;andrea.de luca45@email.com;+39 303 6690033;Verona;5;2025-12-02;si;2025-10-13
+Lorenzo;De Luca;lorenzo.de luca39@email.com;+39 314 7278297;Amsterdam;14;2024-04-11;;
+Marta;Mancini;marta.mancini13@email.com;;Berlin;14;2023-01-10;si;2023-12-02
+Giulia;Moretti;giulia.moretti14@email.com;+39 339 1377156;Zurich;9;2026-11-04;si;2024-04-07
+Lorenzo;Bianchi;;+39 313 4465793;Bologna;9;2023-05-20;yes;2023-12-26
+Giovanni;Rizzo;sara.moretti82@email.com;+39 354 7575272;Barcelona;10;2023-08-19;true;2025-06-10
+Andrea;Ferrari;andrea.ferrari59@email.com;+39 398 8808058;Zurich;11;2025-08-16;false;
+Marco;Ferrari;marco.ferrari22@email.com;+39 373 3137316;Barcelona;2;2026-07-19;sì;2024-09-21
+Valentina;Ricci;;+39 343 4493656;Torino;7;2026-02-19;true;2025-06-18
+Laura;Costa;laura.costa40@email.com;+39 313 7357071;Milano;4;2024-11-05;sì;2023-04-27
+Riccardo;Rizzo;riccardo.rizzo27@email.com;+39 372 6109503;Prague;11;2023-10-17;;
+Matteo;Bianchi;francesca.bruno64@email.com;+39 345 2840432;London;10;2026-07-18;false;
+Alessandro;Romano;alessandro.romano47@email.com;+39 385 3106365;Napoli;13;2023-03-21;sì;2023-12-16
+Valentina;Costa;;+39 358 9546564;Milano;5;2026-12-08;no;
+Davide;Marino;davide.marino5@email.com;+39 314 9078781;Torino;2;2025-10-02;yes;2024-09-03
+Giovanni;Rizzo;giovanni.rizzo61@email.com;+39 345 5942868;Prague;1;2024-10-02;yes;2025-10-09
+;Moretti;.moretti10@email.com;+39 316 5713926;Munich;4;2024-05-26;sì;2025-03-19
+Elena;Giordano;elena.giordano11@email.com;+39 319 9320631;Munich;5;2023-11-09;true;2023-11-15
+Francesca;Russo;francesca.russo96@email.com;;;13;2026-07-22;true;2024-05-05
+Giovanni;Mancini;giovanni.mancini82@email.com;+39 378 5573311;Palermo;12;2024-09-11;sì;2024-11-19
+Sara;Bruno;sara.bruno2@email.com;+39 387 8481668;Roma;0;;no;
+Laura;Colombo;laura.colombo16@email.com;+39 348 4099902;Venezia;2;2026-12-22;yes;2024-08-22
+Giovanni;Marino;giovanni.marino49@email.com;;Genova;15;2026-03-21;yes;2023-08-03
+Marta;Esposito;marta.esposito83@email.com;+39 379 1508113;Milano;4;2023-11-13;yes;2024-01-16
+Lorenzo;Bianchi;lorenzo.bianchi66@email.com;+39 361 8315833;Milano;2;2026-12-27;;
+Marta;Esposito;marta.esposito88@email.com;+39 382 2521139;Bologna;9;2023-07-22;false;
+Alessandro;Greco;alessandro.greco46@email.com;;Prague;0;;si;2023-01-07
+Elena;Giordano;elena.giordano64@email.com;+39 337 4664903;Barcelona;14;2024-12-19;sì;2024-02-07
+Elena;Ferrari;elena.ferrari61@email.com;+39 307 9519948;Torino;5;2023-02-16;yes;2023-08-20
+Laura;Moretti;laura.moretti95@email.com;+39 387 3304005;Firenze;5;2025-03-25;no;
+Valentina;Romano;laura.bianchi99@email.com;+39 380 7310431;Prague;5;2025-07-23;true;2023-01-01
+Marta;Bianchi;marta.bianchi53@email.com;+39 388 1631179;Verona;2;2025-07-01;;
+Silvia;Ricci;;+39 397 9515120;Firenze;8;2024-11-28;;
+Marta;Giordano;marta.giordano83@email.com;+39 332 6608533;Bologna;1;2024-01-16;no;
+Davide;Esposito;davide.esposito75@email.com;+39 386 6464086;London;13;2024-02-16;si;2023-04-24
+Fabio;Giordano;fabio.giordano79@email.com;+39 317 8679606;Roma;1;2025-03-04;yes;2023-06-05
+Riccardo;Costa;riccardo.costa38@email.com;+39 381 3851044;Genova;15;2026-08-09;si;2023-07-28
+Marco;De Luca;marco.de luca75@email.com;;Roma;0;;;
+Giulia;Giordano;giulia.giordano51@email.com;+39 312 8590706;Verona;6;2024-11-03;sì;2025-12-14
+Marco;Giordano;marco.giordano74@email.com;+39 358 8780612;Milano;14;2023-07-23;false;
+Giovanni;Mancini;giovanni.mancini79@email.com;+39 387 2358267;Munich;1;2026-10-02;sì;2025-11-12
+Anna;Gallo;anna.gallo91@email.com;+39 342 5003592;Berlin;11;2026-05-02;si;2025-04-11
+Luca;Gallo;luca.gallo16@email.com;+39 368 5903382;Bologna;2;2025-02-04;sì;2023-08-03
+Sara;Marino;sara.marino27@email.com;+39 337 7988325;Milano;14;2025-04-03;si;2024-06-14
+Marco;Ricci;marco.ricci75@email.com;+39 341 9156216;Verona;4;2024-05-08;true;2024-05-19
+Marta;Gallo;marta.gallo46@email.com;;Napoli;5;2024-04-04;si;2025-09-10
+Giulia;Bruno;giulia.bruno27@email.com;+39 340 6768795;Amsterdam;0;;si;2025-05-04
+Andrea;Costa;;+39 364 6557966;Firenze;14;2026-01-05;yes;2025-11-05
+Silvia;Esposito;silvia.esposito58@email.com;+39 377 4274069;Torino;14;2026-04-16;yes;2023-01-03
+Giovanni;Moretti;giovanni.moretti47@email.com;+39 354 7201361;Vienna;2;2026-08-10;yes;2024-05-15
+Sara;De Luca;sara.de luca77@email.com;+39 360 9813089;Barcelona;8;2026-12-19;true;2023-01-14
+Andrea;Colombo;andrea.colombo6@email.com;+39 374 6098837;Amsterdam;4;2023-11-22;no;
+Chiara;De Luca;chiara.de luca4@email.com;+39 308 7069317;Prague;3;2023-05-06;yes;2025-11-16
+Fabio;Russo;fabio.russo46@email.com;+39 313 7357071;Geneva;5;2024-09-11;sì;2025-04-25
+Giovanni;Greco;giovanni.greco69@email.com;+39 301 3297630;Berlin;3;2024-04-26;true;2024-06-06
+Silvia;Moretti;silvia.moretti92@email.com;+39 314 8001908;Napoli;9;2026-10-17;si;2023-08-12
+Giovanni;Romano;giovanni.romano29@email.com;+39 388 4801288;Amsterdam;3;2026-01-07;sì;2024-12-25
+Francesca;Russo;francesca.russo16@email.com;+39 338 1172342;Genova;6;2024-11-12;;
+Marco;Ferrari;marco.ferrari75@email.com;+39 364 5057108;Bologna;6;2023-12-04;sì;2025-04-23
+Alessandro;Mancini;alessandro.mancini24@email.com;;Zurich;7;2023-08-04;yes;2024-07-07
+Davide;Bianchi;marta.esposito83@email.com;+39 349 5758210;Paris;14;2025-07-07;;
+Luca;Giordano;luca.giordano87@email.com;+39 356 9768819;Bologna;3;2023-06-07;si;2024-07-23
+Giovanni;Colombo;giovanni.colombo55@email.com;+39 391 5579723;Geneva;11;2026-08-17;;
+Lorenzo;Bianchi;lorenzo.bianchi64@email.com;;London;0;;sì;2023-08-22
+Laura;Bruno;laura.bruno10@email.com;+39 363 8818548;Barcelona;10;2023-01-14;true;2025-05-18
+Francesca;Conti;matteo.rizzo2@email.com;+39 399 6084244;Firenze;12;2026-11-18;true;2023-05-23
+Silvia;Lombardi;silvia.lombardi8@email.com;+39 348 6918393;Munich;4;2023-11-11;sì;2023-10-02
+Matteo;Esposito;matteo.esposito8@email.com;+39 382 6236161;Milano;3;2025-01-15;false;
+Valentina;Lombardi;valentina.lombardi61@email.com;;Genova;15;2025-08-17;true;2024-10-04
+Giovanni;Romano;giovanni.romano64@email.com;;London;9;2024-10-24;si;2024-05-02
+Luca;Lombardi;luca.lombardi68@email.com;+39 309 6064152;Vienna;8;2024-01-21;yes;2023-07-13
+Davide;Romano;;+39 359 5495219;Munich;1;2026-03-08;true;2025-12-21
+Andrea;Greco;andrea.greco9@email.com;+39 334 5815809;Palermo;4;2025-08-16;si;2024-04-04
+Silvia;De Luca;silvia.de luca35@email.com;+39 335 3952542;Verona;2;2023-07-12;true;2023-01-28
+Luca;Conti;luca.conti15@email.com;+39 315 9756994;Zurich;3;2025-10-24;yes;2024-02-08
+Matteo;Ricci;matteo.ricci28@email.com;+39 332 1938272;Venezia;15;2024-06-16;sì;2024-09-14
+;Greco;.greco95@email.com;;Munich;9;2023-09-28;si;2024-09-13
+Elena;Costa;elena.costa33@email.com;;Paris;14;2023-05-28;no;
+Luca;Giordano;luca.giordano92@email.com;;Geneva;2;2025-08-23;si;2025-05-17
+Marco;Russo;marco.russo83@email.com;+39 380 6126237;Paris;4;2025-08-16;si;2023-09-23
+Andrea;Marino;andrea.marino37@email.com;+39 323 7601736;;7;2023-09-21;;
+Laura;Ricci;laura.ricci90@email.com;+39 379 8195804;Paris;0;;yes;2023-10-04
+Riccardo;Giordano;riccardo.giordano35@email.com;+39 316 8236157;Napoli;13;2023-05-09;yes;2025-11-07
+Elena;Moretti;elena.moretti83@email.com;+39 317 6423167;Venezia;13;2023-02-18;si;2025-07-23
+Giulia;Russo;giulia.russo78@email.com;;London;12;2025-03-18;sì;2023-05-17
+Giulia;Lombardi;giulia.lombardi44@email.com;+39 340 9899034;Paris;8;2025-05-20;yes;2023-03-16
+Lorenzo;Mancini;lorenzo.mancini63@email.com;+39 384 8381800;Vienna;8;2026-02-16;si;2023-01-16
+Giulia;Costa;giulia.costa64@email.com;+39 318 3074573;Prague;8;2024-10-01;yes;2023-03-24
+Davide;Lombardi;davide.lombardi64@email.com;;Napoli;3;2023-02-15;sì;2024-06-19
+Marta;Costa;marta.costa43@email.com;+39 357 6451176;Roma;4;2025-06-26;;
+Giulia;Ferrari;giulia.ferrari33@email.com;;London;5;2025-11-25;no;
+Andrea;Esposito;andrea.esposito40@email.com;+39 345 2612483;Paris;8;2023-07-26;true;2024-07-16
+Anna;Moretti;anna.moretti66@email.com;+39 328 3601637;Amsterdam;2;2025-03-05;sì;2024-08-14
+Chiara;Ricci;chiara.ricci10@email.com;+39 365 8128865;Milano;2;2023-12-22;yes;2024-05-19
+Riccardo;Romano;riccardo.romano54@email.com;+39 375 8633602;Geneva;5;2025-11-04;yes;2024-03-07
+;Rizzo;.rizzo84@email.com;+39 384 9165848;Torino;12;2024-03-01;;
+Alessandro;Esposito;alessandro.esposito4@email.com;+39 383 5056398;Paris;14;2023-02-06;si;2023-05-25
+Andrea;Costa;andrea.costa75@email.com;+39 350 1854332;;9;2026-08-17;true;2024-08-24
+Fabio;Moretti;fabio.moretti30@email.com;+39 354 6299086;Paris;11;2023-03-10;true;2024-02-16
+Alessandro;Giordano;alessandro.giordano88@email.com;+39 391 8859576;Bologna;11;2024-05-23;true;2024-11-21
+Luca;Giordano;luca.giordano13@email.com;;Venezia;0;;si;2023-09-02
+Anna;Romano;anna.romano9@email.com;+39 329 3024809;Berlin;8;2023-12-02;yes;2024-01-25
+Riccardo;Costa;;+39 378 2709062;Bologna;6;2025-12-15;sì;2023-11-04
+Davide;Giordano;davide.giordano43@email.com;+39 325 8367017;Bologna;10;2023-05-12;false;
+Valentina;Gallo;valentina.gallo68@email.com;+39 354 7935859;Vienna;11;2024-01-23;;
+Davide;Ferrari;;+39 307 7597913;Barcelona;9;2025-12-24;si;2025-01-21
+;Gallo;.gallo19@email.com;+39 326 8417942;Verona;12;2023-01-18;;
+Giovanni;Conti;giovanni.conti70@email.com;+39 370 6238726;Verona;8;2026-09-04;no;
+Giulia;Gallo;giulia.gallo97@email.com;+39 338 1087466;Verona;7;2024-12-13;;
+Davide;Ricci;davide.ricci47@email.com;+39 354 7913101;Berlin;2;2026-10-18;si;2024-04-15
+Davide;Conti;davide.conti57@email.com;;Amsterdam;4;2026-03-23;no;
+Davide;Mancini;davide.mancini96@email.com;+39 315 7855503;Munich;3;2025-05-16;yes;2023-09-05
+Marco;Bianchi;marco.bianchi40@email.com;+39 317 6423167;Zurich;9;2026-08-27;sì;2024-08-19
+Laura;Bianchi;laura.bianchi58@email.com;+39 393 6456223;Vienna;10;2025-11-03;true;2024-04-13
+Sara;Rossi;sara.rossi72@email.com;+39 310 4228384;Milano;15;2023-11-18;sì;2025-09-07
+Sara;Rossi;sara.rossi75@email.com;+39 377 6375942;;13;2025-07-09;sì;2024-07-06
+Luca;Esposito;luca.esposito24@email.com;+39 339 7832964;Firenze;1;2025-03-14;yes;2023-01-23
+Giovanni;Marino;giovanni.marino26@email.com;+39 330 9270822;Torino;14;2026-01-14;sì;2024-01-11
+Elena;Rossi;elena.rossi32@email.com;+39 316 6110555;Barcelona;5;2026-09-15;si;2023-06-18
+Giulia;Rossi;giulia.rossi84@email.com;+39 361 5585262;Berlin;6;2025-01-06;false;
+Silvia;Lombardi;silvia.lombardi18@email.com;;Vienna;10;2025-04-22;false;
+Giovanni;Bruno;giovanni.bruno89@email.com;;Amsterdam;13;2026-09-03;sì;2023-11-06
+Luca;Rizzo;luca.rizzo87@email.com;;Munich;0;;yes;2024-03-27
+;Costa;.costa88@email.com;+39 311 6086491;Geneva;15;2024-01-07;true;2024-01-09
+Matteo;Esposito;matteo.esposito71@email.com;+39 386 3944885;Venezia;7;2024-11-01;sì;2023-05-19
+Silvia;Moretti;silvia.moretti55@email.com;;Vienna;3;2026-06-17;yes;2024-07-09
+Giulia;Ricci;giovanni.conti86@email.com;+39 373 1425670;Torino;5;2023-01-16;true;2023-04-07
+Valentina;Rossi;valentina.rossi33@email.com;+39 343 1913231;Vienna;14;2023-02-02;si;2023-10-20
+Giulia;Conti;marco.bianchi40@email.com;+39 378 8245056;Paris;3;2024-10-26;sì;2024-07-13
+Laura;Rossi;laura.rossi80@email.com;+39 386 1435739;Genova;2;2024-11-17;si;2023-02-01
+Lorenzo;Gallo;lorenzo.gallo32@email.com;+39 316 6228902;Verona;4;2025-05-12;yes;2024-10-18
+Marco;Mancini;marco.mancini65@email.com;+39 306 8081010;Zurich;6;2024-11-16;;
+Riccardo;Moretti;riccardo.moretti43@email.com;+39 320 2759055;Palermo;0;;no;
+Riccardo;Moretti;riccardo.moretti43@email.com;+39 351 4091109;Vienna;3;2024-11-19;sì;2023-06-01
+Anna;Russo;anna.russo29@email.com;+39 343 5126595;Firenze;4;2025-04-10;yes;2023-01-27
+Riccardo;Ricci;riccardo.ricci68@email.com;;Napoli;2;2024-04-18;;
+Matteo;Gallo;matteo.gallo6@email.com;+39 368 5935567;Prague;4;2026-04-24;sì;2025-05-28
+Luca;Giordano;luca.giordano50@email.com;+39 365 7279143;Amsterdam;15;2026-05-19;yes;2025-06-17
+Matteo;Lombardi;matteo.lombardi58@email.com;+39 339 8130700;Verona;4;2026-09-12;yes;2024-09-03
+Elena;Lombardi;elena.lombardi58@email.com;+39 363 6318720;Torino;2;2025-09-17;true;2023-05-21
+Silvia;Ferrari;silvia.ferrari10@email.com;+39 342 4299177;Barcelona;4;2025-01-25;yes;2023-12-20
+Chiara;Greco;chiara.greco52@email.com;+39 301 8918912;Genova;12;2026-04-17;;
+Fabio;Rizzo;fabio.rizzo11@email.com;+39 398 8007639;Milano;4;2026-11-27;sì;2024-03-19
+Anna;Bruno;anna.bruno98@email.com;+39 341 1389899;Genova;12;2026-02-18;si;2023-06-19
+Matteo;Colombo;;+39 338 2564332;;15;2024-02-13;si;2023-12-20
+Chiara;Colombo;chiara.colombo8@email.com;+39 341 7893107;London;15;2024-03-28;false;
+Alessandro;Greco;alessandro.greco78@email.com;+39 325 9430131;Geneva;2;2024-09-11;si;2023-03-15
+Fabio;Giordano;fabio.giordano37@email.com;;Bologna;5;2026-08-13;yes;2024-10-27
+Sara;Lombardi;sara.lombardi21@email.com;+39 337 2119776;Barcelona;13;2023-06-03;false;
+Francesca;Mancini;francesca.mancini33@email.com;+39 303 2228016;London;12;2023-01-09;true;2024-06-24
+Francesca;Bianchi;francesca.bianchi9@email.com;+39 391 8343784;Geneva;5;2023-03-10;;
+Francesca;Rizzo;francesca.rizzo2@email.com;+39 345 3985341;Verona;3;2026-01-20;si;2024-12-02
+Marco;Russo;;+39 330 4355203;Firenze;2;2024-12-06;sì;2024-04-22
+Giulia;De Luca;giulia.de luca81@email.com;+39 369 7628072;;5;2025-01-13;si;2023-06-11
+Alessandro;Costa;alessandro.costa80@email.com;+39 327 7897060;Firenze;5;2025-11-23;sì;2025-09-26
+Matteo;Bianchi;matteo.bianchi41@email.com;+39 322 6049101;Geneva;0;;si;2025-10-23
+Francesca;Greco;francesca.russo16@email.com;+39 325 3544610;Zurich;10;2023-09-26;si;2025-10-15
+Valentina;Greco;valentina.greco44@email.com;+39 385 5166421;Milano;10;2023-08-03;si;2025-07-17
+Alessandro;Russo;alessandro.russo12@email.com;+39 326 4964626;Bologna;6;2024-05-10;true;2024-03-24
+Fabio;Costa;fabio.costa62@email.com;;Amsterdam;13;2023-07-14;si;2024-08-14
+Luca;Greco;luca.greco33@email.com;+39 336 7293920;Genova;6;2023-01-28;yes;2023-12-16
+Davide;Gallo;;;Roma;2;2023-07-19;true;2024-11-19
+Sara;Colombo;sara.colombo97@email.com;+39 362 7177044;;15;2025-11-23;true;2025-04-08
+Marco;Bianchi;marco.bianchi33@email.com;+39 341 9156216;Genova;2;2026-03-27;true;2024-12-19
+Valentina;Marino;valentina.marino49@email.com;+39 396 2491048;London;6;2025-01-06;yes;2023-05-24
+Marta;Rossi;marta.rossi54@email.com;+39 321 3959522;Genova;3;2024-04-02;no;
+Sara;Colombo;sara.colombo81@email.com;+39 381 3787134;Amsterdam;0;;sì;2024-02-11
+;Esposito;;+39 305 2624736;Zurich;15;2026-06-12;false;
+Giovanni;Bruno;giovanni.bruno49@email.com;;London;0;;;
+Andrea;Rossi;andrea.rossi90@email.com;+39 357 8972523;Zurich;11;2026-04-20;sì;2025-06-01
+Marta;Conti;marta.conti61@email.com;;Napoli;9;2023-03-16;;
+Luca;Greco;;+39 357 2940765;Milano;2;2024-06-13;si;2023-03-25
+Lorenzo;Ricci;;+39 385 3277614;Geneva;7;2023-11-11;true;2023-12-11
+Matteo;Conti;;+39 329 4750560;Firenze;6;2025-03-28;sì;2023-06-24
+Giovanni;;giovanni.69@email.com;+39 354 6362719;Geneva;4;2024-02-13;;
+Marco;Rizzo;marco.rizzo38@email.com;+39 358 3473387;Prague;3;2026-11-27;sì;2025-06-10
+Alessandro;Giordano;alessandro.giordano43@email.com;+39 393 4776077;Bologna;9;2023-09-13;si;2024-12-13
+Giovanni;De Luca;matteo.russo20@email.com;+39 389 4273103;Verona;1;2026-11-06;sì;2023-06-25
+Fabio;Bianchi;fabio.bianchi27@email.com;+39 394 1153218;Paris;12;2024-01-04;no;
+Anna;Giordano;;+39 375 8278315;Verona;7;2024-11-24;true;2023-01-04
+Matteo;Ferrari;matteo.ferrari36@email.com;+39 301 3013272;Firenze;15;2024-07-16;si;2023-10-19
+Valentina;Greco;valentina.greco69@email.com;+39 302 7606809;Genova;3;2023-03-28;true;2023-09-27
+;Romano;.romano6@email.com;+39 320 2473390;Barcelona;9;2024-07-22;no;
+Marco;Ricci;marco.ricci38@email.com;+39 373 9228265;Roma;6;2024-01-07;yes;2025-09-17
+Andrea;Greco;andrea.greco71@email.com;+39 316 8080237;Venezia;14;2026-12-05;true;2025-03-13
+Silvia;Colombo;;+39 324 7243511;Geneva;13;2024-02-09;si;2024-03-11
+Francesca;Rizzo;francesca.rizzo82@email.com;;;8;2026-04-13;no;
+Francesca;Esposito;francesca.esposito63@email.com;+39 373 5731119;Barcelona;12;2026-08-19;sì;2023-06-25
+;Marino;.marino17@email.com;+39 334 1886921;Bologna;13;2026-06-26;yes;2025-04-22
+Riccardo;Mancini;riccardo.mancini92@email.com;+39 339 2458649;Torino;2;2024-10-02;yes;2023-11-03
+Luca;Greco;luca.greco55@email.com;;Geneva;3;2024-12-01;true;2025-11-22
+Valentina;Rizzo;valentina.rizzo68@email.com;+39 357 3827503;Munich;7;2024-09-12;;
+Giulia;De Luca;;+39 386 5190365;Verona;9;2025-04-01;;
+Fabio;Conti;;+39 304 8768806;Munich;14;2023-01-12;no;
+Sara;Conti;sara.conti11@email.com;;London;8;2025-05-12;true;2023-03-25
+Valentina;Romano;;+39 356 3715129;Roma;3;2024-07-14;no;
+Giovanni;Russo;giovanni.russo86@email.com;+39 362 9314244;Firenze;12;2023-03-05;false;
+;Mancini;.mancini44@email.com;+39 301 8286823;Bologna;4;2024-05-25;sì;2024-04-20
+Francesca;Marino;francesca.marino26@email.com;+39 313 9427765;;12;2024-03-14;si;2023-02-05
+Marco;Moretti;marco.moretti68@email.com;+39 329 4720771;Venezia;3;2025-12-14;true;2025-01-10
+Elena;Bruno;elena.bruno85@email.com;+39 360 5700293;Firenze;10;2023-11-18;si;2024-08-12
+Andrea;Bruno;andrea.bruno76@email.com;+39 383 5629621;;3;2024-04-23;sì;2023-11-24
+Riccardo;Esposito;riccardo.esposito93@email.com;+39 362 1486955;Firenze;14;2026-02-16;yes;2025-06-12
+Valentina;Mancini;valentina.mancini77@email.com;;Barcelona;12;2023-03-15;sì;2025-04-24
+Davide;Conti;davide.conti27@email.com;+39 327 1148668;Verona;9;2025-09-04;false;
+Sara;Ricci;sara.ricci19@email.com;+39 317 5537143;Geneva;0;;si;2023-09-04
+Anna;Bruno;anna.bruno93@email.com;;Venezia;11;2024-05-01;sì;2025-01-27
+Silvia;Lombardi;silvia.lombardi84@email.com;+39 377 4458774;Palermo;12;2026-06-05;yes;2023-10-21
+Marta;Ferrari;marta.ferrari23@email.com;+39 393 4026721;Torino;6;2026-04-15;si;2023-07-22
+Matteo;Esposito;matteo.esposito2@email.com;+39 302 2846089;Torino;1;2025-03-21;;
+Laura;;laura.70@email.com;+39 390 2425479;Roma;15;2025-11-18;true;2023-05-11
+Francesca;Rossi;francesca.rossi66@email.com;+39 303 5148725;Firenze;12;2026-03-04;yes;2025-05-08
+Elena;Esposito;elena.esposito43@email.com;;Berlin;4;2025-10-06;;
+Valentina;Bianchi;valentina.bianchi37@email.com;+39 363 7192680;Napoli;2;2024-06-05;;
+Matteo;Costa;matteo.costa9@email.com;+39 393 5672054;Amsterdam;10;2026-10-26;si;2023-07-12
+Giovanni;Bianchi;giovanni.bianchi54@email.com;+39 363 9933438;Palermo;7;2025-01-07;sì;2025-12-14
+Marco;Gallo;;+39 344 7054201;Barcelona;9;2026-04-07;;
+Elena;Russo;elena.russo19@email.com;+39 354 7235826;;5;2025-03-03;sì;2024-10-28
+;Ferrari;.ferrari98@email.com;+39 395 9849143;Napoli;0;;true;2025-06-15
+Giulia;Russo;giulia.russo51@email.com;+39 358 5329433;Napoli;2;2024-07-20;si;2024-03-09
+Giulia;Ricci;;+39 309 8859053;Genova;11;2025-02-04;true;2024-03-02
+Luca;Gallo;luca.gallo37@email.com;+39 327 1184163;Prague;8;2023-10-26;si;2025-01-08
+Marta;Russo;marta.russo46@email.com;;Firenze;4;2025-07-24;yes;2024-12-12
+Davide;Esposito;davide.esposito49@email.com;;Torino;2;2024-04-26;si;2023-11-15
+Andrea;Romano;;+39 366 6727998;;13;2026-04-07;yes;2024-10-28
+Laura;Moretti;laura.moretti64@email.com;+39 398 6193258;Vienna;2;2025-03-10;;
+Sara;Ferrari;sara.ferrari23@email.com;+39 360 5295408;Verona;1;2026-07-28;si;2023-10-16
+Laura;Bianchi;laura.bianchi41@email.com;+39 364 8551295;Palermo;1;2023-03-28;;
+Francesca;Greco;francesca.greco29@email.com;+39 311 6854207;London;3;2026-04-13;true;2023-02-06
+Giovanni;Ferrari;giovanni.ferrari90@email.com;+39 358 1642271;Geneva;10;2026-01-26;no;
+Anna;De Luca;anna.de luca3@email.com;+39 334 5229054;Vienna;9;2026-09-07;sì;2024-07-03
+Lorenzo;Romano;lorenzo.romano44@email.com;+39 325 6859883;Barcelona;12;2024-02-24;si;2025-07-12
+Fabio;Moretti;fabio.moretti94@email.com;+39 340 1238014;Milano;13;2026-03-21;si;2024-06-04
+Riccardo;Lombardi;;+39 369 3786712;Munich;0;;si;2023-11-19
+Marco;Greco;marco.greco90@email.com;;Bologna;10;2026-07-12;yes;2024-09-14
+Sara;Rizzo;sara.rizzo85@email.com;+39 336 2664720;Geneva;13;2023-11-15;no;
+Davide;Lombardi;davide.lombardi28@email.com;+39 348 2921009;;12;2025-04-17;sì;2024-08-14
+Chiara;Marino;chiara.marino54@email.com;+39 314 8001908;Prague;10;2026-04-18;;
+Matteo;Colombo;matteo.colombo74@email.com;;Firenze;5;2024-09-04;si;2024-06-17
+Fabio;Conti;fabio.conti71@email.com;+39 340 6931382;Milano;2;2024-08-21;si;2023-10-23
+Anna;Romano;anna.romano69@email.com;+39 348 5370124;Geneva;3;2023-02-05;si;2025-01-21
+Chiara;Marino;chiara.marino47@email.com;+39 312 9238233;Zurich;13;2026-03-06;true;2025-02-07
+Chiara;Rossi;chiara.rossi5@email.com;+39 344 9118679;Genova;8;2023-09-01;sì;2023-09-24
+Davide;Mancini;fabio.russo46@email.com;+39 393 3123664;Amsterdam;9;2026-09-13;sì;2024-12-18
+Alessandro;Marino;alessandro.marino36@email.com;+39 398 6227531;Geneva;8;2023-10-13;true;2024-08-14
+Valentina;Colombo;valentina.colombo9@email.com;;Berlin;9;2025-07-01;false;
+Francesca;Romano;fabio.rizzo11@email.com;+39 318 6275644;Zurich;14;2024-09-03;sì;2025-06-07
+Matteo;Greco;matteo.greco36@email.com;;Paris;13;2025-06-07;;
+Alessandro;Russo;;+39 315 8596473;;9;2023-08-10;true;2023-10-01
+Andrea;Conti;andrea.conti44@email.com;+39 312 7963867;Roma;10;2026-05-23;yes;2024-02-18
+Riccardo;Giordano;riccardo.giordano48@email.com;+39 328 1802525;Genova;7;2025-09-01;yes;2025-12-14
+Giulia;Marino;luca.de luca16@email.com;+39 348 5528372;Napoli;3;2026-11-15;;
+Francesca;Mancini;francesca.mancini36@email.com;+39 328 2540137;Genova;7;2023-02-16;sì;2024-09-27
+;Colombo;.colombo25@email.com;+39 375 9852408;Firenze;4;2024-04-12;yes;2025-08-21
+Matteo;Costa;elena.esposito64@email.com;+39 339 2712355;;7;2026-03-09;;
+Marco;Giordano;marco.giordano71@email.com;+39 319 7659346;;3;2026-12-14;sì;2024-05-12
+Alessandro;Greco;alessandro.greco78@email.com;+39 387 1836704;Palermo;1;2023-09-04;no;
+Lorenzo;Ricci;lorenzo.ricci51@email.com;+39 388 5500772;Firenze;9;2024-09-23;si;2024-11-10
+Laura;Giordano;laura.giordano22@email.com;+39 323 6572641;;10;2025-02-06;sì;2025-08-14
+Marco;Moretti;marco.moretti32@email.com;+39 302 5876441;Zurich;9;2026-08-24;si;2023-02-04
+Anna;Rizzo;anna.rizzo2@email.com;+39 342 9687763;Berlin;15;2023-03-14;;
+Elena;Bianchi;elena.bianchi90@email.com;+39 395 2497768;Barcelona;8;2026-09-06;;
+Lorenzo;Gallo;lorenzo.gallo36@email.com;+39 366 6759189;Amsterdam;3;2024-08-22;true;2025-06-10
+Andrea;Mancini;andrea.mancini39@email.com;+39 337 1261597;Milano;0;;sì;2023-08-10
+Giulia;Marino;giulia.marino65@email.com;+39 319 2442898;Amsterdam;9;2025-04-26;si;2024-10-03
+Matteo;De Luca;matteo.de luca39@email.com;+39 355 6410314;Torino;6;2025-10-21;si;2024-03-14
+Riccardo;Rizzo;riccardo.rizzo13@email.com;+39 340 9452615;Paris;14;2026-01-18;false;
+Marco;De Luca;marco.de luca32@email.com;+39 379 5921482;Berlin;14;2026-01-03;no;
+Giulia;Marino;giulia.marino13@email.com;+39 388 6558419;Amsterdam;4;2024-04-22;sì;2025-04-17
+Andrea;Greco;;+39 379 4367185;Milano;6;2026-07-02;sì;2025-02-08
+Francesca;Greco;francesca.greco70@email.com;+39 356 3066894;Barcelona;7;2024-08-16;si;2023-12-22
+Chiara;Greco;chiara.greco86@email.com;+39 313 8784019;;12;2025-01-21;sì;2024-08-04
+Laura;Costa;;+39 392 8689839;Berlin;11;2026-09-03;no;
+Sara;Bianchi;sara.bianchi92@email.com;+39 397 6082320;Berlin;5;2025-03-23;true;2024-08-20
+Giovanni;Lombardi;anna.romano88@email.com;;Palermo;15;2024-02-06;sì;2025-02-16
+Matteo;De Luca;matteo.de luca5@email.com;+39 397 7280082;Vienna;10;2026-03-21;;
+Fabio;Rizzo;fabio.rizzo37@email.com;+39 355 9867252;;6;2024-01-12;sì;2025-11-04
+Valentina;Lombardi;valentina.lombardi94@email.com;+39 367 9324443;Vienna;4;2026-11-13;true;2025-06-12
+Luca;Lombardi;luca.lombardi16@email.com;+39 396 7905438;Munich;8;2023-03-10;;
+Luca;Rizzo;;+39 351 1950399;Roma;8;2025-07-09;;
+Alessandro;Bruno;alessandro.bruno94@email.com;+39 307 4953000;Torino;1;2026-10-24;;
+Laura;Ferrari;laura.colombo28@email.com;+39 328 6876348;London;6;2023-09-16;si;2023-01-01
+Giulia;Conti;giulia.conti55@email.com;+39 315 7169127;Barcelona;0;;sì;2023-04-03
+Fabio;;giulia.greco68@email.com;+39 336 1733490;Firenze;12;2023-02-09;si;2024-03-20
+Silvia;Colombo;silvia.colombo29@email.com;+39 346 5910412;Paris;3;2026-05-03;yes;2024-12-18
+Alessandro;Bianchi;alessandro.bianchi71@email.com;+39 318 1601759;Prague;1;2026-05-27;true;2023-01-16
+Luca;Russo;luca.russo49@email.com;+39 326 7364050;Geneva;11;2025-05-26;sì;2025-05-02
+Fabio;Colombo;fabio.colombo56@email.com;+39 394 1958290;London;8;2026-12-08;yes;2025-08-14
+Andrea;Rossi;andrea.rossi32@email.com;+39 337 6055825;Zurich;3;2025-03-15;yes;2025-10-01
+Riccardo;Rossi;;+39 371 4654790;Vienna;10;2024-05-25;sì;2024-10-18
+Lorenzo;Marino;lorenzo.marino19@email.com;+39 329 2920094;Venezia;7;2025-01-22;true;2025-06-02
+Anna;Rizzo;anna.rizzo10@email.com;+39 309 4975843;Zurich;9;2025-06-14;true;2023-11-14
+Anna;Giordano;.ferrari98@email.com;+39 375 1428411;London;11;2023-11-24;yes;2025-12-25
+Andrea;Conti;;;Firenze;13;2023-10-16;;
+Davide;Mancini;davide.mancini38@email.com;+39 398 7072764;Munich;13;2023-06-21;sì;2025-04-15
+Marta;Moretti;marta.moretti17@email.com;+39 352 3317607;Berlin;2;2024-10-16;no;
+Alessandro;;alessandro.34@email.com;+39 360 2694421;Berlin;2;2026-07-12;true;2023-12-06
+Andrea;Conti;andrea.conti44@email.com;;Paris;11;2026-12-27;sì;2025-01-03
+Valentina;Greco;valentina.greco93@email.com;;Vienna;11;2026-06-15;no;
+Sara;Mancini;sara.mancini30@email.com;+39 372 9685189;Napoli;10;2023-12-24;true;2024-06-13
+Alessandro;De Luca;alessandro.de luca13@email.com;+39 336 5594415;Venezia;3;2024-02-07;si;2024-05-20
+Silvia;Mancini;silvia.mancini70@email.com;+39 362 1432471;Verona;4;2023-12-23;true;2025-08-17
+Francesca;Costa;francesca.costa18@email.com;+39 314 6934456;Zurich;10;2025-08-21;no;
+Davide;Ferrari;;+39 390 9745909;Milano;1;2024-03-19;;
+Matteo;Ricci;matteo.ricci24@email.com;+39 325 2488335;Amsterdam;0;;;
+Silvia;Moretti;silvia.moretti34@email.com;+39 330 6850278;London;15;2025-09-16;si;2024-04-10
+Chiara;Esposito;chiara.esposito98@email.com;;Munich;10;2026-12-05;true;2023-03-15
+Marta;Giordano;marta.giordano35@email.com;;Paris;8;2026-08-14;false;
+Matteo;Marino;matteo.marino44@email.com;+39 357 7875496;Geneva;3;2025-03-20;;
+Silvia;Rossi;silvia.rossi91@email.com;+39 398 2064762;Palermo;12;2025-03-12;yes;2025-04-06
+Giovanni;De Luca;;+39 302 9834133;;9;2024-01-09;true;2023-03-10
+Francesca;Conti;francesca.conti35@email.com;+39 346 5910412;Prague;4;2026-04-27;;
+Laura;Greco;laura.greco39@email.com;+39 333 8908785;Barcelona;15;2024-07-01;si;2024-09-09
+Marta;Conti;marta.conti58@email.com;;Zurich;3;2024-11-03;si;2024-06-16
+Francesca;Rizzo;francesca.rizzo32@email.com;+39 360 9781289;Zurich;13;2024-01-11;si;2023-08-09
+Fabio;;fabio.97@email.com;+39 363 6251539;Paris;2;2023-07-05;true;2025-08-17
+Marco;Romano;anna.bianchi7@email.com;+39 380 9801144;;12;2023-07-10;;
+Lorenzo;Mancini;lorenzo.mancini22@email.com;+39 326 7228596;Amsterdam;4;2023-06-14;true;2023-06-24
+Sara;Bianchi;sara.bianchi90@email.com;+39 368 8693923;Palermo;11;2025-11-01;true;2025-03-03
+Alessandro;Marino;alessandro.marino94@email.com;+39 351 5273985;Venezia;3;2024-05-19;si;2023-10-05
+Francesca;Bianchi;francesca.bianchi43@email.com;;Torino;7;2024-03-06;true;2023-03-01
+Marta;Rossi;marta.rossi66@email.com;+39 360 6487648;Amsterdam;12;2025-05-27;false;
+Davide;Bruno;davide.bruno22@email.com;+39 391 3397195;Paris;3;2025-03-01;true;2025-05-22
+Anna;Costa;anna.costa79@email.com;;Munich;0;;no;
+;Colombo;.colombo48@email.com;+39 334 5815809;Roma;8;2023-12-16;true;2023-12-23
+Laura;Costa;laura.costa97@email.com;+39 347 1483804;Napoli;5;2023-07-27;;
+Francesca;Russo;francesca.russo70@email.com;;Bologna;10;2025-09-01;sì;2024-11-28
+Matteo;De Luca;matteo.de luca98@email.com;+39 310 3895499;Milano;5;2025-05-18;si;2025-09-14
+Anna;Esposito;anna.esposito73@email.com;+39 311 4061858;Palermo;11;2025-11-21;sì;2023-01-07
+Alessandro;Bianchi;alessandro.bianchi36@email.com;+39 328 4158231;Munich;8;2025-06-25;yes;2024-12-15
+Davide;Costa;davide.costa75@email.com;+39 326 8278852;Berlin;6;2025-02-17;;
+Alessandro;Marino;;+39 380 4127701;Firenze;1;2025-01-06;yes;2024-10-13
+Valentina;Giordano;valentina.giordano46@email.com;+39 323 1364903;Munich;7;2025-08-22;true;2025-07-16
+Matteo;Greco;matteo.greco65@email.com;+39 334 7723471;Prague;6;2024-03-22;si;2024-10-23
+Giovanni;Russo;giovanni.russo45@email.com;+39 300 3474488;Palermo;6;2024-11-18;yes;2023-03-08
+Anna;Rossi;anna.rossi88@email.com;+39 360 7313125;Zurich;3;2024-07-25;;
+Giovanni;Greco;giovanni.greco51@email.com;+39 385 1451244;London;0;;si;2024-06-11
+Luca;Ricci;luca.ricci56@email.com;+39 323 8142250;Berlin;5;2023-08-26;true;2023-05-14
+Luca;Gallo;luca.gallo2@email.com;+39 364 7442287;Firenze;13;2026-09-12;true;2024-01-10
+Marta;Bruno;marta.bruno23@email.com;+39 349 2342330;Vienna;14;2025-01-04;yes;2023-09-27
+Marta;Costa;marta.costa33@email.com;+39 398 1394773;Roma;10;2023-06-24;yes;2024-01-15
+Giulia;Rizzo;giulia.rizzo13@email.com;+39 363 8232666;;14;2025-06-02;true;2025-10-08
+Andrea;Moretti;andrea.moretti49@email.com;+39 343 6066483;Paris;2;2023-04-19;yes;2025-11-24
+Lorenzo;Greco;lorenzo.greco89@email.com;+39 360 4610612;Bologna;1;2025-05-01;si;2024-09-22
+;Colombo;.colombo35@email.com;+39 381 6337828;Geneva;9;2026-10-14;yes;2023-02-20
+Laura;Bruno;laura.bruno44@email.com;+39 356 3546422;Roma;12;2023-11-16;no;
+Silvia;Gallo;silvia.gallo39@email.com;+39 341 7893107;Amsterdam;9;2024-07-18;true;2024-01-25
+Andrea;Conti;andrea.conti28@email.com;+39 337 3996787;Munich;12;2024-07-20;;
+Lorenzo;Bruno;lorenzo.bruno88@email.com;+39 340 9427273;Bologna;14;2026-05-01;true;2024-08-10
+Silvia;Bruno;silvia.bruno13@email.com;+39 353 7883587;Paris;2;2023-06-20;si;2023-10-20
+Elena;Romano;davide.bianchi54@email.com;+39 324 3707494;Verona;6;2023-01-07;false;
+Fabio;Costa;fabio.costa31@email.com;;Torino;5;2023-12-02;sì;2025-06-28
+Valentina;Mancini;valentina.mancini54@email.com;;London;1;2023-06-13;sì;2024-08-27
+Davide;Costa;davide.costa34@email.com;+39 314 3834568;Torino;8;2026-12-16;si;2023-08-07
+Elena;Marino;elena.marino58@email.com;+39 376 1599695;Verona;11;2024-10-21;yes;2023-04-12
+Chiara;Giordano;chiara.giordano89@email.com;+39 349 5316874;Berlin;0;;si;2025-05-05
+Davide;Conti;;+39 375 9406983;London;15;2023-11-03;true;2025-03-28
+Giovanni;Ricci;giovanni.ricci94@email.com;+39 345 9368311;Munich;7;2023-07-21;;
+Francesca;Bruno;;+39 368 2332904;Palermo;5;2024-12-23;si;2023-05-26
+Riccardo;Romano;riccardo.romano12@email.com;+39 308 3223802;Barcelona;15;2023-06-26;si;2023-10-25
+Luca;Colombo;luca.colombo13@email.com;+39 362 6032509;Geneva;6;2026-01-09;sì;2025-08-25
+Valentina;Moretti;valentina.moretti62@email.com;;Firenze;9;2024-08-01;si;2024-05-22
+Giovanni;Mancini;giovanni.mancini56@email.com;+39 356 6745050;Berlin;7;2025-06-25;si;2023-02-25
+Davide;Giordano;davide.giordano74@email.com;+39 324 7647803;Berlin;5;2026-11-20;;
+Valentina;Marino;;+39 347 3432470;Paris;10;2026-07-01;;
+Matteo;Russo;matteo.russo59@email.com;+39 390 4392572;London;0;;false;
+Giovanni;Rizzo;giovanni.rizzo65@email.com;+39 309 5079175;Roma;15;2026-12-23;;
+Marta;Ricci;alessandro.greco46@email.com;+39 347 8350507;Napoli;13;2025-10-07;si;2025-02-11
+Silvia;Ferrari;silvia.ferrari85@email.com;+39 337 1366612;Munich;10;2026-12-07;;
+Sara;Bruno;sara.bruno87@email.com;+39 377 1388196;Roma;1;2025-01-19;true;2024-08-26
+Valentina;Russo;valentina.russo69@email.com;+39 381 2125910;Vienna;2;2024-02-25;sì;2025-03-26
+Valentina;Marino;;+39 342 2225169;London;13;2025-01-20;true;2025-12-24
+;Rossi;.rossi29@email.com;+39 368 8679826;Genova;6;2025-03-04;yes;2025-10-05
+Marco;Rizzo;marco.rizzo70@email.com;+39 340 4860502;Milano;6;2024-08-04;si;2024-05-08
+Matteo;Rossi;laura.moretti95@email.com;+39 326 7383812;Genova;3;2023-08-24;si;2025-10-24
+Laura;Gallo;laura.gallo12@email.com;+39 332 9535161;Verona;3;2023-07-28;sì;2024-07-13
+Chiara;Ricci;chiara.ricci50@email.com;+39 354 6299086;Roma;4;2023-10-26;sì;2023-09-05
+Alessandro;Greco;alessandro.greco23@email.com;+39 319 4046988;Verona;0;;;
+Matteo;Gallo;matteo.gallo4@email.com;;Berlin;12;2024-03-04;si;2024-01-18
+Marco;Gallo;;+39 360 8791898;Milano;4;2025-08-16;;
+Lorenzo;Bianchi;;+39 312 9015983;Napoli;4;2024-04-22;;
+Luca;Esposito;luca.esposito32@email.com;+39 384 6051756;Napoli;8;2025-07-12;;
+Andrea;Lombardi;andrea.lombardi50@email.com;+39 323 1240278;Amsterdam;0;;si;2023-07-11
+Anna;Colombo;anna.colombo58@email.com;+39 333 8379676;Amsterdam;10;2026-11-04;yes;2024-03-09
+Giovanni;Mancini;giovanni.mancini4@email.com;+39 329 8674459;Torino;14;2024-07-27;yes;2023-06-10
+Davide;Colombo;davide.colombo26@email.com;+39 376 3546298;Berlin;7;2024-06-06;sì;2025-06-18
+Francesca;Romano;francesca.romano97@email.com;+39 378 8113803;Vienna;13;2025-03-24;true;2024-07-17
+Chiara;Rossi;chiara.rossi27@email.com;+39 308 1993584;London;5;2024-04-27;true;2023-04-13
+Anna;Ferrari;anna.ferrari52@email.com;+39 386 3547556;Berlin;3;2023-11-20;yes;2024-01-21
+Marta;Ricci;marta.ricci96@email.com;+39 396 6727358;Paris;3;2024-12-23;false;
+Marta;Greco;;+39 376 7082569;Firenze;13;2025-12-24;false;
+Lorenzo;Marino;lorenzo.marino33@email.com;+39 312 9146156;Prague;15;2026-10-17;true;2025-05-04
+Matteo;Russo;matteo.russo13@email.com;+39 397 5003283;Vienna;1;2026-10-28;true;2024-12-24
+Davide;Russo;davide.russo56@email.com;+39 380 6126237;Munich;8;2025-04-09;true;2023-12-15
+Riccardo;Russo;riccardo.russo99@email.com;+39 398 6400269;Torino;5;2025-06-20;;
+Silvia;Ricci;silvia.ricci12@email.com;+39 363 4123785;Bologna;14;2024-06-01;true;2024-06-26
+Francesca;Colombo;francesca.colombo72@email.com;+39 322 7676849;Napoli;12;2025-09-12;sì;2023-12-20
+Matteo;Bianchi;;+39 337 2379281;;8;2024-12-08;sì;2023-09-05
+Elena;Ricci;elena.ricci38@email.com;+39 378 9107980;London;12;2025-12-26;si;2024-03-28
+Anna;Marino;;+39 369 6990710;Berlin;4;2026-09-11;yes;2025-04-26
+Francesca;Moretti;francesca.moretti71@email.com;+39 334 1892572;Roma;14;2025-08-28;true;2023-03-01
+Andrea;Ferrari;andrea.ferrari73@email.com;;Genova;4;2026-05-18;true;2024-12-25
+Chiara;Bruno;chiara.bruno53@email.com;+39 387 6275739;Torino;3;2023-09-14;false;
+Sara;Colombo;sara.colombo23@email.com;+39 363 3004878;London;12;2026-03-28;true;2025-12-22
+Giovanni;Romano;giovanni.romano33@email.com;+39 351 4365631;Firenze;10;2025-01-20;;
+Giulia;Rizzo;sara.lombardi85@email.com;+39 303 7288704;Munich;5;2023-11-05;false;
+Laura;Gallo;laura.gallo99@email.com;+39 356 1509048;Verona;3;2025-02-12;;
+Sara;Lombardi;sara.lombardi78@email.com;+39 343 8628047;Munich;2;2024-04-27;true;2024-02-22
+Marta;Colombo;marta.colombo62@email.com;;Torino;3;2025-09-19;;
+Fabio;Rizzo;fabio.rizzo37@email.com;+39 325 5915038;Zurich;0;;true;2024-02-16
+Silvia;Giordano;;+39 398 1924685;Roma;5;2023-01-10;sì;2024-10-24
+Matteo;Colombo;matteo.colombo88@email.com;+39 367 3991211;Zurich;5;2023-12-07;sì;2023-02-15
+Marta;Colombo;marta.colombo49@email.com;+39 337 1079503;London;7;2023-03-05;yes;2023-07-27
+Laura;Ricci;;+39 390 6196562;Milano;8;2026-07-13;;
+Lorenzo;Colombo;lorenzo.colombo81@email.com;+39 398 8535120;Amsterdam;5;2023-03-18;sì;2025-02-04
+Giovanni;Romano;giovanni.romano89@email.com;+39 336 5387228;Berlin;15;2023-08-16;si;2023-09-28
+Francesca;Esposito;francesca.esposito98@email.com;+39 355 7222701;Zurich;6;2023-10-01;sì;2025-09-25
+Andrea;Bruno;andrea.bruno60@email.com;+39 350 7375918;Vienna;6;2023-08-03;sì;2023-03-21
+Elena;Moretti;marta.rossi54@email.com;+39 368 1292960;Milano;3;2026-01-19;yes;2024-01-05
+Giulia;Conti;lorenzo.colombo81@email.com;+39 383 8993139;Palermo;14;2026-10-09;yes;2025-10-13
+Anna;Costa;anna.costa47@email.com;+39 393 3925160;Verona;0;;yes;2023-06-24
+Andrea;Russo;andrea.russo30@email.com;+39 380 6921373;Vienna;14;2025-06-11;true;2024-12-15
+Matteo;Bianchi;matteo.bianchi25@email.com;;Barcelona;11;2026-06-21;;
+Chiara;Colombo;chiara.colombo58@email.com;+39 399 7914190;Vienna;13;2023-12-07;si;2025-07-17
+Matteo;Lombardi;matteo.lombardi73@email.com;+39 373 4318696;Geneva;15;2023-11-04;si;2025-03-25
+;Ferrari;.ferrari43@email.com;+39 345 4405893;Zurich;11;2026-08-11;no;
+Sara;Greco;sara.greco20@email.com;+39 379 7873288;Napoli;7;2026-02-25;true;2025-05-23
+Giulia;Bianchi;luca.costa71@email.com;;Torino;11;2025-02-06;si;2024-01-16
+Andrea;Moretti;andrea.moretti86@email.com;+39 337 2393728;Venezia;5;2024-09-09;false;
+Davide;Rossi;davide.rossi31@email.com;+39 391 8343784;Milano;0;;yes;2025-01-05
+Chiara;Conti;chiara.conti89@email.com;+39 342 7153780;Napoli;13;2025-12-09;;
+Silvia;Colombo;silvia.colombo86@email.com;+39 340 9536101;Napoli;5;2024-02-28;si;2023-04-03
+Luca;Rossi;valentina.mancini55@email.com;+39 358 6551591;Torino;6;2024-02-23;sì;2023-12-05
+Luca;Rossi;giovanni.esposito78@email.com;+39 324 8986694;Prague;15;2023-08-06;no;
+Davide;Rossi;davide.rossi70@email.com;+39 315 2271373;Prague;7;2025-10-14;;
+Davide;Greco;davide.greco31@email.com;+39 387 5222291;Paris;1;2023-11-25;sì;2023-08-12
+Riccardo;Rossi;riccardo.rossi99@email.com;+39 387 2105263;Verona;15;2026-06-18;false;
+Alessandro;Ricci;alessandro.ricci60@email.com;+39 351 8778317;Milano;12;2024-06-13;si;2023-12-25
+Andrea;Conti;andrea.conti23@email.com;;Milano;8;2026-07-06;sì;2024-08-05
+Chiara;Rizzo;chiara.rizzo64@email.com;;Geneva;10;2025-03-08;sì;2024-02-03
+Davide;Giordano;davide.giordano40@email.com;+39 339 8197382;Amsterdam;4;2023-01-15;yes;2024-12-12
+Anna;De Luca;anna.de luca41@email.com;;Napoli;10;2025-11-19;yes;2025-06-19
+Elena;Lombardi;elena.lombardi73@email.com;+39 365 2603610;Venezia;14;2023-08-13;yes;2023-09-16
+Alessandro;Marino;alessandro.marino61@email.com;+39 341 6975520;Barcelona;10;2024-11-07;si;2024-06-16
+Laura;Moretti;laura.moretti25@email.com;+39 331 7308382;Milano;6;2023-11-21;false;
+Valentina;Ferrari;;+39 348 3633660;Geneva;14;2026-05-06;false;
+Fabio;;fabio.42@email.com;+39 340 7291943;Zurich;1;2023-09-02;yes;2024-03-11
+Andrea;Giordano;andrea.giordano67@email.com;+39 311 7045114;Berlin;12;2026-11-26;true;2024-02-16
+Matteo;Bianchi;matteo.bianchi21@email.com;;Palermo;0;;si;2023-11-22
+Marta;Russo;;;;12;2025-08-01;yes;2024-07-25
+Valentina;Rizzo;valentina.rizzo30@email.com;+39 389 2352703;Geneva;0;;si;2024-04-05
+Chiara;Marino;chiara.marino26@email.com;+39 325 6487124;Firenze;12;2023-07-26;yes;2024-01-15
+Francesca;Colombo;francesca.colombo89@email.com;;Venezia;7;2024-09-01;no;
+Chiara;Rossi;chiara.rossi64@email.com;+39 341 8682024;Palermo;9;2023-10-04;si;2024-08-18
+Marco;Rossi;;;Genova;3;2024-07-24;true;2025-10-06
+Anna;Ferrari;anna.ferrari5@email.com;+39 333 8665973;Milano;6;2026-03-01;;
+Francesca;Ferrari;francesca.ferrari89@email.com;+39 389 9048449;;12;2026-07-27;si;2023-07-22
+Riccardo;;davide.russo56@email.com;+39 392 9039158;Roma;14;2026-09-23;yes;2023-04-23
+Marta;Ricci;marta.ricci12@email.com;+39 360 3749697;Munich;4;2026-03-19;;
+Matteo;Gallo;matteo.gallo87@email.com;+39 369 7842181;Barcelona;14;2024-01-11;yes;2023-06-12
+Davide;Bianchi;davide.bianchi21@email.com;+39 326 7649652;Venezia;3;2024-12-08;sì;2025-09-02
+Giovanni;Giordano;giovanni.giordano71@email.com;+39 350 4675408;Vienna;3;2024-12-25;;
+Alessandro;Rossi;alessandro.rossi64@email.com;+39 339 5057290;;6;2023-05-04;si;2025-11-04
+Alessandro;Romano;alessandro.romano58@email.com;+39 325 3544610;Prague;15;2023-11-16;yes;2023-05-14
+Giulia;Giordano;giulia.giordano50@email.com;+39 354 6889724;Barcelona;2;2023-02-08;sì;2024-01-16
+Francesca;Costa;luca.greco33@email.com;+39 390 8569862;Vienna;0;;sì;2025-03-19
+Luca;Mancini;luca.mancini69@email.com;+39 374 2974150;Paris;9;2023-11-05;true;2024-03-02
+Luca;Colombo;luca.colombo96@email.com;;Prague;7;2026-04-23;no;
+Riccardo;Esposito;riccardo.esposito78@email.com;+39 339 2712355;Venezia;13;2026-09-23;no;
+Valentina;Ferrari;;+39 351 9507953;;3;2023-10-06;;
+Alessandro;Costa;fabio.moretti54@email.com;+39 314 1666991;Berlin;0;;si;2025-12-13
+Marco;Esposito;marco.esposito39@email.com;+39 331 9059592;Barcelona;3;2023-03-22;true;2024-08-07
+Andrea;Mancini;andrea.mancini10@email.com;+39 396 7937523;;13;2025-07-01;si;2024-07-02
+Alessandro;Gallo;alessandro.gallo96@email.com;+39 365 7820472;Paris;15;2023-07-03;false;
+Silvia;Ferrari;silvia.ferrari6@email.com;+39 359 6729127;Prague;15;2024-08-11;yes;2024-08-17
+Luca;Giordano;luca.giordano9@email.com;+39 334 5847725;Genova;11;2025-09-22;yes;2023-10-07
+Valentina;Marino;valentina.marino99@email.com;+39 398 5949535;Verona;5;2024-04-20;yes;2023-08-19
+Giovanni;Romano;giovanni.romano51@email.com;+39 372 8702071;;12;2024-05-16;sì;2024-02-13
+Riccardo;Rizzo;riccardo.rizzo26@email.com;;Firenze;13;2024-03-04;true;2025-02-16
+Anna;Russo;anna.russo69@email.com;+39 395 8101189;Geneva;0;;;
+Lorenzo;Greco;lorenzo.greco74@email.com;;Bologna;10;2026-04-18;si;2023-01-18
+Laura;Rossi;laura.rossi35@email.com;+39 331 7818297;;3;2025-07-19;si;2023-04-09
+Laura;Conti;laura.conti53@email.com;+39 394 7450428;Amsterdam;6;2026-09-11;false;
+Giovanni;Rossi;giovanni.rossi78@email.com;+39 309 7336155;Verona;8;2024-07-20;si;2024-06-13
+Marta;Rossi;marta.rossi9@email.com;+39 349 6791229;Munich;2;2024-05-12;true;2025-08-14
+Lorenzo;Giordano;lorenzo.giordano67@email.com;+39 304 7399569;Barcelona;2;2023-05-03;no;
+Davide;Marino;davide.marino36@email.com;+39 352 6227752;Amsterdam;5;2026-03-08;sì;2025-01-19
+Marco;Colombo;marco.colombo35@email.com;+39 315 8760085;Zurich;7;2024-05-17;si;2023-09-06
+Marco;Mancini;marco.mancini7@email.com;+39 330 7160440;Bologna;3;2023-02-13;si;2024-03-23
+Andrea;Rossi;andrea.rossi97@email.com;+39 351 9808890;Berlin;12;2026-03-17;yes;2025-10-23
+Marta;Bianchi;marta.bianchi48@email.com;+39 352 7418497;Napoli;0;;yes;2024-04-25
+Riccardo;Lombardi;riccardo.lombardi39@email.com;+39 329 8365634;Roma;4;2024-03-21;true;2024-04-15
+Francesca;Greco;francesca.greco84@email.com;+39 337 6952126;Berlin;10;2024-01-04;sì;2024-02-12
+Andrea;Rizzo;andrea.rizzo67@email.com;+39 342 8722401;Amsterdam;3;2026-09-02;yes;2023-09-19
+Silvia;Lombardi;silvia.lombardi49@email.com;+39 393 5481292;Roma;8;2023-05-01;false;
+Andrea;Colombo;andrea.colombo20@email.com;+39 326 1009512;Bologna;2;2026-02-03;sì;2024-12-16
+Riccardo;Bruno;riccardo.bruno34@email.com;+39 394 6546545;Palermo;8;2024-01-14;si;2025-11-27
+Marta;Marino;marta.marino93@email.com;+39 375 6038910;Palermo;7;2026-03-04;si;2025-04-28
+Silvia;Mancini;silvia.mancini43@email.com;+39 379 9072754;Amsterdam;13;2023-06-12;yes;2023-07-13
+Francesca;Greco;francesca.greco51@email.com;+39 330 5806128;Firenze;12;2023-02-26;false;
+Marco;Bianchi;marco.bianchi90@email.com;;Munich;11;2023-01-06;si;2023-03-10
+Chiara;Bruno;chiara.bruno6@email.com;+39 324 3851025;Berlin;9;2023-10-10;false;
+Andrea;Ferrari;andrea.ferrari90@email.com;+39 385 9106820;London;9;2026-04-26;true;2024-06-17
+Chiara;Bruno;andrea.rossi32@email.com;;Zurich;2;2025-10-08;true;2023-03-24
+Marta;De Luca;marta.de luca86@email.com;+39 390 4519388;Roma;11;2025-07-06;yes;2023-07-07
+Marta;Costa;marta.costa42@email.com;+39 395 8085830;;5;2024-05-14;;
+Luca;Giordano;luca.giordano18@email.com;+39 335 4393282;Munich;10;2025-01-04;sì;2025-06-23
+Marta;Mancini;marta.mancini95@email.com;+39 350 9870703;Prague;1;2025-09-25;si;2024-12-26
+Riccardo;;riccardo.9@email.com;;Prague;7;2024-08-09;;
+Chiara;Russo;chiara.russo51@email.com;+39 305 4721202;Venezia;2;2026-01-17;true;2023-07-02
+Chiara;Moretti;chiara.moretti69@email.com;+39 314 4939850;;6;2026-02-11;yes;2023-09-21
+;Giordano;.giordano34@email.com;+39 332 7972202;Barcelona;9;2023-02-05;si;2024-02-25
+Francesca;Rossi;francesca.rossi98@email.com;;Amsterdam;14;2025-02-12;true;2024-02-17
+Luca;Gallo;luca.gallo33@email.com;;Barcelona;10;2024-08-25;sì;2023-03-05
+Anna;Rossi;anna.rossi14@email.com;+39 351 4562809;Palermo;2;2026-09-25;true;2025-12-23
+Riccardo;Conti;riccardo.conti5@email.com;+39 345 1287248;Milano;13;2025-08-03;;
+Andrea;Esposito;andrea.esposito18@email.com;+39 370 6716053;Barcelona;10;2026-05-02;;
+Francesca;Russo;;+39 348 3567530;Verona;11;2025-07-01;;
+Marco;Greco;marco.greco68@email.com;;Genova;3;2023-04-02;sì;2024-06-11
+Lorenzo;Greco;lorenzo.greco11@email.com;+39 373 5986295;Zurich;13;2025-12-02;sì;2024-01-10
+Andrea;Ferrari;matteo.de luca5@email.com;+39 313 5433920;Bologna;7;2024-11-19;;
+Francesca;Rossi;francesca.rossi95@email.com;;Genova;8;2026-09-08;true;2023-11-17
+Giulia;De Luca;giulia.de luca68@email.com;+39 375 7904546;Geneva;13;2026-01-04;si;2025-02-23
+Matteo;Lombardi;matteo.lombardi24@email.com;+39 385 5173838;Napoli;2;2024-05-04;si;2025-01-24
+Fabio;Rossi;fabio.rossi2@email.com;+39 357 3422356;Venezia;12;2026-11-07;sì;2024-06-14
+Andrea;Colombo;andrea.colombo85@email.com;+39 314 4939850;Genova;14;2026-02-10;si;2023-01-24
+Andrea;Greco;andrea.greco98@email.com;+39 344 6086779;Vienna;5;2024-01-25;yes;2024-07-09
+Elena;Giordano;elena.giordano83@email.com;+39 392 7221563;Milano;9;2023-10-04;yes;2025-09-26
+Elena;Greco;;;Berlin;5;2023-03-01;;
+Giovanni;Rizzo;giovanni.rizzo24@email.com;+39 397 8127778;Geneva;12;2025-02-13;;
+Marta;Moretti;marta.moretti44@email.com;+39 368 6594013;Roma;4;2024-08-14;sì;2025-02-04
+Silvia;Ferrari;silvia.ferrari92@email.com;+39 327 7222283;Torino;14;2025-04-20;true;2023-05-21
+Francesca;Ferrari;francesca.ferrari81@email.com;+39 360 5648656;Firenze;13;2023-09-19;sì;2024-04-26
+Elena;Lombardi;elena.lombardi46@email.com;+39 321 1451296;Bologna;8;2024-12-02;;
+Sara;Colombo;sara.colombo8@email.com;+39 317 1528329;Torino;13;2024-08-13;false;
+Marco;Romano;marco.romano54@email.com;+39 327 2228310;Bologna;10;2024-08-14;si;2025-03-09
+Sara;Moretti;sara.moretti78@email.com;+39 398 1336009;Palermo;4;2023-09-16;true;2023-10-04
+Matteo;Lombardi;matteo.lombardi24@email.com;+39 316 5034633;Barcelona;2;2023-05-09;sì;2023-09-18
+Giovanni;Rizzo;giovanni.rizzo27@email.com;+39 389 2499599;Zurich;2;2026-03-22;sì;2024-12-21
+;Bruno;.bruno86@email.com;;Genova;2;2026-02-15;no;
+Silvia;Gallo;;+39 319 6928008;Napoli;2;2026-05-16;yes;2024-05-06
+Davide;Ferrari;davide.ferrari80@email.com;+39 360 1677517;London;8;2025-11-11;sì;2025-01-01
+Luca;Gallo;luca.gallo49@email.com;+39 319 5519937;Bologna;11;2026-12-02;no;
+Silvia;Russo;silvia.russo53@email.com;+39 358 6957204;Firenze;8;2026-05-27;si;2023-02-02
+Davide;Esposito;davide.esposito34@email.com;+39 382 3977034;Torino;6;2026-05-08;si;2025-04-13
+Andrea;Ferrari;andrea.ferrari93@email.com;+39 385 6158936;Berlin;11;2026-04-04;si;2024-12-05
+Chiara;Marino;chiara.marino38@email.com;+39 320 6950477;Munich;7;2025-09-22;yes;2023-03-13
+Sara;Greco;sara.greco86@email.com;+39 352 5694057;Berlin;11;2024-05-11;sì;2023-12-04
+Andrea;Costa;fabio.conti96@email.com;+39 337 5006686;Firenze;10;2026-12-08;yes;2023-09-09
+Andrea;Esposito;andrea.esposito60@email.com;+39 369 1810848;London;15;2025-04-02;sì;2025-11-07
+Valentina;Russo;valentina.russo79@email.com;+39 341 7532052;;0;;;
+Sara;Colombo;sara.colombo14@email.com;+39 370 3145923;Amsterdam;10;2025-12-10;sì;2023-12-13
+Laura;Esposito;laura.esposito80@email.com;+39 378 6801436;Prague;3;2025-02-18;yes;2025-02-26
+Chiara;Ricci;chiara.ricci4@email.com;+39 352 4266623;Vienna;4;2025-06-11;;
+Valentina;Ferrari;valentina.ferrari94@email.com;+39 352 1718961;Roma;13;2023-02-24;yes;2023-08-13
+Andrea;;andrea.25@email.com;+39 326 7061978;Vienna;12;2023-06-24;no;
+Alessandro;Esposito;alessandro.esposito44@email.com;+39 365 4077006;Berlin;4;2025-05-24;true;2024-09-21
+Giulia;Esposito;giulia.esposito68@email.com;+39 343 6006996;Genova;4;2024-11-12;;
+Laura;Esposito;davide.marino60@email.com;+39 372 2087833;Bologna;8;2026-10-23;si;2023-12-15
+Fabio;Moretti;fabio.moretti49@email.com;+39 370 8653803;Prague;12;2024-03-11;si;2025-06-19
+Fabio;Esposito;fabio.esposito73@email.com;;Napoli;7;2026-07-19;si;2023-02-06
+Silvia;Russo;;+39 350 2974957;Palermo;6;2024-06-22;sì;2025-08-06
+Laura;Gallo;laura.gallo85@email.com;+39 336 1051543;Prague;3;2026-06-01;;
+Silvia;Bianchi;silvia.bianchi19@email.com;+39 370 7416175;Firenze;15;2024-04-26;sì;2023-01-18
+Davide;Bruno;davide.bruno33@email.com;+39 351 3499000;Bologna;1;2026-04-01;false;
+Marco;Mancini;marco.mancini9@email.com;+39 397 7495927;;0;;si;2025-06-27
+Luca;Conti;luca.conti38@email.com;+39 394 6392076;Napoli;14;2023-12-12;si;2025-09-07
+Elena;Marino;elena.marino77@email.com;+39 391 8533390;Geneva;13;2024-06-01;;
+Silvia;Ferrari;silvia.ferrari61@email.com;;Venezia;2;2023-07-17;;
+Silvia;Marino;silvia.marino30@email.com;+39 340 7004212;Genova;2;2024-11-04;yes;2024-02-15
+Luca;Moretti;luca.moretti55@email.com;+39 385 6331060;Barcelona;6;2025-05-09;yes;2024-02-07
+Fabio;Russo;fabio.russo7@email.com;+39 365 1721441;Venezia;14;2023-07-16;yes;2024-01-08
+Silvia;Esposito;silvia.esposito64@email.com;+39 302 2081661;Genova;5;2025-09-14;true;2025-09-27
+Sara;Lombardi;sara.lombardi94@email.com;+39 397 8147437;Zurich;10;2024-10-25;si;2023-09-06
+Riccardo;Rossi;riccardo.rossi82@email.com;+39 315 8609704;Milano;4;2025-01-13;true;2023-07-17
+Silvia;Bianchi;silvia.bianchi81@email.com;+39 311 7599431;London;3;2024-12-03;sì;2024-09-15
+Davide;Romano;davide.romano51@email.com;+39 305 9963387;Milano;9;2024-03-02;true;2025-10-18
+Giovanni;Russo;giovanni.russo70@email.com;+39 391 5207244;Verona;2;2025-08-21;si;2024-10-11
+Silvia;Mancini;silvia.mancini89@email.com;+39 322 4947358;;5;2026-05-13;true;2024-04-18
+Luca;Moretti;;+39 368 9262295;Napoli;4;2025-09-19;true;2025-08-23
+Alessandro;Giordano;alessandro.giordano41@email.com;+39 382 4124541;Munich;0;;false;
+Matteo;Conti;giovanni.ferrari68@email.com;+39 369 3951233;London;12;2024-03-12;yes;2024-05-06
+Laura;Greco;;+39 394 5517306;Bologna;3;2025-02-22;no;
+Giovanni;Romano;;+39 343 7527621;Geneva;7;2025-02-08;true;2025-04-28
+Davide;Esposito;davide.esposito83@email.com;+39 336 5387228;Palermo;9;2023-04-10;;
+Laura;Esposito;laura.esposito10@email.com;+39 361 9124351;Munich;1;2024-07-10;yes;2025-04-09
+Luca;Bruno;luca.bruno26@email.com;+39 346 4598169;;10;2025-03-23;sì;2023-07-15
+Francesca;Greco;francesca.greco46@email.com;+39 367 3047050;Milano;4;2025-06-05;sì;2025-12-27
+Elena;Mancini;elena.mancini21@email.com;;Vienna;13;2026-05-10;true;2024-01-11
+Sara;Bianchi;sara.bianchi95@email.com;+39 380 6696472;Napoli;9;2025-10-04;yes;2024-12-27
+Luca;De Luca;;+39 305 1719322;Napoli;2;2023-06-28;si;2025-11-08
+Giovanni;Ferrari;giovanni.ferrari67@email.com;+39 371 4055953;Geneva;12;2026-03-16;yes;2025-09-20
+Elena;De Luca;elena.de luca38@email.com;+39 300 3176618;Bologna;2;2023-12-05;si;2024-05-07
+Alessandro;Ferrari;chiara.marino54@email.com;+39 307 7327633;Bologna;13;2024-12-18;;
+;Gallo;.gallo67@email.com;+39 322 4031059;London;8;2024-10-02;yes;2024-12-12
+Giovanni;Bianchi;giovanni.bianchi86@email.com;+39 384 5044801;Vienna;15;2024-04-15;si;2025-08-04
+Alessandro;Lombardi;;;Bologna;6;2023-12-14;si;2023-10-19
+Giovanni;Lombardi;giovanni.lombardi19@email.com;+39 383 7101744;Amsterdam;8;2026-12-24;si;2024-09-10
+Marta;Ricci;marta.ricci3@email.com;+39 332 9357022;;14;2024-08-03;false;
+Sara;Russo;sara.russo98@email.com;+39 314 4594303;Firenze;4;2024-06-13;no;
+Giulia;Rizzo;giulia.rizzo98@email.com;+39 387 8811505;Munich;11;2024-04-21;true;2024-11-07
+Silvia;Conti;;+39 398 1678433;Prague;2;2025-02-15;yes;2023-07-21
+Luca;Gallo;luca.gallo94@email.com;;Torino;11;2025-04-16;si;2025-10-06
+Lorenzo;Mancini;lorenzo.mancini1@email.com;;Napoli;4;2024-02-07;true;2023-10-04
+Sara;Esposito;;+39 396 3342687;Bologna;12;2023-02-20;sì;2023-02-13
+Giulia;Costa;giulia.costa68@email.com;;Zurich;6;2024-09-01;si;2023-05-19
+Sara;Costa;sara.costa67@email.com;+39 336 3955091;Prague;10;2025-03-05;true;2025-09-05
+Laura;;laura.25@email.com;+39 344 7383657;Prague;11;2026-01-25;sì;2023-12-22
+Francesca;Ricci;francesca.ricci55@email.com;+39 369 7152047;Napoli;8;2023-03-16;no;
+Giulia;De Luca;giulia.de luca72@email.com;+39 376 2032110;Napoli;0;;false;
+Andrea;Greco;andrea.greco41@email.com;;Verona;0;;;
+Giulia;;giulia.52@email.com;+39 398 8574470;Munich;11;2025-05-14;no;
+Sara;Ricci;sara.ricci33@email.com;+39 305 1996541;Paris;1;2024-02-15;;
+Matteo;Marino;francesca.ferrari89@email.com;+39 393 7144552;Genova;1;2023-07-15;sì;2025-02-11
+Francesca;Ricci;francesca.ricci7@email.com;+39 367 5622924;;6;2026-03-12;true;2023-02-23
+Silvia;Mancini;silvia.mancini77@email.com;+39 315 1091715;Bologna;6;2026-05-27;;
+Valentina;Conti;valentina.conti9@email.com;+39 329 3024809;Zurich;3;2023-02-26;false;
+Francesca;Russo;matteo.russo13@email.com;+39 330 2139922;Torino;7;2025-03-02;yes;2025-01-11
+Lorenzo;Moretti;lorenzo.moretti83@email.com;+39 350 9878299;Paris;14;2026-10-18;sì;2023-08-19
+Chiara;Esposito;chiara.esposito28@email.com;;Paris;5;2024-04-24;yes;2023-04-27
+Davide;Lombardi;davide.lombardi79@email.com;+39 391 5431092;Barcelona;1;2024-02-03;si;2023-04-15
+Valentina;Russo;valentina.russo81@email.com;+39 312 2404057;Barcelona;14;2025-11-17;true;2023-02-03
+Marco;Ferrari;marco.ferrari39@email.com;+39 315 8571412;Vienna;7;2025-08-01;;
+Silvia;Romano;silvia.romano54@email.com;+39 311 4017046;Torino;2;2024-09-16;sì;2024-10-13
+Fabio;Marino;fabio.marino65@email.com;+39 350 9005008;Torino;3;2026-02-12;sì;2025-06-08
+Valentina;Russo;valentina.russo63@email.com;;Vienna;11;2026-03-10;si;2024-12-13
+Giulia;Moretti;giulia.moretti79@email.com;+39 392 5443133;Milano;4;2024-09-11;yes;2024-09-10
+Francesca;Conti;francesca.conti98@email.com;+39 343 1913231;Barcelona;8;2024-10-02;;
+Valentina;Bianchi;valentina.bianchi97@email.com;+39 320 6950477;Geneva;7;2024-04-23;sì;2023-02-19
+Valentina;Esposito;valentina.esposito1@email.com;;Milano;3;2024-06-09;yes;2024-09-17
+Chiara;Giordano;chiara.giordano41@email.com;;Amsterdam;12;2026-12-03;yes;2023-10-14
+Davide;Bianchi;davide.bianchi70@email.com;+39 393 1047841;Berlin;14;2023-04-27;si;2023-05-03
+Giovanni;Moretti;giovanni.moretti34@email.com;+39 368 5177120;Torino;9;2025-06-19;true;2024-09-13
+Lorenzo;Bruno;lorenzo.bruno18@email.com;+39 307 9015427;Torino;3;2026-11-24;true;2025-01-12
+Giulia;Ricci;giulia.ricci51@email.com;+39 352 3109953;Roma;12;2023-10-21;yes;2024-10-02
+Fabio;Greco;;+39 306 5921048;Barcelona;8;2026-07-16;;
+Valentina;Russo;valentina.russo40@email.com;;Verona;14;2025-04-07;true;2024-09-01
+;Moretti;.moretti48@email.com;+39 348 3194562;Zurich;1;2025-04-02;true;2024-12-10
+Marco;De Luca;marco.de luca38@email.com;+39 357 8183701;London;10;2023-02-03;true;2024-07-05
+Sara;Marino;sara.marino65@email.com;+39 366 7513668;Amsterdam;12;2024-04-28;sì;2023-08-19
+Luca;Romano;luca.romano2@email.com;+39 317 7854309;Firenze;13;2024-01-07;;
+Davide;Marino;davide.marino30@email.com;+39 393 7473815;Venezia;5;2024-05-05;true;2025-06-27
+Francesca;Rizzo;francesca.rizzo33@email.com;+39 357 3827503;Genova;10;2023-02-05;yes;2024-11-15
+Alessandro;Bianchi;alessandro.bianchi69@email.com;+39 362 2423828;Bologna;7;2026-03-01;no;
+Alessandro;Rizzo;alessandro.rizzo61@email.com;+39 369 2019689;Genova;10;2023-07-20;true;2023-01-09
+Elena;Bruno;elena.bruno80@email.com;+39 397 8127778;London;2;2026-08-17;;
+Chiara;Mancini;chiara.mancini23@email.com;+39 385 7030812;Geneva;2;2024-08-23;si;2025-06-23
+;Esposito;.esposito93@email.com;+39 376 3069181;Berlin;13;2024-12-20;yes;2025-12-13
+Giulia;Greco;giulia.greco18@email.com;+39 357 3307375;Bologna;12;2025-03-07;sì;2025-10-18
+Silvia;Ricci;silvia.ricci73@email.com;+39 316 3905824;Berlin;5;2023-12-19;;
+Silvia;Colombo;silvia.colombo2@email.com;+39 300 1273090;Berlin;1;2026-12-13;true;2024-07-04
+Francesca;Rossi;francesca.rossi50@email.com;+39 392 4946534;Roma;2;2026-05-14;yes;2025-04-21
+Silvia;Bianchi;silvia.bianchi76@email.com;+39 367 9324443;;5;2025-06-24;false;
+Fabio;Conti;andrea.ferrari59@email.com;;London;0;;true;2024-02-03
+Anna;Greco;anna.greco29@email.com;+39 357 6434660;Barcelona;0;;yes;2025-08-02
+Alessandro;De Luca;alessandro.de luca49@email.com;+39 379 7799074;Berlin;13;2023-08-17;sì;2025-04-18
+Marta;Moretti;marta.moretti55@email.com;+39 309 8624752;Munich;4;2026-11-17;si;2023-01-03
+Fabio;Rizzo;fabio.rizzo11@email.com;+39 373 7183138;Zurich;11;2023-08-16;;
+Riccardo;Greco;riccardo.greco38@email.com;+39 309 2620209;Geneva;4;2026-03-14;;
+Lorenzo;Romano;lorenzo.romano66@email.com;+39 390 5434785;Roma;9;2025-07-25;si;2023-09-12
+;Bianchi;.bianchi47@email.com;+39 373 1303026;Roma;13;2026-03-07;true;2023-12-11
+Andrea;Marino;andrea.marino21@email.com;+39 306 9820377;Napoli;14;2026-02-13;si;2023-12-09
+;Gallo;.gallo72@email.com;+39 307 2534558;Firenze;14;2023-06-06;sì;2025-03-28
+Valentina;Ferrari;anna.esposito73@email.com;+39 305 1550763;;0;;;
+Marta;Marino;marta.marino65@email.com;+39 391 6489988;Prague;13;2024-07-12;si;2025-09-15
+Andrea;Moretti;andrea.moretti53@email.com;+39 379 9634736;Torino;2;2023-05-11;false;
+Giulia;Bianchi;giulia.bianchi29@email.com;+39 337 4579179;Palermo;14;2025-03-14;;
+Davide;Russo;davide.russo5@email.com;+39 375 4674703;Bologna;6;2025-04-13;;
+Chiara;Conti;chiara.conti7@email.com;+39 335 1840890;Prague;12;2024-12-27;yes;2024-02-12
+Marco;Moretti;marco.moretti42@email.com;+39 389 6192100;Berlin;3;2026-02-20;sì;2023-02-03
+Marco;Bianchi;;+39 306 3972043;Torino;8;2024-01-03;yes;2023-06-27
+Andrea;Romano;andrea.romano73@email.com;;Genova;10;2024-06-26;true;2025-01-03
+Fabio;Marino;fabio.marino57@email.com;;Barcelona;4;2023-06-23;true;2025-04-28
+Fabio;Gallo;silvia.bianchi76@email.com;+39 386 4627767;Napoli;0;;no;
+Giulia;Colombo;giulia.colombo98@email.com;+39 338 2573623;Palermo;11;2025-11-19;no;
+Giovanni;Bianchi;giovanni.bianchi53@email.com;+39 373 1218912;Amsterdam;12;2025-01-25;true;2025-01-03
+Elena;Giordano;elena.giordano28@email.com;+39 336 6146524;;0;;no;
+Marta;Costa;francesca.marino50@email.com;+39 301 2222698;Firenze;12;2026-09-09;no;
+Sara;Lombardi;;+39 319 4671444;Paris;1;2023-06-08;sì;2023-01-24
+Marco;Rizzo;marco.rizzo2@email.com;;Milano;4;2025-11-11;true;2024-04-26
+Riccardo;Bruno;riccardo.bruno70@email.com;;Roma;9;2024-04-14;false;
+Sara;Rossi;sara.rossi67@email.com;+39 359 1413795;Palermo;11;2023-03-07;true;2023-02-26
+Valentina;Romano;francesca.rossi66@email.com;+39 366 9201256;Genova;3;2025-06-18;sì;2024-02-25
+Silvia;Ferrari;silvia.ferrari60@email.com;+39 390 2580352;London;6;2024-09-19;sì;2024-04-16
+Marta;Romano;;+39 306 2610184;Geneva;5;2025-09-05;true;2023-01-02
+Elena;Bianchi;elena.bianchi36@email.com;;Munich;3;2024-12-01;si;2025-09-24
+Andrea;Rossi;;+39 391 3504296;Firenze;4;2024-06-23;true;2024-06-28
+Alessandro;Russo;alessandro.russo54@email.com;+39 332 7641644;Vienna;7;2026-08-12;sì;2024-12-26
+Matteo;Lombardi;matteo.lombardi10@email.com;+39 376 2504225;London;2;2023-03-19;;
+Davide;Colombo;davide.colombo95@email.com;+39 379 7494449;;15;2023-06-13;sì;2023-02-14
+Silvia;Gallo;;+39 396 1680808;London;2;2025-06-02;;
+Chiara;Lombardi;.esposito22@email.com;+39 325 6136672;Geneva;0;;si;2025-07-12
+Matteo;Romano;matteo.romano18@email.com;+39 311 5957964;Barcelona;10;2025-05-22;true;2025-03-27
+Andrea;Esposito;andrea.esposito6@email.com;+39 376 2645611;Torino;9;2026-05-08;no;
+Alessandro;Rizzo;alessandro.rizzo37@email.com;;Venezia;7;2024-01-26;yes;2025-01-12
+Elena;Ferrari;elena.ferrari68@email.com;+39 392 5480794;Vienna;8;2026-10-23;true;2025-10-22
+Lorenzo;Bruno;lorenzo.bruno48@email.com;;Torino;12;2026-04-09;true;2025-10-25
+Andrea;Ferrari;andrea.ferrari90@email.com;+39 379 6139691;Munich;4;2026-07-10;false;
+Riccardo;Romano;riccardo.romano36@email.com;+39 391 2990842;Bologna;6;2026-02-10;yes;2023-11-09
+Giovanni;Greco;giovanni.greco53@email.com;+39 328 2749021;Berlin;3;2025-03-05;sì;2023-09-21
+Francesca;Ferrari;francesca.ferrari72@email.com;+39 346 5686885;;15;2026-04-21;true;2024-05-28
+Sara;Rossi;sara.rossi95@email.com;+39 356 8764480;Milano;6;2023-05-02;true;2025-06-14
+Giulia;Gallo;;+39 347 6460709;Bologna;15;2024-02-10;sì;2023-01-05
+Sara;Bruno;valentina.marino99@email.com;+39 373 3070608;Bologna;2;2023-04-04;true;2025-11-23
+Alessandro;Conti;alessandro.conti51@email.com;+39 376 4128733;Munich;11;2024-04-05;true;2023-06-05
+Sara;Bianchi;sara.bianchi90@email.com;;Palermo;15;2025-04-05;si;2023-05-12
+Elena;De Luca;;+39 311 1821327;Bologna;3;2024-07-02;si;2024-10-16
+Francesca;Rossi;francesca.rossi83@email.com;+39 370 4728927;Paris;15;2025-09-28;si;2025-02-28
+Lorenzo;Conti;lorenzo.conti17@email.com;;Bologna;4;2023-11-04;;
+Laura;Greco;laura.greco86@email.com;+39 391 4089229;Geneva;5;2025-04-12;false;
+Giulia;Conti;giulia.conti62@email.com;+39 382 2925023;;7;2025-04-28;true;2024-02-27
+Silvia;Greco;silvia.greco2@email.com;+39 399 7465381;London;15;2023-06-24;yes;2025-07-08
+Lorenzo;Giordano;lorenzo.giordano23@email.com;+39 347 2450859;Milano;10;2023-10-24;false;
+Matteo;Lombardi;matteo.lombardi64@email.com;+39 361 1008857;Amsterdam;0;;si;2024-03-22
+Francesca;Bianchi;francesca.bianchi26@email.com;+39 355 7770171;Bologna;15;2026-08-16;true;2024-01-19
+Elena;Ferrari;elena.ferrari57@email.com;+39 303 8723932;Genova;11;2025-04-04;true;2025-09-14
+Laura;Ferrari;laura.ferrari4@email.com;+39 374 6618205;Milano;2;2025-08-26;sì;2023-02-19
+Matteo;Marino;matteo.marino37@email.com;+39 300 3353515;Verona;13;2026-10-15;true;2024-05-18
+Chiara;Ferrari;chiara.ferrari55@email.com;+39 380 6080553;Prague;12;2026-10-06;si;2024-04-02
+Riccardo;Costa;riccardo.costa46@email.com;+39 328 6387100;Bologna;11;2024-08-14;true;2025-01-06
+Alessandro;De Luca;alessandro.de luca79@email.com;+39 371 6627064;Zurich;7;2025-05-24;yes;2024-11-14
+Elena;Greco;elena.greco40@email.com;+39 377 5103508;Venezia;9;2026-05-01;yes;2024-10-15
+Davide;Rizzo;davide.rizzo65@email.com;+39 361 4666262;Prague;3;2026-03-02;yes;2023-04-06
+Sara;Esposito;sara.esposito39@email.com;+39 324 5816158;Napoli;4;2023-04-01;false;
+Giulia;Greco;giulia.greco9@email.com;+39 372 1916164;Vienna;3;2025-07-28;yes;2023-03-25
+Anna;Mancini;anna.mancini44@email.com;+39 300 8218298;Genova;11;2025-12-11;si;2023-05-23
+Matteo;Conti;;+39 306 4434355;;4;2024-04-10;true;2023-11-24
+Riccardo;Greco;riccardo.greco3@email.com;+39 391 7974040;Napoli;10;2025-07-25;true;2025-01-02
+Fabio;Russo;fabio.russo85@email.com;+39 336 2080642;Palermo;10;2025-01-06;sì;2024-04-27
+Sara;Rizzo;sara.rizzo24@email.com;+39 396 3675681;;4;2025-07-19;si;2025-04-01
+Francesca;;francesca.26@email.com;+39 308 3061177;Amsterdam;13;2025-06-08;true;2024-01-15
+Giulia;Romano;giulia.romano23@email.com;+39 371 5333808;;4;2025-08-03;sì;2023-05-23
+Fabio;Rossi;;+39 316 5910256;Barcelona;8;2026-12-25;true;2025-07-27
+Francesca;Giordano;francesca.giordano34@email.com;+39 376 4068162;Amsterdam;14;2024-06-17;yes;2025-09-08
+Luca;Romano;luca.romano75@email.com;+39 350 9955283;Torino;6;2024-02-05;si;2023-08-08
+Luca;Ferrari;luca.greco1@email.com;+39 388 7978124;Amsterdam;14;2025-12-02;no;
+Elena;Moretti;;+39 388 6955234;Amsterdam;5;2026-12-09;sì;2024-02-06
+Elena;Ricci;elena.ricci38@email.com;+39 322 7323067;Milano;6;2024-04-10;yes;2025-11-13
+Chiara;Greco;chiara.greco65@email.com;+39 378 9107980;Munich;12;2023-10-25;si;2023-06-20
+Giovanni;Colombo;giovanni.colombo90@email.com;+39 381 4509845;Bologna;13;2026-08-16;;
+Giovanni;Romano;giovanni.romano54@email.com;+39 369 2404503;Verona;5;2023-02-11;sì;2025-06-19
+Valentina;Colombo;valentina.colombo86@email.com;+39 355 5099743;Verona;5;2024-01-14;false;
+Matteo;Ferrari;matteo.ferrari83@email.com;+39 324 4435348;Bologna;7;2023-11-03;sì;2023-05-19
+Sara;Bianchi;sara.bianchi48@email.com;+39 314 7249336;Verona;15;2023-02-25;;
+Fabio;Esposito;fabio.esposito50@email.com;+39 307 9015427;Zurich;15;2025-12-13;true;2024-11-17
+Matteo;Greco;matteo.greco96@email.com;+39 316 4652593;Genova;4;2024-01-10;si;2025-07-26
+Luca;Russo;luca.russo15@email.com;+39 365 2877649;Berlin;8;2023-11-06;false;
+Davide;Colombo;davide.colombo56@email.com;+39 388 3820107;London;10;2024-02-01;yes;2023-12-06
+Giovanni;Russo;giovanni.russo68@email.com;+39 300 6960576;London;1;2026-03-27;true;2025-03-22
+Riccardo;De Luca;riccardo.de luca72@email.com;+39 364 7465343;Torino;13;2025-11-04;false;
+Silvia;Conti;silvia.conti71@email.com;+39 300 2247983;Barcelona;4;2024-06-06;si;2023-04-23
+Riccardo;Moretti;riccardo.moretti91@email.com;+39 389 1331934;Munich;1;2024-01-21;no;
+Silvia;Mancini;fabio.97@email.com;+39 356 7874490;Paris;11;2024-09-23;;
+Chiara;Gallo;chiara.gallo92@email.com;+39 350 7322835;Munich;5;2023-03-11;false;
+Riccardo;Colombo;riccardo.colombo21@email.com;+39 334 8300694;Amsterdam;0;;true;2025-05-05
+Andrea;Moretti;;+39 356 7649771;Munich;15;2025-07-09;true;2024-11-22
+Luca;Mancini;luca.mancini39@email.com;+39 336 8689594;Verona;3;2023-05-10;si;2024-12-19
+Giovanni;Rossi;giovanni.rossi51@email.com;+39 321 2984200;;14;2026-05-18;no;
+;Russo;.russo33@email.com;+39 328 1009139;Barcelona;15;2024-10-20;si;2025-01-11
+Marta;Marino;marta.marino45@email.com;;Munich;0;;true;2024-01-02
+Matteo;Conti;matteo.conti46@email.com;+39 345 7499536;Prague;9;2023-09-25;si;2024-09-22
+Marta;Rossi;marta.rossi83@email.com;+39 380 4423305;Verona;8;2025-03-20;no;
+Laura;Russo;laura.russo55@email.com;;Napoli;1;2023-06-12;false;
+Laura;Moretti;laura.moretti55@email.com;+39 323 3095208;Milano;9;2025-08-10;si;2025-11-22
+Marta;Conti;marta.conti48@email.com;+39 341 3864247;;10;2023-03-10;no;
+Giovanni;Gallo;francesca.mancini36@email.com;+39 316 4101014;Napoli;7;2026-08-06;false;
+Valentina;Marino;valentina.marino45@email.com;+39 341 6447964;Zurich;11;2023-07-04;yes;2023-11-27
+Davide;Bruno;davide.bruno8@email.com;+39 381 1791274;Munich;8;2024-06-25;yes;2024-08-10
+Andrea;Greco;andrea.greco94@email.com;+39 359 2997872;;6;2024-08-17;true;2023-05-10
+Silvia;Rossi;silvia.rossi11@email.com;+39 325 5020591;Bologna;15;2023-06-26;si;2024-01-17
+Sara;Giordano;sara.giordano72@email.com;+39 308 6259001;Palermo;6;2026-09-02;yes;2024-06-27
+Francesca;Mancini;francesca.mancini62@email.com;+39 348 9330961;Torino;12;2025-04-07;true;2023-10-26
+Matteo;Bianchi;matteo.bianchi81@email.com;+39 343 1883459;Barcelona;1;2025-08-08;sì;2025-01-04
+Fabio;Rossi;;+39 320 2597185;Verona;9;2026-05-24;true;2025-09-10
+Davide;Mancini;davide.mancini86@email.com;+39 347 8349098;Prague;10;2025-09-05;false;
+Davide;Esposito;davide.esposito57@email.com;+39 368 2241156;Vienna;14;2023-06-25;si;2025-10-28
+Fabio;Mancini;;+39 334 4457963;Genova;3;2023-04-17;false;
+Davide;Bruno;davide.bruno11@email.com;+39 362 2338593;Geneva;0;;;
+Fabio;Romano;fabio.romano48@email.com;+39 354 8096065;Barcelona;10;2023-12-15;yes;2023-11-27
+Marco;Bruno;marco.bruno96@email.com;+39 394 9831414;Palermo;10;2026-01-19;true;2024-03-21
+Giulia;Mancini;giulia.mancini65@email.com;+39 341 2023352;Berlin;10;2026-04-13;true;2023-07-03
+Matteo;Bianchi;matteo.bianchi66@email.com;+39 331 4506199;Paris;10;2023-06-21;no;
+Chiara;Costa;chiara.costa50@email.com;+39 362 4119511;Geneva;9;2023-11-05;false;
+Davide;Ricci;davide.ricci21@email.com;+39 398 7345316;Venezia;2;2025-02-27;si;2024-03-17
+Valentina;Ferrari;;+39 341 4434928;Venezia;9;2023-06-04;;
+Giulia;Colombo;elena.moretti83@email.com;+39 326 8083687;Venezia;8;2026-02-17;;
+Fabio;Ricci;;+39 373 1753357;Berlin;8;2026-05-28;sì;2025-03-06
+Giovanni;Gallo;giovanni.gallo99@email.com;+39 358 3278090;Barcelona;13;2023-02-25;yes;2023-01-21
+Matteo;Marino;matteo.marino40@email.com;+39 397 9769743;Palermo;11;2024-04-13;si;2025-08-15
+Chiara;Giordano;riccardo.giordano35@email.com;+39 314 6857037;Napoli;0;;;
+Matteo;Bianchi;;;Munich;1;2026-08-05;si;2023-02-20
+Marco;Marino;marco.marino89@email.com;+39 390 5565271;Amsterdam;2;2025-02-21;yes;2024-04-27
+Andrea;Bianchi;andrea.bianchi76@email.com;+39 319 7539332;Munich;6;2023-08-27;;
+Chiara;;chiara.89@email.com;+39 353 2672332;Paris;9;2023-12-13;no;
+Alessandro;Russo;alessandro.russo89@email.com;+39 386 7260091;Munich;4;2024-07-18;false;
+;Rossi;marta.giordano83@email.com;+39 385 9106820;Bologna;1;2024-02-04;true;2023-04-25
+Alessandro;Rizzo;alessandro.rizzo61@email.com;+39 363 3391341;Firenze;8;2026-02-19;yes;2024-12-25
+Sara;Rizzo;sara.rizzo1@email.com;+39 352 1902506;Napoli;4;2023-11-13;si;2024-05-28
+Marco;Bianchi;marco.bianchi97@email.com;;Verona;0;;;
+Riccardo;Giordano;riccardo.giordano87@email.com;+39 345 6298350;Verona;14;2023-11-05;no;
+Lorenzo;Gallo;lorenzo.gallo15@email.com;+39 313 2852877;Paris;2;2026-12-10;;
+Laura;Rizzo;laura.rizzo66@email.com;+39 359 7364758;Venezia;8;2023-09-24;;
+Elena;Costa;elena.costa73@email.com;+39 337 3191599;Napoli;6;2024-06-08;sì;2024-10-24
+Lorenzo;Rizzo;lorenzo.rizzo6@email.com;+39 373 9854747;Bologna;0;;si;2023-12-28
+Alessandro;Giordano;alessandro.giordano46@email.com;+39 379 1508113;Prague;12;2023-10-01;true;2023-05-24
+Marco;Mancini;marco.mancini12@email.com;+39 300 1388269;Amsterdam;7;2024-08-24;no;
+Fabio;Rizzo;fabio.rizzo92@email.com;+39 369 6651210;Venezia;13;2026-04-02;;
+Giulia;Rossi;;+39 387 4676191;Berlin;2;2023-06-03;sì;2025-04-15
+Laura;Rizzo;laura.rizzo19@email.com;;Genova;0;;sì;2023-11-09
+Giovanni;Ricci;giovanni.ricci49@email.com;+39 332 5754387;Roma;13;2023-01-18;;
+Andrea;Marino;andrea.marino91@email.com;;Verona;14;2023-03-13;si;2023-11-08
+Andrea;Russo;andrea.russo34@email.com;;Palermo;9;2025-08-01;yes;2025-04-14
+Marco;Greco;;+39 317 6570296;Milano;10;2025-11-28;true;2023-11-06
+Matteo;Esposito;sara.bruno2@email.com;+39 306 2430308;Bologna;2;2024-03-19;si;2024-02-01
+Valentina;Ferrari;valentina.ferrari34@email.com;+39 301 9351001;Roma;8;2025-11-06;yes;2023-12-25
+Andrea;Costa;andrea.costa50@email.com;+39 379 2478283;Verona;6;2026-03-09;true;2025-12-26
+Elena;Gallo;elena.gallo53@email.com;+39 340 2703840;Berlin;14;2026-07-23;true;2025-03-13
+Matteo;Gallo;;;Venezia;14;2025-08-15;sì;2025-08-14
+Luca;Romano;luca.romano5@email.com;;Napoli;9;2024-06-28;false;
+Lorenzo;Colombo;lorenzo.colombo95@email.com;+39 314 3530270;Venezia;11;2024-01-13;false;
+Lorenzo;Greco;lorenzo.greco86@email.com;+39 325 2347342;Prague;9;2025-09-28;sì;2025-07-08
+Davide;Romano;davide.romano54@email.com;;Bologna;3;2023-03-27;sì;2024-02-27
+Anna;Greco;anna.greco93@email.com;;;13;2024-08-05;true;2023-05-20
+Francesca;Mancini;francesca.mancini8@email.com;+39 376 8494748;;8;2023-04-10;sì;2023-02-26
+Marta;Esposito;marta.esposito13@email.com;+39 307 7597913;Venezia;1;2023-10-21;true;2023-06-22
+Chiara;Costa;chiara.costa2@email.com;+39 356 6716435;Milano;14;2026-03-25;sì;2023-08-06
+Riccardo;Moretti;riccardo.moretti54@email.com;+39 388 9589694;Amsterdam;12;2023-09-07;si;2023-04-22
+Marta;Bruno;marta.bruno72@email.com;;Vienna;11;2023-01-06;yes;2025-01-22
+Lorenzo;Greco;lorenzo.greco51@email.com;+39 315 7554909;Venezia;11;2026-11-16;false;
+Marco;Conti;marco.conti56@email.com;+39 373 7118266;Firenze;2;2026-05-27;;
+Andrea;Conti;andrea.conti26@email.com;;Bologna;8;2025-04-23;;
+Francesca;Moretti;francesca.moretti70@email.com;+39 334 7723471;Zurich;2;2024-01-05;;
+Francesca;Gallo;francesca.gallo98@email.com;+39 349 5878842;Torino;7;2023-01-11;false;
+Marco;Esposito;marco.esposito34@email.com;+39 364 8121698;Firenze;10;2024-09-25;true;2023-09-11
+Luca;Costa;luca.costa30@email.com;+39 363 9500841;London;14;2023-03-10;si;2024-11-02
+Chiara;De Luca;chiara.de luca36@email.com;+39 318 1615362;London;14;2025-11-16;sì;2024-04-02
+Silvia;Ricci;silvia.ricci63@email.com;;Berlin;2;2025-12-15;si;2024-05-27
+Sara;Conti;sara.conti99@email.com;+39 351 3474648;Milano;13;2026-11-13;yes;2023-08-14
+Alessandro;Bianchi;alessandro.bianchi27@email.com;+39 370 7725763;Amsterdam;13;2023-07-22;yes;2025-03-07
+Marco;Marino;;+39 329 3958912;Berlin;11;2024-08-07;yes;2023-05-01
+Fabio;De Luca;fabio.de luca58@email.com;+39 301 6272585;Vienna;15;2026-12-11;yes;2024-08-02
+Anna;Marino;anna.marino4@email.com;+39 333 3468978;Bologna;6;2024-11-05;true;2025-03-15
+Marta;Esposito;marta.esposito48@email.com;+39 377 3024875;Venezia;11;2026-10-18;si;2023-05-06
+Elena;Russo;giulia.mancini65@email.com;;Venezia;0;;sì;2023-12-14
+Sara;Conti;luca.colombo13@email.com;+39 397 1324249;Roma;14;2025-11-01;no;
+Giulia;Greco;giulia.greco59@email.com;;Paris;8;2024-09-01;si;2023-08-06
+Silvia;Ricci;silvia.ricci42@email.com;+39 344 6453433;Amsterdam;5;2024-09-28;si;2023-08-23
+Luca;Romano;luca.romano45@email.com;+39 398 8201418;Zurich;14;2024-08-28;;
+Sara;Rizzo;sara.rizzo63@email.com;+39 356 5988757;Paris;15;2023-03-02;true;2024-01-14
+Silvia;Rossi;silvia.rossi22@email.com;+39 398 2304501;Venezia;7;2025-09-19;;
+Giulia;Lombardi;giulia.lombardi25@email.com;+39 321 5105024;Palermo;1;2025-05-11;yes;2025-06-12
+Giulia;Ricci;giulia.ricci72@email.com;+39 379 4248757;Napoli;5;2023-09-01;si;2024-04-13
+Anna;Lombardi;anna.lombardi16@email.com;;Zurich;1;2026-06-28;yes;2023-03-19
+Laura;Moretti;laura.moretti32@email.com;+39 309 9071889;Venezia;12;2023-10-07;yes;2023-02-01
+Riccardo;Bruno;riccardo.bruno24@email.com;+39 329 2675617;Napoli;8;2026-05-13;true;2023-07-28
+Francesca;Bianchi;francesca.bianchi58@email.com;+39 300 3656490;Venezia;10;2023-04-06;;
+Francesca;Ferrari;francesca.ferrari2@email.com;+39 392 3341663;Vienna;1;2026-10-15;yes;2023-11-27
+Andrea;Marino;andrea.marino95@email.com;+39 311 9417437;Milano;3;2025-09-16;false;
+Marta;Russo;marta.russo26@email.com;;Munich;13;2023-03-11;;
+Riccardo;Rizzo;riccardo.rizzo67@email.com;+39 345 9846486;Amsterdam;10;2024-07-26;;
+Sara;Rossi;sara.rossi85@email.com;+39 339 4635731;Bologna;12;2024-03-28;yes;2025-06-03
+Anna;Rossi;anna.rossi85@email.com;+39 396 6031079;Bologna;0;;si;2025-05-06
+Sara;Ricci;sara.ricci23@email.com;+39 377 8004579;Venezia;13;2025-01-19;no;
+Anna;De Luca;chiara.ricci10@email.com;+39 309 1837220;Bologna;6;2024-03-10;si;2023-06-25
+Riccardo;Ferrari;riccardo.ferrari1@email.com;+39 302 9873077;Paris;12;2023-08-14;sì;2024-07-09
+Andrea;Conti;francesca.colombo89@email.com;+39 359 3910245;Genova;7;2024-07-04;true;2024-11-05
+Marco;Moretti;;+39 325 2663323;Amsterdam;14;2026-09-12;yes;2023-12-07
+Marta;De Luca;marta.de luca89@email.com;+39 337 4020918;Firenze;10;2026-01-03;yes;2024-02-16
+Marta;Moretti;marta.esposito48@email.com;+39 328 8470832;Munich;5;2026-06-26;false;
+Alessandro;Mancini;alessandro.mancini98@email.com;+39 337 9993698;Vienna;1;2024-04-17;si;2024-09-19
+Valentina;;;+39 329 9403033;Venezia;5;2024-06-25;yes;2024-12-09
+;Moretti;.moretti29@email.com;+39 328 3601637;Vienna;3;2025-05-07;;
+Riccardo;Russo;riccardo.russo58@email.com;;London;14;2024-07-18;true;2024-07-28
+Luca;Gallo;luca.gallo48@email.com;+39 373 1563010;;3;2025-06-02;true;2025-03-19
+Riccardo;Rizzo;riccardo.rizzo53@email.com;+39 343 1612451;London;7;2026-11-15;yes;2024-10-17
+Alessandro;Rossi;alessandro.rossi16@email.com;+39 394 4077109;Berlin;2;2026-09-21;false;
+Davide;De Luca;davide.de luca77@email.com;+39 360 4443459;Milano;15;2025-11-11;si;2025-09-23
+Marco;Greco;sara.costa53@email.com;;;14;2026-04-06;sì;2025-07-22
+Giulia;Ferrari;;+39 301 8961905;Prague;2;2024-08-04;;
+Silvia;Bianchi;silvia.bianchi27@email.com;+39 311 8676266;Bologna;9;2026-10-10;;
+Sara;Rossi;sara.rossi86@email.com;;Munich;0;;si;2024-05-22
+Fabio;Moretti;;+39 308 6703894;Venezia;5;2024-09-17;sì;2024-05-20
+Lorenzo;Ricci;lorenzo.ricci89@email.com;+39 359 2873109;Firenze;8;2025-11-17;sì;2024-11-13
+Fabio;Russo;fabio.russo99@email.com;+39 318 9573194;Napoli;1;2026-11-10;true;2023-02-16
+Giulia;Costa;sara.giordano72@email.com;;Bologna;12;2026-09-06;no;
+Chiara;Greco;;+39 302 8677980;Torino;14;2023-07-18;yes;2025-03-21
+Marco;De Luca;marco.de luca50@email.com;+39 360 7813974;Firenze;0;;sì;2025-03-27
+Riccardo;Russo;;+39 386 5438623;Berlin;8;2026-01-03;true;2025-11-06
+Sara;Rossi;sara.rossi85@email.com;+39 347 4606256;Bologna;11;2025-10-15;sì;2023-04-15
+Matteo;Russo;matteo.russo1@email.com;+39 331 7298714;;9;2025-04-23;;
+Valentina;Marino;valentina.marino57@email.com;+39 335 1272937;Berlin;8;2024-02-12;;
+Fabio;Costa;fabio.costa92@email.com;+39 325 3133610;Torino;13;2024-06-19;true;2024-10-25
+Chiara;Lombardi;chiara.lombardi86@email.com;+39 306 5304568;;4;2026-07-03;si;2023-07-19
+Riccardo;Lombardi;riccardo.lombardi49@email.com;+39 376 3589058;Barcelona;7;2026-07-18;;
+Davide;Costa;silvia.rossi85@email.com;+39 305 1550763;Genova;7;2024-10-03;;
+Andrea;Bianchi;andrea.bianchi38@email.com;+39 384 8825067;Verona;7;2023-04-10;sì;2024-12-21
+Francesca;Rossi;francesca.rossi20@email.com;+39 326 7649652;Napoli;5;2025-01-11;yes;2025-07-10
+Laura;Bianchi;silvia.bianchi81@email.com;+39 354 8182446;Geneva;8;2026-03-19;;
+Silvia;Russo;silvia.russo17@email.com;+39 384 7115217;Berlin;13;2026-10-11;false;
+Marta;Bianchi;marta.bianchi99@email.com;+39 339 5159219;Torino;10;2024-08-22;yes;2023-12-06
+Laura;Bruno;laura.bruno63@email.com;+39 309 9327019;Napoli;5;2025-10-24;si;2024-02-25
+Fabio;Moretti;fabio.moretti25@email.com;+39 338 4084465;Milano;9;2025-08-14;false;
+Marco;Costa;marco.costa29@email.com;+39 300 8892606;Palermo;11;2024-09-19;sì;2024-11-02
+Anna;Ferrari;;+39 309 6939432;Vienna;3;2025-05-23;sì;2025-12-26
+Laura;Conti;laura.ferrari4@email.com;+39 300 1848565;Venezia;9;2023-04-20;sì;2025-05-11
+Silvia;Bianchi;silvia.bianchi27@email.com;+39 320 1669504;Barcelona;0;;true;2025-05-21
+Silvia;Rossi;silvia.rossi44@email.com;;Zurich;6;2026-03-07;true;2025-10-07
+Giulia;Colombo;giulia.colombo3@email.com;+39 306 8247800;Firenze;1;2023-09-27;true;2023-10-06
+Chiara;Ricci;chiara.ricci19@email.com;+39 312 6625161;Firenze;12;2023-10-21;sì;2024-03-26
+Matteo;Russo;matteo.russo21@email.com;+39 376 8891729;Roma;9;2024-11-07;yes;2024-12-09
+Luca;Costa;luca.costa80@email.com;+39 373 5568424;Paris;13;2024-04-11;;
+Fabio;Conti;;+39 349 2236018;;14;2026-09-13;si;2024-08-27
+Giulia;Bruno;giulia.bruno51@email.com;+39 354 7935859;Geneva;8;2023-01-28;sì;2025-11-14
+Alessandro;Lombardi;alessandro.lombardi95@email.com;+39 384 9165848;Munich;14;2024-02-19;si;2024-06-19
+Sara;Conti;sara.conti6@email.com;;Prague;8;2024-01-11;true;2024-11-11
+Chiara;Rizzo;chiara.rizzo43@email.com;+39 371 1273300;Verona;6;2025-07-13;true;2024-11-12
+Sara;Romano;sara.romano64@email.com;+39 389 7835058;Paris;4;2023-08-01;true;2023-07-27
+Chiara;Costa;anna.mancini44@email.com;+39 308 7139999;Torino;2;2026-08-26;yes;2023-11-01
+Francesca;Bruno;francesca.bruno8@email.com;+39 338 2259185;Venezia;1;2025-04-04;yes;2024-10-09
+Giovanni;Costa;giovanni.costa74@email.com;+39 382 9803220;Paris;12;2025-07-04;true;2025-05-28
+Silvia;Ricci;silvia.ricci34@email.com;+39 350 1116024;Torino;15;2025-04-28;si;2023-12-23
+Marco;Esposito;marco.esposito56@email.com;+39 318 9037259;;8;2024-06-08;si;2025-07-10
+Sara;Conti;sara.conti80@email.com;+39 333 3773909;Barcelona;5;2025-11-05;;
+Giulia;Bianchi;giulia.bianchi33@email.com;+39 354 4169197;Verona;9;2026-11-03;;
+Laura;Lombardi;laura.lombardi87@email.com;+39 310 6507216;Geneva;10;2023-04-18;si;2024-01-15
+;Esposito;.esposito37@email.com;+39 319 4092125;Genova;14;2023-07-24;si;2023-08-15
+Davide;Russo;laura.mancini92@email.com;+39 326 7065068;Verona;5;2024-11-10;sì;2024-10-11
+Luca;Russo;luca.russo7@email.com;+39 302 8286828;Napoli;13;2025-10-01;;
+;Romano;.romano25@email.com;+39 345 7770277;Vienna;2;2025-06-20;;
+Marta;Lombardi;marta.lombardi76@email.com;+39 362 5660649;;13;2025-06-01;sì;2024-10-23
+Chiara;Moretti;chiara.moretti54@email.com;+39 327 3140084;Barcelona;3;2023-11-28;yes;2024-02-05
+Francesca;Bruno;luca.gallo48@email.com;+39 387 8556961;Verona;9;2024-11-06;si;2023-04-27
+Giovanni;Conti;giovanni.conti9@email.com;+39 367 3371355;Barcelona;15;2025-02-13;true;2025-11-18
+Davide;Russo;davide.russo90@email.com;+39 347 7724543;Zurich;8;2026-11-15;;
+Laura;Marino;laura.marino87@email.com;;London;14;2023-01-27;;
+Silvia;Russo;silvia.russo52@email.com;+39 341 6978202;Zurich;13;2026-11-17;;
+Matteo;Bruno;matteo.bruno46@email.com;;Vienna;1;2025-09-26;true;2024-01-01
+Valentina;Mancini;valentina.mancini10@email.com;+39 341 2786964;Berlin;8;2026-05-01;;
+Andrea;Colombo;valentina.mancini54@email.com;+39 340 8884485;Geneva;13;2025-05-05;no;
+Alessandro;Mancini;alessandro.mancini89@email.com;+39 378 9970343;Genova;8;2025-11-19;;
+Marco;Lombardi;marco.lombardi61@email.com;;Venezia;15;2025-03-18;;
+Lorenzo;Esposito;lorenzo.esposito2@email.com;;Milano;9;2025-08-21;yes;2024-12-16
+Elena;;elena.81@email.com;+39 396 3342687;Torino;1;2025-09-20;yes;2023-11-28
+Andrea;Bruno;andrea.bruno60@email.com;+39 305 4814428;Paris;15;2026-06-20;;
+Anna;Esposito;anna.esposito95@email.com;;Zurich;4;2026-12-17;si;2023-01-17
+Lorenzo;Esposito;lorenzo.esposito29@email.com;;Paris;8;2026-05-17;yes;2025-09-13
+Alessandro;Esposito;alessandro.esposito50@email.com;+39 327 2450419;Berlin;2;2024-05-25;;
+Andrea;Conti;andrea.conti54@email.com;+39 302 8053283;Geneva;15;2023-03-06;true;2025-03-08
+Elena;Giordano;elena.giordano98@email.com;+39 334 8516545;Venezia;14;2023-11-26;false;
+Riccardo;De Luca;riccardo.de luca10@email.com;;Munich;14;2023-06-16;sì;2024-12-07
+Laura;Russo;laura.russo78@email.com;+39 321 7794554;Milano;13;2024-01-22;yes;2025-09-15
+Marta;Conti;marta.conti14@email.com;;Barcelona;10;2023-03-19;;
+Silvia;Mancini;silvia.mancini13@email.com;+39 380 6696472;Napoli;4;2024-07-18;sì;2023-01-15
+Laura;Ricci;laura.ricci56@email.com;+39 358 1775445;Palermo;13;2024-06-12;true;2024-06-15
+Riccardo;Rossi;riccardo.rossi99@email.com;+39 327 2680238;Torino;1;2026-10-20;sì;2025-06-15
+Elena;Mancini;elena.mancini40@email.com;+39 326 2756081;Palermo;3;2025-01-07;yes;2024-01-21
+Matteo;Rizzo;matteo.rizzo51@email.com;+39 377 2252381;Napoli;1;2024-11-10;true;2024-10-15
+Lorenzo;Gallo;lorenzo.gallo61@email.com;+39 397 4890678;Napoli;13;2025-08-07;true;2024-01-03
+Marta;Mancini;marta.mancini64@email.com;+39 320 3471319;Torino;1;2025-09-12;true;2025-12-07
+Chiara;Romano;chiara.romano12@email.com;;London;7;2023-08-07;yes;2025-12-09
+Chiara;Greco;chiara.greco50@email.com;+39 395 6985046;Vienna;3;2023-06-01;true;2024-12-20
+Sara;Romano;marco.mancini9@email.com;;Roma;12;2025-09-07;yes;2024-11-16
+Marta;Costa;marta.costa93@email.com;+39 336 5049416;Munich;13;2023-10-24;no;
+Fabio;Conti;fabio.conti25@email.com;+39 315 7334303;Venezia;12;2024-01-05;sì;2023-03-11
+Andrea;Bianchi;andrea.bianchi76@email.com;+39 326 8343691;Vienna;0;;true;2024-06-20
+Laura;Ferrari;laura.ferrari52@email.com;+39 378 3754895;Munich;9;2026-05-05;false;
+Matteo;Russo;matteo.russo17@email.com;+39 374 6984503;Amsterdam;5;2026-07-28;yes;2024-10-25
+Lorenzo;Ferrari;lorenzo.ferrari71@email.com;;Venezia;6;2025-11-09;no;
+Silvia;Conti;silvia.conti30@email.com;+39 396 5046670;Amsterdam;2;2025-10-27;yes;2024-07-24
+Alessandro;Bianchi;alessandro.bianchi76@email.com;+39 375 6315276;Vienna;10;2026-11-14;sì;2024-01-19
+Valentina;Esposito;valentina.esposito48@email.com;+39 392 9991137;Torino;10;2025-04-14;yes;2023-10-03
+Marta;Rizzo;;+39 370 2302184;Zurich;13;2026-01-14;true;2025-09-11
+Silvia;Rossi;silvia.rossi26@email.com;+39 309 7245951;Roma;1;2024-09-14;si;2023-07-02
+Giovanni;;giovanni.18@email.com;+39 312 5853247;Zurich;10;2024-01-04;true;2024-01-04
+Matteo;De Luca;matteo.de luca19@email.com;;Bologna;4;2023-06-13;sì;2024-04-28
+Andrea;Rossi;andrea.rossi6@email.com;+39 326 5295403;Berlin;5;2026-02-26;sì;2023-04-21
+Alessandro;Romano;alessandro.romano53@email.com;+39 327 6104959;Prague;0;;yes;2025-08-14
+Davide;De Luca;davide.de luca94@email.com;;Prague;7;2025-03-20;true;2025-11-16
+Marta;Ricci;marta.ricci89@email.com;+39 351 7223110;Munich;12;2024-11-17;sì;2024-08-25
+Giulia;Moretti;giulia.moretti61@email.com;+39 331 7783360;London;8;2026-12-11;si;2024-08-25
+Elena;Bruno;elena.bruno53@email.com;+39 398 6688883;Zurich;4;2026-02-06;si;2025-07-16
+Riccardo;De Luca;riccardo.de luca29@email.com;+39 384 5808672;Firenze;0;;true;2023-11-19
+Matteo;Rizzo;matteo.rizzo31@email.com;+39 397 2294596;Berlin;3;2024-12-15;si;2025-09-03
+Luca;Rossi;luca.rossi17@email.com;+39 321 1068231;Napoli;0;;true;2024-09-23
+Matteo;Marino;;;Zurich;14;2025-03-24;si;2025-05-26
+Fabio;Romano;fabio.romano52@email.com;+39 376 2826783;;9;2026-10-09;;
+Davide;Ferrari;davide.ferrari90@email.com;+39 372 8720280;Palermo;7;2023-01-04;sì;2024-11-18
+Matteo;Esposito;matteo.esposito15@email.com;+39 372 5565225;Genova;8;2026-11-14;sì;2023-04-08
+Marta;Colombo;silvia.ferrari60@email.com;+39 307 2193846;Milano;2;2025-10-21;si;2023-02-09
+Fabio;Ferrari;fabio.ferrari21@email.com;+39 367 7999942;Geneva;2;2023-04-10;no;
+Andrea;Esposito;andrea.esposito96@email.com;+39 333 3616177;Firenze;15;2026-10-04;si;2023-07-02
+Alessandro;Rizzo;alessandro.rizzo13@email.com;;Verona;3;2023-03-10;no;
+Riccardo;Rossi;riccardo.rossi84@email.com;+39 316 9952619;Geneva;2;2024-07-16;yes;2023-08-23
+Davide;Gallo;giovanni.rossi78@email.com;+39 381 9377149;Prague;12;2025-03-08;;
+Andrea;Esposito;andrea.esposito31@email.com;+39 342 1862334;Zurich;8;2024-06-06;si;2024-02-14
+Marta;;marta.37@email.com;+39 390 8827320;Verona;13;2024-01-01;yes;2025-09-12
+Anna;Esposito;anna.esposito56@email.com;;Bologna;9;2026-11-24;false;
+Luca;Costa;luca.costa47@email.com;+39 348 1134133;Milano;3;2026-09-21;sì;2024-11-09
+Valentina;Romano;valentina.romano14@email.com;+39 381 7909697;;4;2026-03-07;yes;2023-08-05
+Davide;Esposito;davide.esposito18@email.com;+39 323 3935832;Munich;4;2025-01-01;yes;2024-06-28
+Lorenzo;Ferrari;lorenzo.ferrari78@email.com;+39 313 2937117;Bologna;14;2024-01-26;sì;2024-04-11
+Valentina;Greco;valentina.greco63@email.com;+39 397 8790689;Zurich;3;2024-05-03;sì;2023-01-10
+Laura;Bruno;laura.bruno98@email.com;;Napoli;14;2023-03-03;true;2025-07-26
+Davide;Rizzo;davide.rizzo97@email.com;;Firenze;3;2024-11-20;sì;2025-04-15
+Riccardo;Marino;riccardo.marino52@email.com;+39 342 6421773;Milano;9;2025-03-19;;
+Marco;De Luca;marco.de luca89@email.com;;Paris;1;2026-04-08;true;2023-07-03
+Riccardo;Marino;riccardo.marino41@email.com;+39 328 8017149;Genova;0;;sì;2023-06-08
+Marta;Conti;marta.conti51@email.com;+39 399 9370105;Napoli;5;2025-03-07;sì;2025-05-22
+;Mancini;.mancini91@email.com;+39 342 6737942;Zurich;10;2026-05-28;;
+Fabio;Rossi;.marino17@email.com;+39 357 2030693;Verona;10;2025-03-08;no;
+Luca;Bruno;luca.bruno50@email.com;+39 317 8299487;Firenze;2;2026-05-06;;
+Laura;Bianchi;laura.bianchi60@email.com;+39 315 7026084;Milano;15;2026-04-05;true;2024-10-07
+Anna;Russo;anna.russo21@email.com;+39 375 8633602;Palermo;3;2024-06-20;sì;2025-10-02
+Elena;Giordano;elena.giordano8@email.com;+39 374 6730956;Torino;8;2025-06-20;si;2024-07-23
+Chiara;Rossi;chiara.rossi19@email.com;+39 399 6773521;Vienna;2;2026-09-25;no;
+Luca;Greco;luca.greco32@email.com;+39 315 5961162;Paris;15;2026-06-02;sì;2023-11-15
+Anna;Romano;anna.romano9@email.com;+39 320 2451909;Geneva;2;2023-03-05;true;2025-01-14
+Elena;Ferrari;elena.ferrari88@email.com;+39 380 9016545;Munich;15;2024-02-28;si;2023-03-07
+Andrea;Conti;andrea.conti66@email.com;+39 363 2405730;;6;2023-12-08;;
+Riccardo;Bruno;riccardo.bruno73@email.com;+39 331 2227246;Genova;12;2024-08-25;yes;2025-11-21
+Silvia;Marino;silvia.marino88@email.com;+39 309 6718131;Milano;3;2026-06-06;no;
+Valentina;Conti;valentina.conti29@email.com;+39 318 9184794;Zurich;11;2026-10-16;yes;2023-04-16
+Valentina;Marino;valentina.marino21@email.com;+39 373 5831487;Paris;4;2024-10-14;false;
+Giovanni;Conti;chiara.ricci4@email.com;+39 396 8504617;Geneva;10;2026-10-25;no;
+Alessandro;Marino;alessandro.marino17@email.com;+39 384 7228508;Munich;0;;si;2024-08-15
+Marta;Lombardi;marta.lombardi67@email.com;+39 358 1406467;Genova;4;2026-11-24;si;2023-05-15
+Andrea;Russo;andrea.russo9@email.com;+39 389 4273103;Firenze;13;2023-03-26;si;2025-03-28
+Andrea;Rossi;andrea.rossi93@email.com;+39 334 3122320;London;14;2023-09-06;si;2023-04-14
+Silvia;Moretti;silvia.moretti90@email.com;+39 342 5247900;Venezia;11;2023-02-28;true;2025-03-01
+Alessandro;Bianchi;alessandro.bianchi73@email.com;+39 383 1015341;Berlin;15;2023-09-02;no;
+Alessandro;Mancini;francesca.conti98@email.com;+39 307 5728583;Genova;10;2025-04-17;yes;2024-07-17
+Francesca;Marino;francesca.marino41@email.com;+39 305 1201699;Vienna;3;2025-01-03;yes;2024-05-15
+Laura;Russo;laura.russo14@email.com;+39 388 4426007;Berlin;12;2026-02-03;sì;2023-06-17
+Fabio;Lombardi;fabio.lombardi75@email.com;+39 384 4342125;Barcelona;0;;sì;2025-06-28
+Alessandro;Gallo;alessandro.gallo76@email.com;+39 390 3515763;London;5;2026-11-05;si;2023-10-21
+Francesca;Costa;giovanni.gallo73@email.com;+39 334 8135725;Zurich;4;2024-03-27;si;2023-04-01
+Riccardo;Romano;riccardo.romano83@email.com;+39 381 7223933;Paris;11;2023-04-01;no;
+Silvia;Costa;silvia.costa73@email.com;+39 392 1133760;Amsterdam;15;2026-12-25;no;
+Francesca;Esposito;francesca.esposito17@email.com;+39 364 7542039;Roma;2;2024-12-28;false;
+Lorenzo;Bianchi;lorenzo.bianchi87@email.com;+39 384 9110583;Prague;13;2026-02-13;true;2024-02-25
+Anna;Moretti;anna.moretti59@email.com;+39 378 7335540;Verona;11;2024-11-13;yes;2024-01-01
+Anna;Colombo;;+39 311 2274041;Palermo;9;2026-01-25;sì;2024-01-12
+Francesca;Bruno;matteo.costa9@email.com;+39 350 3539937;Vienna;6;2025-10-15;sì;2023-07-12
+Silvia;Colombo;silvia.colombo27@email.com;;Venezia;15;2026-04-23;sì;2024-10-13
+Davide;De Luca;davide.de luca31@email.com;+39 326 2537115;Napoli;13;2024-05-13;;
+Silvia;Bruno;silvia.bruno93@email.com;+39 300 1660983;London;1;2023-06-03;si;2023-09-13
+Fabio;Rossi;fabio.rossi19@email.com;+39 383 4404402;Zurich;6;2026-11-07;;
+Matteo;Moretti;matteo.moretti2@email.com;+39 392 1632773;Verona;3;2023-03-17;si;2023-09-15
+Elena;Bruno;elena.bruno77@email.com;+39 303 4001084;Palermo;13;2026-07-06;;
+Silvia;Rossi;silvia.rossi18@email.com;+39 308 6851727;Venezia;14;2026-01-28;;
+Anna;Ricci;;+39 344 4558295;Geneva;15;2026-10-17;false;
+Chiara;Bianchi;chiara.bianchi40@email.com;+39 329 8958621;Amsterdam;3;2026-08-23;no;
+Francesca;Mancini;francesca.mancini85@email.com;+39 327 7864683;Bologna;12;2026-07-06;yes;2023-02-24
+Fabio;Romano;fabio.romano89@email.com;+39 388 4266796;Prague;0;;true;2024-03-06
+Fabio;Ricci;fabio.ricci42@email.com;+39 359 3555068;Barcelona;12;2024-09-12;;
+Silvia;Rossi;silvia.rossi38@email.com;+39 399 7501701;Munich;4;2026-06-26;si;2025-02-27
+Luca;Rizzo;luca.rizzo40@email.com;+39 383 7057598;Vienna;5;2026-06-21;si;2024-05-20
+Riccardo;Russo;riccardo.russo76@email.com;+39 393 3515332;Milano;8;2026-11-21;true;2025-01-16
+Laura;Gallo;laura.gallo25@email.com;+39 315 1263021;;6;2024-05-26;false;
+Sara;Conti;sara.conti74@email.com;+39 394 5836541;Geneva;8;2025-07-22;yes;2024-12-03
+Marta;Marino;marta.marino27@email.com;+39 347 4672026;Berlin;13;2024-11-24;false;
+Lorenzo;Mancini;lorenzo.mancini30@email.com;;Genova;13;2026-07-27;true;2025-03-28
+Chiara;Mancini;chiara.mancini59@email.com;+39 300 9521022;Venezia;6;2025-04-28;si;2025-07-25
+Valentina;Moretti;valentina.moretti4@email.com;+39 340 1999475;Bologna;8;2023-01-15;;
+Alessandro;Marino;alessandro.marino26@email.com;+39 357 4813067;Milano;11;2024-09-01;si;2025-06-09
+Luca;De Luca;fabio.russo7@email.com;+39 381 1081630;Torino;6;2024-08-20;si;2025-02-10
+Lorenzo;Ricci;lorenzo.ricci98@email.com;+39 392 2687290;Bologna;5;2026-05-05;yes;2025-01-09
+Silvia;De Luca;silvia.de luca86@email.com;+39 367 7098138;Paris;2;2023-10-27;yes;2024-05-11
+Luca;Lombardi;luca.lombardi39@email.com;+39 396 4689637;Genova;3;2024-08-09;true;2023-08-06
+Matteo;Esposito;matteo.esposito41@email.com;+39 354 3798207;Berlin;8;2026-07-06;sì;2023-07-01
+Marco;Lombardi;marco.lombardi11@email.com;+39 302 4940487;Roma;1;2025-12-20;sì;2024-12-16
+Fabio;Rizzo;fabio.rizzo91@email.com;+39 386 2677020;Munich;1;2023-11-10;no;
+Andrea;Russo;andrea.russo39@email.com;;Amsterdam;7;2025-06-15;si;2025-04-04
+Matteo;Costa;matteo.costa43@email.com;+39 336 5341285;Munich;13;2024-02-02;si;2025-05-08
+Sara;Lombardi;marta.de luca86@email.com;+39 314 8846695;Paris;5;2024-11-20;yes;2023-08-07
+Luca;Russo;luca.russo20@email.com;+39 331 7661732;Amsterdam;14;2023-01-12;yes;2024-04-22
+Andrea;Lombardi;andrea.lombardi83@email.com;;Genova;2;2023-05-09;;
+;Russo;.russo83@email.com;+39 331 9294106;Bologna;11;2025-09-13;si;2025-05-21
+Riccardo;Conti;riccardo.conti2@email.com;+39 326 5582570;Paris;4;2023-01-03;yes;2024-11-03
+Elena;Rizzo;elena.rizzo97@email.com;+39 335 7296438;Barcelona;7;2024-06-26;si;2023-01-04
+Elena;Romano;fabio.bianchi27@email.com;+39 392 7896688;London;15;2023-08-24;no;
+Davide;Lombardi;giovanni.ferrari67@email.com;+39 310 5311394;Venezia;3;2025-01-26;sì;2024-01-15
+Silvia;Moretti;silvia.moretti68@email.com;+39 399 2350621;Amsterdam;11;2024-10-13;false;
+Anna;Bruno;anna.bruno55@email.com;+39 357 2951677;Napoli;11;2026-07-25;true;2023-07-08
+Riccardo;Rizzo;riccardo.rizzo27@email.com;+39 367 9016612;Verona;6;2026-02-10;no;
+Chiara;Conti;chiara.conti94@email.com;+39 387 2853043;Verona;3;2024-02-20;sì;2025-05-06
+Matteo;Rizzo;;+39 303 5198530;Barcelona;0;;true;2025-09-16
+;Ricci;.ricci88@email.com;+39 351 4808649;Geneva;4;2023-11-21;yes;2025-03-24
+Sara;Giordano;elena.esposito43@email.com;+39 395 3435279;Firenze;5;2024-01-03;true;2023-03-17
+Silvia;Esposito;;+39 306 9060755;Roma;14;2025-03-28;yes;2025-08-10
+Andrea;Esposito;andrea.esposito53@email.com;;Milano;3;2026-02-16;sì;2025-10-18
+Alessandro;Bruno;;+39 312 3821306;Paris;14;2023-07-20;false;
+Chiara;Moretti;chiara.moretti10@email.com;+39 327 9817361;Bologna;1;2023-02-25;;
+Alessandro;Rossi;alessandro.rossi25@email.com;+39 314 7526630;Geneva;7;2025-05-19;no;
+Giulia;Russo;giulia.russo61@email.com;+39 395 5963598;Palermo;10;2023-03-16;;
+Lorenzo;Colombo;lorenzo.colombo44@email.com;+39 308 4091304;Bologna;15;2023-12-06;false;
+Alessandro;Conti;alessandro.conti30@email.com;+39 333 2638595;Zurich;10;2026-04-25;;
+Giulia;Moretti;giulia.moretti77@email.com;+39 343 1774125;Venezia;14;2023-09-24;yes;2024-10-18
+Laura;Moretti;laura.moretti82@email.com;+39 383 2559402;Paris;15;2026-01-16;sì;2023-04-20
+Andrea;Esposito;andrea.esposito2@email.com;+39 316 3879823;Berlin;3;2024-01-14;;
+Elena;Romano;elena.romano2@email.com;+39 383 6201002;Venezia;0;;yes;2023-11-22
+;Gallo;.gallo45@email.com;;Milano;13;2025-02-10;true;2025-02-11
+Marta;Gallo;marta.gallo25@email.com;+39 381 3252091;Bologna;1;2026-02-22;sì;2025-11-20
+Luca;Rossi;luca.rossi35@email.com;+39 322 1591105;Paris;13;2024-03-19;true;2024-12-13
+Anna;Ricci;anna.ricci12@email.com;+39 369 4219121;London;4;2026-11-06;si;2024-03-09
+Davide;Colombo;davide.colombo87@email.com;+39 330 5317688;Munich;1;2025-03-10;true;2024-10-09
+Elena;Rizzo;;+39 343 1349361;Amsterdam;11;2023-04-19;sì;2025-06-06
+Valentina;Moretti;valentina.moretti42@email.com;+39 360 7792383;;0;;sì;2025-09-07
+Fabio;Lombardi;fabio.lombardi59@email.com;+39 336 7743856;Paris;8;2023-08-23;true;2024-08-19
+Marco;De Luca;marco.de luca57@email.com;+39 397 4605302;Paris;15;2026-12-11;true;2023-06-13
+Marco;Bruno;marco.bruno3@email.com;+39 384 5907858;Genova;6;2025-10-21;;
+Valentina;;;;Prague;13;2024-08-11;sì;2025-06-26
+Chiara;Russo;chiara.russo23@email.com;+39 360 3815529;Palermo;4;2025-12-16;no;
+Valentina;Romano;valentina.romano10@email.com;+39 331 9678884;Berlin;12;2025-04-01;true;2025-01-22
+Luca;Rossi;luca.rossi71@email.com;+39 363 3391341;London;14;2026-01-07;yes;2023-12-16
+Matteo;Bruno;matteo.bruno55@email.com;+39 336 4544771;Barcelona;7;2023-11-05;true;2025-12-23
+Alessandro;Ricci;alessandro.ricci92@email.com;;Vienna;8;2026-07-06;si;2023-08-10
+Valentina;Bianchi;valentina.bianchi41@email.com;+39 370 9193739;Verona;9;2025-03-19;true;2024-10-09
+Anna;Colombo;anna.colombo4@email.com;+39 360 7531259;;4;2026-07-15;yes;2023-05-28
+Anna;Ferrari;chiara.giordano58@email.com;+39 383 4489005;Paris;8;2025-07-12;sì;2025-12-02
+Davide;Bianchi;davide.bianchi32@email.com;;Napoli;5;2026-07-02;true;2024-04-11
+Marco;Russo;;+39 308 2005458;Torino;11;2023-10-23;;
+Laura;Mancini;laura.mancini11@email.com;+39 340 9428578;Torino;8;2025-12-10;;
+Marta;Costa;marta.costa83@email.com;+39 300 5708762;Milano;4;2025-12-05;false;
+Anna;Conti;anna.conti68@email.com;+39 391 3752659;Verona;5;2023-06-09;sì;2025-03-19
+Marta;Ricci;marta.ricci9@email.com;+39 327 2480411;Prague;7;2023-05-15;yes;2024-05-15
+Davide;Bruno;chiara.esposito28@email.com;+39 373 1218912;Torino;7;2026-07-10;false;
+Marta;Giordano;;;Paris;11;2025-09-27;si;2023-03-12
+Luca;Gallo;luca.gallo69@email.com;+39 315 9203376;Barcelona;2;2026-06-12;sì;2025-09-10
+Davide;Esposito;davide.esposito28@email.com;;Roma;2;2023-04-18;si;2024-09-25
+Luca;Marino;luca.marino78@email.com;+39 320 2724636;Roma;7;2023-03-03;;
+Davide;Bruno;davide.bruno12@email.com;+39 325 5185220;Zurich;1;2024-01-07;no;
+Giulia;Greco;giulia.greco86@email.com;;Zurich;9;2025-08-14;true;2024-10-18
+Valentina;Ricci;;+39 371 4083015;Paris;10;2025-11-03;true;2025-10-09
+;Esposito;.esposito96@email.com;+39 394 1153218;Napoli;3;2026-09-05;si;2025-05-05
+Andrea;Ferrari;;+39 383 7392603;Amsterdam;6;2023-12-01;true;2023-01-17
+Marco;Gallo;marco.gallo82@email.com;;;14;2024-03-05;si;2023-09-21
+Marco;Russo;marco.russo35@email.com;+39 394 3161205;Zurich;11;2024-12-26;true;2023-03-20
+Giulia;Bruno;;+39 390 3473294;Milano;1;2024-03-09;false;
+Marco;De Luca;marco.de luca34@email.com;+39 390 3515763;Venezia;10;2024-01-04;sì;2025-09-24
+Matteo;Bruno;matteo.bruno29@email.com;+39 365 9563936;Roma;2;2026-11-05;no;
+;Lombardi;.lombardi94@email.com;+39 301 5688262;Milano;0;;true;2023-10-20
+Alessandro;Bruno;alessandro.bruno67@email.com;;Prague;9;2023-05-15;si;2025-03-23
+Fabio;Russo;fabio.russo72@email.com;+39 311 7859186;Barcelona;12;2025-09-25;yes;2025-04-05
+Davide;Conti;davide.conti43@email.com;+39 375 3798423;Firenze;0;;si;2023-09-06
+Davide;Colombo;davide.colombo66@email.com;+39 393 6000047;Geneva;15;2026-05-11;false;
+Silvia;Ricci;silvia.ricci42@email.com;+39 318 2331262;Bologna;10;2026-05-18;sì;2024-06-12
+Riccardo;Marino;riccardo.marino38@email.com;+39 320 8189747;Geneva;3;2026-07-09;;
+Giovanni;Ricci;giovanni.ricci10@email.com;+39 355 6212353;Milano;7;2023-10-07;true;2025-10-14
+Anna;Mancini;anna.mancini25@email.com;+39 394 6490864;Barcelona;4;2024-05-25;si;2023-05-05
+Laura;Romano;laura.romano81@email.com;+39 383 1827363;Genova;1;2024-05-18;;
+Marco;Ferrari;marco.ferrari96@email.com;+39 367 7696322;Paris;10;2023-06-08;false;
+Fabio;Bianchi;fabio.bianchi63@email.com;;Zurich;15;2024-07-23;no;
+Chiara;Moretti;chiara.moretti91@email.com;;Torino;1;2025-06-24;si;2025-06-24
+Alessandro;;alessandro.44@email.com;+39 311 3662793;Venezia;15;2025-12-13;si;2025-06-13
+Marco;Costa;marco.costa62@email.com;+39 372 2678642;Venezia;4;2025-02-26;true;2024-06-03
+Chiara;Moretti;chiara.moretti55@email.com;+39 322 9724378;Amsterdam;10;2025-08-15;;
+Valentina;Gallo;giulia.colombo98@email.com;+39 378 5417843;Paris;9;2026-11-16;;
+Francesca;Bruno;francesca.bruno19@email.com;+39 334 1902080;Munich;9;2024-06-19;;
+Riccardo;Costa;riccardo.costa16@email.com;+39 359 8631186;Torino;8;2025-12-18;;
+Marta;Bianchi;marta.bianchi65@email.com;+39 328 6748021;Barcelona;9;2025-11-12;;
+Riccardo;Colombo;riccardo.colombo19@email.com;;Geneva;11;2025-08-12;sì;2025-12-19
+Davide;Esposito;davide.esposito68@email.com;+39 381 2972292;Verona;9;2023-08-04;si;2023-12-24
+Lorenzo;Conti;lorenzo.conti92@email.com;+39 363 9206403;Munich;9;2025-10-11;;
+Giulia;Mancini;giulia.mancini92@email.com;+39 359 1426112;Milano;14;2023-02-15;no;
+Giulia;Conti;giulia.conti5@email.com;+39 376 3987988;Munich;3;2024-11-18;sì;2024-12-05
+Fabio;De Luca;fabio.de luca26@email.com;+39 330 7174257;;13;2023-08-05;;
+Andrea;Rizzo;andrea.rizzo28@email.com;+39 313 4252262;Verona;9;2024-07-13;si;2023-10-15
+Elena;Bruno;elena.bruno57@email.com;;Milano;6;2023-08-22;no;
+Elena;Gallo;elena.gallo20@email.com;+39 322 6749638;Torino;8;2024-09-28;false;
+Davide;Conti;davide.conti17@email.com;;Bologna;5;2026-02-04;false;
+Fabio;Giordano;fabio.giordano19@email.com;+39 339 7615498;Munich;8;2024-03-12;false;
+Giovanni;Marino;giovanni.marino99@email.com;+39 397 6748022;Genova;10;2023-12-19;true;2023-09-01
+Alessandro;Costa;alessandro.costa13@email.com;;Napoli;8;2024-01-03;;
+Lorenzo;Mancini;lorenzo.mancini8@email.com;+39 356 3835080;London;15;2025-08-16;no;
+;Lombardi;.lombardi56@email.com;+39 399 8801944;Torino;13;2026-03-04;false;
+Marta;Bianchi;marta.bianchi51@email.com;+39 313 9405450;Zurich;12;2026-05-20;sì;2023-11-06
+Valentina;Costa;valentina.costa5@email.com;;Venezia;0;;;
+Fabio;Russo;elena.ricci47@email.com;+39 384 2920868;Firenze;11;2024-07-18;sì;2023-09-03
+Andrea;Lombardi;andrea.lombardi23@email.com;+39 331 2123816;London;10;2023-03-06;true;2025-03-25
+Francesca;De Luca;francesca.de luca91@email.com;+39 316 7378822;Geneva;9;2023-01-14;yes;2025-04-25
+Anna;Costa;anna.costa62@email.com;;;3;2024-12-03;si;2025-12-12
+Chiara;Russo;chiara.russo70@email.com;+39 342 7168031;Geneva;7;2026-02-16;true;2025-10-01
+Marta;Ferrari;marta.ferrari45@email.com;+39 307 6091294;Palermo;12;2025-04-08;true;2023-06-03
+Riccardo;Conti;riccardo.conti98@email.com;+39 385 8307873;Palermo;14;2023-11-25;yes;2023-05-11
+Marta;Ricci;marta.ricci54@email.com;+39 357 6592366;Zurich;8;2023-01-10;;
+Silvia;Marino;silvia.marino90@email.com;+39 327 2964069;Roma;9;2026-10-25;false;
+Fabio;Gallo;fabio.gallo62@email.com;+39 313 1859412;Munich;14;2026-06-15;false;
+Andrea;Mancini;andrea.mancini88@email.com;+39 343 5502386;London;8;2025-12-14;si;2025-01-20
+Marco;De Luca;marco.de luca84@email.com;+39 327 9714135;Vienna;14;2026-10-12;true;2023-10-25
+Riccardo;Russo;riccardo.russo53@email.com;+39 359 4082605;Torino;2;2023-08-25;;
+Elena;Gallo;elena.gallo24@email.com;+39 369 3817316;Prague;4;2024-05-09;si;2025-04-02
+Matteo;Rossi;matteo.rossi49@email.com;;Munich;0;;;
+Andrea;Colombo;andrea.colombo18@email.com;+39 364 6765230;Barcelona;8;2025-05-18;false;
+Marta;Bruno;marta.bruno97@email.com;+39 301 5293710;Vienna;0;;yes;2023-09-26
+Valentina;Greco;valentina.greco62@email.com;;;5;2024-03-04;true;2025-07-01
+Elena;Ferrari;elena.ferrari80@email.com;;Amsterdam;4;2026-03-17;true;2023-10-25
+Marta;Colombo;marta.colombo21@email.com;+39 352 3913886;;13;2024-03-18;true;2024-05-04
+;;lorenzo.bianchi64@email.com;+39 343 2330232;Amsterdam;0;;si;2025-12-21
+Anna;Greco;anna.greco68@email.com;+39 389 2143380;Milano;14;2023-06-06;no;
+Matteo;Lombardi;matteo.lombardi30@email.com;+39 361 9968324;Amsterdam;11;2024-04-23;si;2023-01-19
+Silvia;Colombo;silvia.colombo7@email.com;;Barcelona;15;2025-09-23;si;2023-03-13
+Francesca;;francesca.93@email.com;+39 377 9109893;;4;2024-09-24;si;2024-02-19
+Anna;Bianchi;;+39 300 5507241;Prague;10;2023-06-18;;
+Anna;Bruno;anna.bruno78@email.com;+39 376 3766121;Firenze;9;2025-03-10;false;
+Silvia;Costa;silvia.costa17@email.com;+39 369 4988524;Vienna;13;2026-03-25;true;2025-08-08
+Lorenzo;Greco;lorenzo.greco44@email.com;+39 359 9705563;Verona;10;2024-09-28;true;2024-08-04
+Giulia;Romano;giulia.romano29@email.com;+39 302 5979963;Milano;1;2023-07-23;true;2023-11-01
+Anna;Giordano;anna.giordano22@email.com;+39 388 3322319;Torino;7;2025-11-02;si;2023-04-14
+Francesca;Bruno;;+39 358 4092823;Milano;10;2023-11-03;sì;2024-08-28
+Davide;Marino;davide.marino43@email.com;;Zurich;7;2026-11-14;yes;2023-03-19
+Marta;Giordano;chiara.colombo15@email.com;+39 398 3743507;Napoli;1;2023-10-02;si;2024-06-01
+Giulia;De Luca;giulia.de luca83@email.com;+39 364 9202221;Verona;1;2024-11-08;false;
+Francesca;Conti;silvia.marino90@email.com;+39 346 5490245;Venezia;12;2025-04-24;si;2024-04-22
+Fabio;Romano;fabio.romano61@email.com;+39 358 4324036;Amsterdam;7;2024-05-11;;
+Elena;Colombo;elena.colombo13@email.com;+39 397 8980134;Palermo;14;2024-06-02;yes;2023-12-27
+Giovanni;Ferrari;giovanni.ferrari42@email.com;+39 390 2506164;Napoli;1;2025-06-13;true;2023-10-09
+Chiara;Ferrari;chiara.ferrari48@email.com;+39 329 9567985;Munich;2;2023-06-23;true;2025-02-19
+Elena;Greco;elena.greco9@email.com;;London;3;2026-04-06;true;2024-06-16
+Davide;Bianchi;davide.bianchi56@email.com;+39 309 7118380;Milano;0;;no;
+Riccardo;De Luca;riccardo.de luca8@email.com;+39 349 9404963;Genova;2;2026-01-17;true;2025-08-15
+Giulia;Lombardi;giulia.lombardi98@email.com;+39 306 4633090;London;1;2023-07-08;sì;2025-10-07
+Silvia;Mancini;silvia.mancini69@email.com;+39 387 6926067;London;1;2025-07-25;false;
+Silvia;Rizzo;alessandro.russo54@email.com;+39 320 1029823;Genova;14;2026-04-12;false;
+;Greco;.greco92@email.com;;Venezia;11;2025-05-20;true;2025-08-17
+Silvia;Colombo;silvia.colombo62@email.com;+39 355 7357191;Firenze;10;2023-07-10;no;
+Anna;De Luca;anna.de luca52@email.com;+39 396 2499964;Napoli;6;2023-12-02;;
+Andrea;Gallo;andrea.gallo98@email.com;+39 360 8999672;Bologna;15;2026-02-12;si;2023-07-16
+Chiara;Rizzo;chiara.rizzo19@email.com;+39 347 5866606;Roma;1;2024-10-28;sì;2024-05-19
+Marta;Conti;marta.conti18@email.com;+39 327 1221284;;1;2023-05-08;no;
+Giovanni;Romano;giovanni.romano3@email.com;;Venezia;13;2026-07-05;true;2025-10-21
+Davide;Moretti;davide.moretti78@email.com;+39 343 3603872;Napoli;4;2024-05-02;true;2023-01-06
+Anna;Conti;anna.conti14@email.com;+39 347 9701622;Berlin;5;2023-06-03;yes;2023-09-28
+Valentina;Conti;valentina.conti24@email.com;+39 367 5931039;Zurich;6;2024-08-13;sì;2025-09-13
+Laura;Bruno;laura.bruno37@email.com;+39 318 3685540;Torino;12;2024-08-08;si;2024-09-18
+Riccardo;Ferrari;;+39 350 9005008;Firenze;3;2024-11-19;true;2025-10-26
+Valentina;Rossi;valentina.rossi12@email.com;+39 395 3082730;London;4;2024-05-24;;
+Marta;De Luca;marta.de luca9@email.com;+39 310 5712781;Barcelona;3;2023-05-01;;
+Giovanni;Ferrari;giovanni.ferrari15@email.com;+39 300 6196201;London;8;2026-02-10;yes;2024-01-19
+Davide;Costa;davide.costa34@email.com;+39 349 5559481;Roma;15;2026-12-09;si;2024-06-22
+Marco;Ricci;marco.ricci34@email.com;+39 301 8961905;London;9;2025-02-01;sì;2025-04-13
+Matteo;Rossi;matteo.rossi45@email.com;+39 382 1762915;Barcelona;1;2026-11-11;no;
+Chiara;De Luca;chiara.de luca5@email.com;+39 307 5712700;Prague;12;2025-09-09;false;
+Davide;Ferrari;elena.giordano11@email.com;;Palermo;15;2026-06-19;true;2023-02-15
+Chiara;Moretti;;+39 367 2732472;Venezia;1;2023-03-03;false;
+Lorenzo;Greco;lorenzo.greco43@email.com;+39 335 4815971;Zurich;13;2025-03-08;yes;2025-10-24
+Fabio;Esposito;fabio.esposito94@email.com;+39 300 1929478;London;11;2023-12-20;si;2024-11-13
+Marta;Costa;marta.costa73@email.com;+39 388 3596615;London;11;2025-11-08;si;2023-12-26
+Laura;Bianchi;laura.bianchi59@email.com;+39 310 5050456;Paris;14;2023-06-12;sì;2024-10-13
+Silvia;Esposito;silvia.esposito78@email.com;;Munich;6;2025-07-10;si;2024-01-13
+Matteo;Colombo;matteo.colombo2@email.com;+39 380 6497182;Amsterdam;8;2023-12-18;si;2025-12-08
+Matteo;Conti;matteo.conti42@email.com;+39 383 1918727;Firenze;1;2023-02-27;si;2024-01-01
+Giovanni;De Luca;giovanni.de luca25@email.com;+39 398 9628019;;0;;;
+Silvia;Mancini;silvia.mancini39@email.com;+39 373 1859563;Venezia;6;2025-09-04;true;2024-03-07
+Marta;Costa;;;Napoli;13;2024-02-25;;
+Davide;Rizzo;davide.rizzo97@email.com;+39 350 5822224;Firenze;13;2026-10-08;si;2023-03-07
+Valentina;Mancini;valentina.mancini9@email.com;+39 335 1250828;Zurich;7;2024-09-05;sì;2025-10-24
+Matteo;Costa;matteo.costa31@email.com;+39 379 6383442;Venezia;13;2025-11-17;si;2024-03-20
+Lorenzo;Ricci;lorenzo.ricci91@email.com;+39 314 2948619;Geneva;13;2023-06-18;no;
+Marta;Giordano;marta.giordano77@email.com;+39 307 7520573;Munich;1;2023-12-05;true;2025-08-20
+Marco;Marino;marco.marino15@email.com;;Zurich;6;2025-02-18;no;
+Marco;Romano;marco.romano73@email.com;+39 329 8639889;Zurich;15;2025-02-19;false;
+Andrea;Marino;andrea.marino9@email.com;+39 327 2454383;Bologna;13;2025-09-10;yes;2024-11-15
+Sara;Colombo;sara.colombo47@email.com;+39 395 9525568;Palermo;4;2024-02-02;si;2025-05-21
+Marta;Mancini;marta.mancini30@email.com;;Amsterdam;4;2024-01-03;false;
+Laura;Costa;laura.costa61@email.com;+39 355 3687135;Zurich;2;2025-06-03;si;2025-07-11
+Marco;Rossi;marco.rossi15@email.com;+39 398 5293840;Milano;0;;si;2023-12-02
+Riccardo;Bianchi;riccardo.bianchi84@email.com;+39 324 5558647;Zurich;6;2024-10-04;;
+Valentina;Lombardi;valentina.lombardi78@email.com;+39 350 4709669;Amsterdam;12;2025-01-08;;
+Alessandro;Rossi;alessandro.rossi3@email.com;+39 327 2680238;Firenze;10;2026-07-10;yes;2025-01-04
+Andrea;Lombardi;andrea.lombardi1@email.com;+39 397 6748022;Genova;13;2023-06-27;true;2025-10-23
+Sara;Bruno;sara.bruno18@email.com;;Verona;14;2024-06-09;no;
+Giulia;Greco;;+39 386 4329896;Zurich;5;2026-03-15;sì;2023-02-11
+Riccardo;Rizzo;riccardo.rizzo11@email.com;+39 375 1313415;Barcelona;15;2026-02-26;yes;2025-09-01
+Chiara;Bianchi;chiara.bianchi90@email.com;+39 337 7114714;Vienna;13;2026-10-20;yes;2025-06-19
+Luca;Esposito;;+39 328 1307382;Zurich;14;2023-02-13;no;
+Marco;Rizzo;marco.rizzo68@email.com;;Genova;5;2024-07-23;sì;2024-11-06
+Davide;Moretti;davide.moretti26@email.com;+39 395 2180243;Firenze;8;2023-12-08;si;2023-11-16
+Fabio;Moretti;fabio.moretti77@email.com;+39 342 7609338;Amsterdam;7;2025-03-17;;
+Anna;Rizzo;anna.rizzo14@email.com;+39 399 4940163;Amsterdam;0;;si;2023-12-19
+Elena;Giordano;;+39 393 5986002;Prague;1;2024-12-14;yes;2024-05-04
+Andrea;Conti;andrea.conti30@email.com;+39 345 2830816;Berlin;6;2025-11-21;yes;2023-06-19
+Fabio;Russo;fabio.russo55@email.com;;Barcelona;13;2023-07-16;si;2025-08-11
+Davide;Greco;davide.greco5@email.com;;London;14;2023-11-21;true;2025-11-04
+Alessandro;Bruno;alessandro.bruno66@email.com;+39 320 3493299;;9;2024-07-19;;
+Fabio;Moretti;elena.romano3@email.com;+39 397 3319359;Zurich;14;2023-05-20;true;2024-04-06
+Riccardo;Bianchi;riccardo.bianchi17@email.com;+39 309 5899269;Munich;11;2026-01-05;sì;2025-04-23
+Giulia;Russo;giulia.russo54@email.com;+39 346 5598546;Palermo;3;2023-11-05;no;
+Marta;Rossi;marta.rossi52@email.com;+39 319 4973772;Munich;13;2024-11-01;yes;2024-05-10
+Lorenzo;Gallo;marco.rossi47@email.com;+39 356 7649771;Genova;4;2023-05-22;yes;2023-04-21
+;Russo;.russo32@email.com;+39 384 3384327;Vienna;4;2025-06-22;sì;2023-11-06
+Marco;Conti;marco.conti83@email.com;+39 392 2126339;Geneva;6;2023-08-14;si;2023-01-07
+Laura;Giordano;giovanni.russo45@email.com;+39 396 4879075;Geneva;12;2024-02-01;sì;2025-10-06
+;Ricci;valentina.costa91@email.com;;Venezia;14;2024-08-25;si;2025-04-21
+Giulia;Bruno;giulia.bruno70@email.com;+39 321 3437617;Bologna;0;;si;2025-11-17
+Valentina;Lombardi;valentina.lombardi91@email.com;+39 341 3304421;Venezia;0;;true;2023-10-14
+Riccardo;Bianchi;riccardo.bianchi44@email.com;+39 357 8814431;Amsterdam;8;2026-08-25;yes;2023-08-01
+Giulia;De Luca;giulia.de luca78@email.com;;Napoli;4;2026-11-24;si;2024-09-02
+Luca;Conti;luca.conti26@email.com;+39 311 4017046;London;6;2026-05-16;no;
+Fabio;Gallo;fabio.gallo25@email.com;;Munich;4;2024-06-22;;
+Lorenzo;Ferrari;lorenzo.ferrari78@email.com;+39 387 5390450;London;0;;sì;2025-02-16
+Marta;Esposito;marta.esposito14@email.com;+39 336 1976688;Napoli;12;2025-07-03;yes;2025-08-20
+Giulia;Bruno;;+39 300 1859692;;11;2024-01-12;sì;2024-09-24
+Giulia;Bianchi;giulia.bianchi88@email.com;+39 396 8095702;Geneva;11;2026-05-21;false;
+Riccardo;Bruno;riccardo.bruno77@email.com;;Geneva;11;2025-11-21;no;
+Sara;Russo;sara.russo93@email.com;+39 387 7146970;Paris;7;2026-12-19;false;
+Laura;Costa;laura.costa49@email.com;+39 367 6372578;Roma;14;2025-09-10;;
+Laura;Conti;.esposito96@email.com;+39 343 9444237;Milano;8;2026-04-06;sì;2025-06-15
+Lorenzo;Gallo;;+39 313 2630262;Venezia;2;2026-11-14;sì;2025-09-12
+Davide;Moretti;davide.moretti29@email.com;+39 345 7913049;Barcelona;6;2023-01-05;sì;2025-08-24
+Andrea;De Luca;;+39 317 1145154;Barcelona;15;2023-12-20;si;2025-09-28
+Andrea;Ferrari;andrea.ferrari88@email.com;+39 335 8497007;Barcelona;3;2025-11-16;si;2025-04-15
+Sara;Ferrari;sara.ferrari44@email.com;+39 344 3416872;Barcelona;14;2026-08-11;false;
+Chiara;Marino;chiara.marino38@email.com;+39 300 2938551;Milano;13;2025-10-14;no;
+Sara;Costa;;+39 332 7322945;Berlin;8;2025-05-16;sì;2023-03-27
+Laura;Ricci;laura.ricci16@email.com;+39 346 7871771;Vienna;1;2023-11-14;si;2025-04-28
+Giovanni;Moretti;giovanni.moretti30@email.com;+39 390 3190036;Bologna;6;2026-02-18;no;
+Valentina;Romano;valentina.romano54@email.com;+39 313 3182019;Amsterdam;5;2023-07-14;sì;2024-09-28
+Luca;Bruno;luca.bruno66@email.com;+39 329 6933084;Barcelona;5;2024-06-05;no;
+Luca;Romano;luca.romano56@email.com;;Berlin;9;2024-12-27;yes;2024-10-23
+Silvia;Greco;luca.greco17@email.com;+39 321 8722075;Milano;6;2024-07-13;;
+Davide;De Luca;davide.de luca96@email.com;+39 354 6669426;Berlin;7;2026-08-18;true;2025-07-01
+Elena;Marino;elena.marino53@email.com;+39 328 5462064;Napoli;13;2026-08-21;yes;2024-04-11
+Giulia;Russo;giulia.russo91@email.com;+39 316 8755807;Milano;14;2025-12-06;si;2023-09-12
+Lorenzo;Russo;lorenzo.russo44@email.com;+39 377 4740173;Verona;14;2023-02-14;;
+Marta;Rizzo;marta.rizzo75@email.com;+39 336 7706371;Venezia;0;;true;2024-07-20
+Davide;Marino;davide.marino27@email.com;+39 309 3735270;;14;2026-03-08;yes;2025-08-23
+Laura;Marino;laura.marino36@email.com;+39 304 9190464;Roma;4;2024-04-19;yes;2023-01-03
+Davide;Rossi;;+39 397 7306911;Barcelona;1;2023-01-18;yes;2024-09-20
+Marco;Esposito;marco.esposito26@email.com;+39 316 8547260;Geneva;11;2025-08-23;true;2023-06-13
+Fabio;Greco;fabio.greco79@email.com;;Torino;12;2026-02-10;yes;2024-11-08
+Davide;Gallo;davide.gallo10@email.com;+39 320 6250306;Roma;4;2026-11-25;;
+Davide;Mancini;davide.mancini41@email.com;+39 380 4103349;Roma;9;2024-01-26;false;
+Andrea;Giordano;andrea.giordano60@email.com;+39 399 3373918;Verona;2;2025-01-24;yes;2025-04-06
+Sara;Lombardi;sara.lombardi83@email.com;+39 373 5202935;Bologna;11;2025-08-19;no;
+Giovanni;Lombardi;giovanni.lombardi62@email.com;+39 317 4970610;Firenze;2;2024-05-24;true;2023-02-18
+Elena;Marino;elena.marino26@email.com;+39 379 8254557;Palermo;2;2025-03-04;false;
+;Bianchi;.bianchi90@email.com;+39 328 1661584;Berlin;1;2023-10-13;yes;2025-01-06
+Valentina;Greco;valentina.greco74@email.com;+39 375 1605663;Napoli;6;2024-07-28;si;2023-06-13
+Matteo;Giordano;;;;2;2024-12-18;;
+Fabio;Ferrari;fabio.ferrari62@email.com;+39 303 2879291;Paris;8;2023-08-03;si;2023-04-09
+Lorenzo;Mancini;lorenzo.mancini92@email.com;+39 390 3575237;Genova;2;2023-07-01;no;
+Alessandro;Giordano;alessandro.giordano84@email.com;+39 398 1920570;Prague;0;;;
+Laura;Conti;marta.costa37@email.com;+39 335 7754401;Palermo;12;2024-04-07;;
+;Russo;.russo67@email.com;+39 374 9312731;Verona;7;2024-01-26;sì;2025-07-07
+Matteo;Bruno;matteo.bruno90@email.com;+39 324 3870573;Zurich;4;2024-11-12;sì;2025-08-06
+Silvia;Bruno;;+39 379 2918105;Berlin;6;2024-04-14;;
+Marta;Rizzo;marta.rizzo26@email.com;+39 381 4229757;Vienna;7;2025-09-10;sì;2023-05-23
+Valentina;De Luca;valentina.de luca62@email.com;+39 350 4873662;Bologna;14;2026-08-13;sì;2024-04-04
+Giulia;Esposito;giulia.esposito14@email.com;+39 332 2333304;Torino;6;2023-07-18;sì;2025-05-23
+Matteo;Esposito;matteo.esposito26@email.com;+39 366 3791492;Venezia;10;2026-06-09;;
+Sara;Conti;sara.conti33@email.com;;Venezia;15;2023-04-10;;
+Lorenzo;Bruno;lorenzo.bruno87@email.com;+39 301 4873311;Napoli;4;2024-09-13;false;
+Fabio;Giordano;fabio.giordano84@email.com;;Roma;11;2025-11-21;si;2024-09-08
+Riccardo;Rossi;riccardo.rossi92@email.com;+39 375 9852408;Berlin;0;;true;2025-05-28
+Lorenzo;Rizzo;;+39 304 1261652;Firenze;10;2025-03-20;true;2025-06-23
+Anna;Marino;anna.marino43@email.com;+39 394 8985604;Milano;10;2023-02-14;yes;2024-03-16
+Luca;Costa;luca.costa37@email.com;+39 323 4929809;Paris;7;2025-12-17;true;2025-04-18
+Laura;Giordano;giulia.lombardi98@email.com;+39 371 2735432;Torino;14;2024-01-28;false;
+Lorenzo;Lombardi;lorenzo.lombardi37@email.com;+39 381 5114166;Barcelona;6;2026-12-12;si;2025-04-21
+Matteo;Giordano;matteo.giordano7@email.com;+39 341 7347779;Torino;4;2026-01-22;true;2023-02-11
+Davide;Moretti;;+39 373 3027043;Torino;8;2023-10-28;sì;2024-07-09
+Davide;Ricci;davide.ricci39@email.com;+39 362 4571629;Bologna;10;2024-08-24;;
+Marta;Greco;sara.bruno87@email.com;+39 315 3466780;Bologna;0;;sì;2023-02-25
+Sara;Conti;sara.conti53@email.com;+39 302 3489781;Paris;11;2025-07-25;si;2025-04-27
+Davide;Bianchi;davide.bianchi2@email.com;;Roma;7;2026-12-23;sì;2024-01-26
+Valentina;Lombardi;valentina.lombardi97@email.com;+39 365 4935572;Verona;13;2026-07-22;si;2025-12-23
+Sara;Moretti;sara.moretti37@email.com;+39 343 7626456;Geneva;8;2024-09-04;true;2024-06-22
+Riccardo;Lombardi;riccardo.lombardi6@email.com;+39 316 3502581;London;1;2025-06-06;si;2024-10-08
+Anna;;alessandro.romano47@email.com;+39 333 1658042;Venezia;4;2026-07-24;sì;2024-09-11
+Marta;Gallo;marta.gallo62@email.com;+39 303 2037650;Genova;13;2024-03-16;si;2024-12-25
+Valentina;Ricci;valentina.ricci46@email.com;+39 398 9718036;Prague;5;2024-02-02;si;2024-11-06
+Elena;Ricci;elena.ricci92@email.com;+39 388 6237747;Genova;0;;sì;2023-12-15
+Elena;Colombo;elena.colombo66@email.com;+39 351 2383944;Berlin;14;2025-11-22;sì;2024-08-08
+Francesca;Giordano;francesca.giordano3@email.com;+39 349 5962572;Barcelona;3;2024-08-20;no;
+Sara;De Luca;sara.de luca81@email.com;+39 377 8191998;Prague;6;2023-04-20;si;2024-12-05
+Riccardo;Moretti;riccardo.moretti87@email.com;+39 327 2347255;Paris;11;2025-06-25;si;2023-10-17
+Luca;;luca.95@email.com;+39 385 1617796;Prague;2;2026-04-05;yes;2024-07-16
+Silvia;Lombardi;silvia.lombardi1@email.com;+39 339 3460150;Vienna;12;2025-04-19;si;2023-06-12
+Valentina;Ricci;valentina.ricci77@email.com;+39 372 6836228;Amsterdam;11;2023-09-16;false;
+Alessandro;Russo;alessandro.russo85@email.com;+39 359 4422953;Bologna;14;2024-12-07;si;2024-12-13
+Chiara;Mancini;chiara.mancini9@email.com;+39 308 6259001;Genova;0;;true;2024-12-24
+Andrea;De Luca;andrea.de luca99@email.com;+39 388 4316893;Roma;15;2023-10-07;yes;2025-05-03
+Marta;Esposito;;+39 384 7136216;Venezia;15;2026-07-19;sì;2024-06-25
+Chiara;Marino;chiara.marino30@email.com;+39 307 6462358;Torino;12;2024-08-18;false;
+Chiara;Costa;;+39 330 8466877;Berlin;10;2023-07-06;false;
+Giovanni;Russo;giovanni.russo83@email.com;+39 335 7598164;Palermo;9;2025-05-17;no;
+Matteo;Moretti;matteo.moretti14@email.com;+39 330 9462493;Verona;9;2026-07-01;sì;2023-06-28
+Chiara;Lombardi;chiara.lombardi57@email.com;+39 374 3055639;Zurich;5;2023-04-24;no;
+Fabio;Conti;fabio.conti53@email.com;+39 389 2176584;Geneva;3;2024-04-07;false;
+Anna;Bianchi;lorenzo.bianchi66@email.com;+39 340 1005430;Milano;0;;yes;2024-04-26
+Luca;Romano;luca.romano13@email.com;+39 347 1919374;Prague;9;2023-04-13;;
+Anna;Russo;anna.russo86@email.com;+39 328 7908592;;15;2023-11-10;true;2025-08-03
+Laura;Bianchi;laura.bianchi72@email.com;;Firenze;0;;;
+Laura;De Luca;riccardo.rizzo11@email.com;+39 345 3737930;Torino;6;2026-08-12;yes;2023-11-02
+Davide;Rizzo;marco.giordano74@email.com;+39 388 4041928;Roma;1;2026-10-27;;
+Anna;Ferrari;anna.ferrari15@email.com;+39 382 2064889;Palermo;4;2024-04-02;;
+Sara;Bruno;sara.bruno64@email.com;;Zurich;9;2026-09-22;si;2023-02-26
+Davide;Moretti;davide.moretti75@email.com;+39 373 7787413;Napoli;5;2023-04-26;yes;2024-01-12
+Valentina;Rossi;valentina.rossi14@email.com;;Torino;1;2026-02-09;false;
+Giulia;Rizzo;giulia.rizzo34@email.com;;Berlin;10;2023-07-27;true;2023-10-22
+Andrea;Costa;andrea.costa29@email.com;+39 344 1681517;Munich;0;;yes;2023-05-05
+Riccardo;Costa;riccardo.costa87@email.com;+39 358 7815515;Verona;12;2026-03-17;yes;2023-01-04
+Matteo;Esposito;matteo.esposito67@email.com;;Torino;14;2023-07-13;true;2023-10-26
+Andrea;;andrea.77@email.com;+39 351 7930068;Verona;15;2023-03-03;true;2024-07-06
+Anna;Giordano;anna.giordano19@email.com;+39 325 6707655;Berlin;0;;no;
+Laura;Greco;laura.greco14@email.com;+39 377 4458774;Torino;10;2024-12-04;;
+Davide;Marino;davide.marino80@email.com;+39 331 3506902;Prague;4;2025-05-24;no;
+Elena;Esposito;elena.esposito10@email.com;+39 368 9144961;Barcelona;15;2024-12-28;si;2025-11-15
+Chiara;Russo;chiara.russo68@email.com;+39 362 9674575;Verona;12;2024-07-12;sì;2023-11-19
+Riccardo;Mancini;riccardo.mancini28@email.com;+39 360 8577572;Verona;4;2024-04-24;;
+Marta;Bianchi;marta.bianchi82@email.com;+39 308 8817194;Venezia;1;2025-06-08;si;2025-01-11
+Silvia;Mancini;silvia.mancini34@email.com;+39 348 7356276;Napoli;14;2023-11-16;true;2024-06-23
+Giovanni;Colombo;giovanni.colombo50@email.com;+39 313 7231355;Verona;1;2023-05-26;no;
+;Ricci;.ricci50@email.com;;Genova;14;2024-02-20;true;2024-06-23
+Laura;Giordano;laura.giordano30@email.com;+39 335 8565242;Verona;1;2024-05-10;true;2023-02-01
+Laura;Moretti;laura.moretti46@email.com;+39 380 2154595;Napoli;1;2023-06-19;sì;2024-09-13
+Fabio;Bianchi;fabio.bianchi29@email.com;+39 336 1755582;Zurich;7;2025-09-02;sì;2023-03-06
+Riccardo;Rossi;riccardo.rossi40@email.com;;Verona;12;2026-08-24;;
+;;.53@email.com;;Napoli;12;2024-09-28;sì;2023-11-15
+Andrea;Esposito;andrea.esposito69@email.com;+39 327 9446410;Venezia;14;2024-10-07;false;
+Alessandro;Rossi;alessandro.rossi76@email.com;+39 321 1615455;Firenze;11;2024-04-09;true;2023-05-18
+Lorenzo;Colombo;lorenzo.colombo75@email.com;+39 314 9738492;Venezia;11;2024-02-01;;
+Matteo;Ricci;andrea.greco41@email.com;+39 328 7312675;Munich;10;2025-10-09;false;
+Sara;Ferrari;sara.ferrari14@email.com;;Vienna;5;2026-09-16;true;2024-10-16
+Marta;Giordano;marta.bruno72@email.com;+39 332 2224296;Amsterdam;9;2024-04-07;sì;2025-11-18
+;Moretti;.moretti15@email.com;+39 312 2258222;Genova;9;2026-05-16;yes;2024-09-01
+Laura;Romano;laura.romano2@email.com;;Geneva;8;2023-05-27;true;2023-07-25
+Laura;Lombardi;laura.lombardi29@email.com;;Roma;12;2026-02-02;true;2024-11-08
+Sara;Colombo;francesca.rossi14@email.com;+39 372 8362374;Munich;15;2025-11-15;;
+Laura;Colombo;laura.colombo16@email.com;+39 386 2608514;Paris;5;2023-10-14;true;2023-11-26
+Davide;Bruno;davide.bruno83@email.com;+39 308 1586085;Amsterdam;12;2025-04-23;true;2023-06-17
+Alessandro;De Luca;alessandro.de luca49@email.com;+39 363 8118523;Berlin;8;2026-11-24;false;
+Matteo;Conti;matteo.conti57@email.com;+39 380 5003268;Munich;4;2024-08-16;yes;2024-11-02
+Sara;Moretti;sara.moretti96@email.com;+39 329 5340236;Amsterdam;1;2023-06-08;true;2024-05-18
+Silvia;Colombo;;+39 323 3027788;Milano;8;2026-04-15;yes;2025-09-02
+Alessandro;Russo;alessandro.russo1@email.com;+39 322 5321271;Barcelona;11;2026-11-19;sì;2025-03-14
+Valentina;Colombo;valentina.colombo36@email.com;+39 350 8245804;Zurich;15;2024-01-23;si;2024-04-27
+Fabio;Greco;fabio.greco3@email.com;+39 305 9102367;Vienna;8;2026-10-21;yes;2023-07-10
+Marta;Colombo;marta.colombo3@email.com;+39 327 6392735;Milano;6;2025-11-25;yes;2025-08-17
+Sara;De Luca;sara.de luca52@email.com;+39 355 8892762;London;7;2023-04-19;sì;2023-10-06
+Francesca;Bianchi;francesca.bianchi83@email.com;;Berlin;7;2026-01-11;no;
+Davide;Rossi;davide.rossi97@email.com;+39 315 1502686;Verona;6;2026-09-24;true;2023-08-17
+Lorenzo;Mancini;lorenzo.mancini67@email.com;+39 327 8262177;Geneva;9;2024-08-06;yes;2025-11-01
+Davide;Russo;davide.russo71@email.com;+39 384 7542448;Berlin;10;2025-05-09;sì;2024-08-24
+Giulia;Rizzo;giulia.rizzo96@email.com;+39 323 1564961;Geneva;4;2023-02-24;false;
+Anna;Romano;anna.romano17@email.com;+39 379 7747887;Milano;12;2024-01-15;si;2023-06-28
+Laura;Lombardi;laura.lombardi8@email.com;+39 350 8245804;Barcelona;11;2025-01-01;;
+Chiara;Bianchi;laura.mancini5@email.com;;Firenze;9;2023-10-08;no;
+Giulia;Gallo;giulia.gallo67@email.com;+39 362 8500604;Firenze;10;2025-02-18;si;2024-12-11
+Sara;Giordano;sara.giordano18@email.com;+39 316 6956512;Berlin;14;2023-06-11;yes;2023-06-12
+Fabio;Russo;fabio.russo55@email.com;;Zurich;14;2023-12-25;yes;2024-12-17
+Chiara;Mancini;chiara.mancini92@email.com;+39 365 3285565;Paris;0;;yes;2023-04-11
+Laura;Gallo;laura.gallo27@email.com;+39 365 2305317;Verona;14;2026-08-21;si;2025-03-15
+Marta;Giordano;marta.giordano37@email.com;+39 327 9628763;Amsterdam;7;2023-01-16;;
+Giulia;Greco;giulia.greco37@email.com;+39 388 7980239;Zurich;6;2026-11-28;sì;2024-07-05
+Marta;Esposito;marta.esposito4@email.com;+39 355 8495246;Napoli;3;2026-03-22;false;
+Marta;Conti;;+39 314 4388297;Palermo;11;2025-06-12;sì;2023-06-10
+Laura;Bruno;laura.bruno24@email.com;+39 371 4601894;Paris;15;2026-09-02;;
+Silvia;;;+39 311 1502801;Munich;2;2025-11-16;no;
+Silvia;Bruno;silvia.bruno59@email.com;+39 371 7437678;Paris;7;2023-09-19;;
+Davide;Mancini;laura.lombardi87@email.com;+39 370 4303493;Roma;5;2023-10-23;yes;2023-03-02
+Alessandro;Ricci;alessandro.ricci64@email.com;+39 300 4962847;Verona;6;2026-09-04;si;2025-02-18
+Valentina;Costa;valentina.costa18@email.com;+39 338 9598383;Napoli;9;2026-05-09;si;2025-07-14
+Marco;Marino;marco.marino98@email.com;+39 355 7819352;Verona;15;2025-10-19;yes;2025-02-22
+Sara;Greco;sara.greco33@email.com;+39 372 6619686;Napoli;12;2024-10-09;false;
+Marco;Bianchi;marco.bianchi2@email.com;;Berlin;12;2023-02-22;false;
+Silvia;Romano;silvia.romano32@email.com;+39 382 3288452;Amsterdam;14;2025-01-13;si;2023-01-08
+Luca;Colombo;luca.colombo67@email.com;+39 331 1863317;Vienna;10;2026-11-27;false;
+Anna;Costa;anna.costa46@email.com;+39 316 7637050;Paris;8;2024-03-15;true;2024-11-09
+Giulia;Gallo;giulia.gallo25@email.com;+39 322 1709860;Napoli;3;2023-04-11;true;2024-05-15
+Luca;Lombardi;matteo.marino37@email.com;+39 380 2699225;Bologna;8;2024-12-19;yes;2023-09-03
+Davide;Giordano;;+39 362 1798938;;12;2023-12-27;si;2025-02-01
+Marta;Russo;marta.russo68@email.com;+39 383 5957199;Amsterdam;10;2023-12-06;no;
+Anna;Moretti;anna.moretti38@email.com;;Amsterdam;0;;si;2023-05-28
+Anna;Esposito;anna.esposito97@email.com;;Genova;9;2026-02-10;true;2025-10-15
+Riccardo;Ricci;riccardo.ricci11@email.com;+39 331 2459426;Torino;7;2026-06-11;yes;2024-01-06
+Davide;Rossi;davide.rossi43@email.com;+39 317 1908300;Firenze;14;2023-01-12;true;2025-01-05
+Valentina;Rizzo;valentina.rizzo60@email.com;+39 322 2396352;Palermo;6;2025-04-19;true;2024-12-20
+;Ricci;.ricci37@email.com;+39 310 8023000;Firenze;9;2024-01-05;;
+Lorenzo;Romano;lorenzo.romano43@email.com;+39 394 2851681;Verona;2;2023-06-04;sì;2024-02-28
+Giulia;Moretti;giulia.moretti93@email.com;;Genova;11;2026-12-28;si;2023-06-16
+Giulia;Rossi;giulia.rossi52@email.com;+39 347 8350507;Bologna;14;2025-12-23;true;2023-12-09
+Laura;Romano;laura.romano28@email.com;+39 372 8897047;Vienna;14;2025-01-12;yes;2024-09-04
+Laura;Esposito;;+39 330 1512151;Prague;11;2023-07-20;sì;2025-06-24
+Silvia;Colombo;silvia.colombo28@email.com;+39 318 2040738;Verona;1;2025-03-24;false;
+Giovanni;Lombardi;giovanni.lombardi85@email.com;;Milano;12;2026-09-21;yes;2023-10-09
+Giovanni;De Luca;giovanni.de luca15@email.com;+39 352 1437371;Torino;12;2023-09-14;;
+Davide;Rossi;davide.rossi29@email.com;+39 383 2140904;;14;2024-03-16;no;
+Matteo;Romano;matteo.romano86@email.com;+39 359 9236732;Berlin;4;2024-02-04;false;
+Fabio;Bruno;fabio.bruno52@email.com;+39 362 8543005;Bologna;3;2024-01-12;yes;2024-12-26
+Francesca;Colombo;;+39 394 8710198;Roma;5;2026-06-04;;
+Valentina;Costa;valentina.costa54@email.com;+39 369 3024131;Verona;8;2026-08-20;false;
+Elena;Gallo;elena.gallo87@email.com;+39 339 4626565;Torino;4;2024-01-23;true;2023-03-12
+Matteo;Marino;matteo.marino63@email.com;+39 353 4173395;Amsterdam;7;2024-01-11;sì;2023-11-03
+Matteo;Mancini;matteo.mancini62@email.com;+39 342 3985271;Berlin;15;2023-02-06;si;2025-11-09
+Silvia;Romano;silvia.romano38@email.com;+39 329 3771635;Zurich;14;2023-04-19;si;2023-08-21
+Lorenzo;Costa;lorenzo.costa41@email.com;+39 384 9303860;Torino;14;2024-11-10;;
+Alessandro;Greco;andrea.rizzo4@email.com;+39 345 1531126;Genova;8;2026-10-23;true;2023-01-20
+Anna;Costa;anna.costa79@email.com;+39 312 7827264;Barcelona;0;;;
+;Bruno;.bruno75@email.com;+39 313 2014070;Genova;15;2025-05-27;yes;2023-08-25
+Fabio;Bianchi;fabio.bianchi68@email.com;+39 381 7973599;Prague;6;2024-06-15;;
+Giovanni;Colombo;giovanni.colombo10@email.com;+39 363 1630550;Paris;2;2025-11-06;yes;2024-01-21
+Matteo;Romano;matteo.romano37@email.com;+39 322 3070990;Palermo;5;2025-01-16;yes;2024-10-23
+Luca;Costa;luca.costa50@email.com;;Roma;8;2023-07-02;;
+Elena;Lombardi;elena.lombardi74@email.com;+39 350 4185755;Firenze;5;2026-06-13;sì;2025-03-01
+Luca;Conti;luca.conti33@email.com;+39 393 6633387;Zurich;0;;si;2024-07-12
+Laura;Ferrari;laura.ferrari41@email.com;+39 378 2659332;Bologna;1;2025-10-06;;
+Sara;Ferrari;sara.ferrari14@email.com;+39 374 5535463;London;11;2024-10-04;yes;2023-02-07
+Chiara;Romano;chiara.romano21@email.com;+39 357 6066228;Geneva;12;2025-09-03;yes;2025-05-14
+Silvia;Bianchi;silvia.bianchi32@email.com;+39 385 6485289;Prague;9;2023-06-07;;
+Andrea;Esposito;matteo.moretti14@email.com;;Palermo;5;2025-03-18;yes;2024-09-25
+Lorenzo;Rossi;lorenzo.rossi95@email.com;+39 350 8996249;Venezia;7;2024-04-18;si;2023-03-11
+Valentina;Costa;valentina.costa4@email.com;+39 393 4320261;Verona;12;2023-09-23;true;2025-12-14
+Marta;Giordano;marta.giordano44@email.com;+39 316 3905824;Napoli;15;2025-08-26;yes;2023-01-23
+Andrea;Gallo;andrea.gallo9@email.com;+39 368 4479052;Zurich;7;2024-04-18;true;2025-12-23
+Francesca;Rizzo;francesca.rizzo49@email.com;;Roma;0;;true;2025-11-14
+Lorenzo;Romano;lorenzo.romano59@email.com;+39 366 7160857;Genova;5;2025-04-10;sì;2025-07-22
+Riccardo;Russo;;;Prague;9;2026-04-26;true;2024-01-24
+Anna;Costa;;+39 309 4987610;Munich;8;2025-12-06;yes;2025-06-03
+Sara;Gallo;sara.gallo25@email.com;+39 378 2129457;Firenze;11;2023-10-14;true;2023-11-23
+Marta;Greco;;+39 354 4848331;Palermo;8;2026-03-05;sì;2024-12-01
+Elena;Marino;elena.marino65@email.com;+39 305 4334002;Vienna;4;2023-09-27;no;
+Laura;Lombardi;laura.lombardi87@email.com;+39 395 6371348;Prague;14;2026-04-25;no;
+Marta;Colombo;marta.colombo27@email.com;;Palermo;12;2023-07-24;;
+Giovanni;Lombardi;giovanni.lombardi31@email.com;+39 365 1313942;Napoli;1;2023-09-05;yes;2025-02-22
+Chiara;Ferrari;chiara.ferrari6@email.com;+39 354 2051615;Verona;5;2026-01-07;true;2025-11-07
+Andrea;Rossi;andrea.rossi33@email.com;+39 339 3176160;;12;2023-11-10;sì;2023-01-10
+Francesca;Colombo;francesca.colombo96@email.com;+39 306 8924857;Geneva;4;2025-07-25;;
+Riccardo;Bianchi;riccardo.bianchi10@email.com;+39 376 9335208;Vienna;15;2025-02-07;;
+Davide;Giordano;davide.giordano78@email.com;+39 373 4744782;Venezia;15;2025-02-19;si;2023-05-17
+Lorenzo;Bruno;;+39 310 8654520;Prague;0;;sì;2025-09-22
+Matteo;Greco;matteo.greco14@email.com;+39 340 9556359;Napoli;7;2023-06-09;sì;2025-11-11
+Chiara;Moretti;chiara.moretti11@email.com;+39 303 7888358;Torino;1;2025-04-15;true;2024-01-05
+Silvia;Marino;silvia.marino88@email.com;+39 396 4674973;Berlin;13;2024-11-23;sì;2024-09-23
+Andrea;Esposito;andrea.esposito18@email.com;+39 335 1363463;Firenze;5;2026-06-22;true;2023-02-26
+Marta;Rizzo;marta.rizzo3@email.com;;Venezia;13;2024-07-05;true;2024-02-17
+Chiara;Greco;chiara.greco34@email.com;+39 310 2929050;Palermo;14;2024-03-11;;
+Riccardo;Russo;giulia.rizzo98@email.com;+39 348 8099188;Roma;1;2025-04-17;true;2025-05-20
+Francesca;Costa;francesca.costa76@email.com;+39 373 3698512;Paris;1;2025-04-05;sì;2023-11-07
+Elena;Ferrari;elena.ferrari48@email.com;+39 321 8779870;Vienna;8;2025-04-24;true;2023-01-08
+Andrea;Gallo;andrea.gallo4@email.com;+39 388 6546609;Zurich;6;2025-02-21;sì;2025-11-05
+Luca;Esposito;silvia.ferrari10@email.com;+39 331 7744629;Verona;2;2025-03-21;sì;2024-03-06
+Valentina;Costa;valentina.costa47@email.com;+39 385 3283197;Geneva;10;2025-05-24;sì;2024-02-22
+Andrea;De Luca;andrea.de luca43@email.com;+39 399 6313853;Firenze;11;2025-10-19;si;2025-11-20
+Chiara;Russo;chiara.russo72@email.com;+39 344 9576111;Amsterdam;0;;yes;2025-03-17
+Giovanni;Russo;giovanni.russo75@email.com;;Verona;11;2024-06-06;;
+Lorenzo;Giordano;lorenzo.giordano36@email.com;+39 359 3177199;Berlin;12;2024-07-10;sì;2023-07-01
+Silvia;De Luca;silvia.de luca47@email.com;+39 375 4823023;London;9;2023-10-04;;
+;Esposito;.esposito21@email.com;+39 345 4323826;Venezia;7;2026-01-15;true;2023-10-27
+Fabio;Bianchi;fabio.bianchi14@email.com;+39 315 7614280;Prague;7;2025-04-22;yes;2023-11-27
+Laura;Mancini;laura.mancini20@email.com;+39 319 5073469;Zurich;13;2025-10-23;false;
+Anna;Moretti;anna.moretti15@email.com;+39 392 2831981;Firenze;4;2024-03-28;;
+Andrea;Marino;andrea.marino27@email.com;+39 316 8982549;Venezia;8;2026-06-22;yes;2025-01-25
+Anna;Esposito;anna.esposito11@email.com;;;5;2025-11-21;si;2025-03-18
+Giovanni;Lombardi;;;Venezia;15;2024-04-20;false;
+Alessandro;Bruno;alessandro.bruno82@email.com;+39 393 3234621;Munich;5;2023-01-01;si;2025-07-25
+;Conti;.conti33@email.com;+39 332 9756449;Zurich;12;2024-08-03;;
+Anna;Gallo;marta.bianchi48@email.com;+39 308 8603031;Vienna;6;2026-04-04;yes;2023-08-20
+Andrea;Moretti;;;Bologna;1;2026-11-12;;
+Laura;Rossi;laura.rossi1@email.com;+39 322 1461695;Palermo;8;2025-10-14;sì;2023-02-17
+Giulia;Bianchi;giulia.bianchi80@email.com;;Geneva;11;2023-04-06;true;2024-02-15
+Alessandro;Rossi;alessandro.rossi56@email.com;;Venezia;5;2023-04-01;sì;2024-06-01
+Giulia;Costa;giulia.costa45@email.com;+39 341 6715580;Roma;3;2025-10-27;sì;2025-06-19
+Riccardo;Romano;riccardo.romano87@email.com;+39 364 8201595;Palermo;1;2025-11-11;sì;2024-12-05
+Giulia;Marino;giulia.marino50@email.com;+39 337 4375409;Roma;14;2026-09-22;false;
+Silvia;De Luca;silvia.de luca90@email.com;;Paris;2;2026-11-05;true;2024-10-03
+Valentina;Greco;valentina.greco84@email.com;+39 340 4634386;Venezia;3;2025-11-22;si;2024-10-07
+Laura;Mancini;laura.mancini32@email.com;+39 301 5536680;Berlin;12;2026-06-13;true;2025-10-07
+Fabio;Romano;fabio.romano18@email.com;+39 399 4700650;Firenze;10;2024-06-13;no;
+Marta;Romano;marta.romano4@email.com;+39 384 9488389;London;9;2026-01-01;sì;2024-04-05
+Fabio;Rizzo;fabio.rizzo43@email.com;+39 327 7832762;Palermo;2;2026-06-21;si;2023-04-09
+Alessandro;Bianchi;alessandro.bianchi69@email.com;;Roma;0;;true;2025-08-27
+;Russo;.russo36@email.com;+39 356 1526583;Amsterdam;2;2025-05-07;;
+Matteo;Rizzo;matteo.rizzo49@email.com;;Milano;15;2025-05-12;si;2023-06-16
+Davide;De Luca;davide.de luca70@email.com;+39 335 3857829;Geneva;3;2026-03-14;si;2025-02-09
+Alessandro;Marino;alessandro.marino18@email.com;+39 374 9793825;;0;;false;
+Francesca;Colombo;francesca.colombo38@email.com;;Venezia;15;2023-12-15;yes;2024-08-26
+;Conti;.conti30@email.com;;Vienna;12;2026-06-27;yes;2024-08-21
+Marta;De Luca;francesca.mancini36@email.com;+39 364 6738192;Munich;5;2023-05-19;true;2024-06-11
+Laura;Rizzo;laura.rizzo65@email.com;+39 346 6017834;Paris;11;2024-10-27;sì;2024-02-22
+Silvia;Costa;silvia.costa88@email.com;+39 361 3343653;Torino;7;2025-04-02;no;
+Alessandro;Ferrari;alessandro.ferrari31@email.com;+39 310 2820230;Venezia;0;;;
+Davide;Rizzo;davide.rizzo18@email.com;+39 372 7588335;Berlin;8;2024-06-03;si;2024-10-15
+Riccardo;Lombardi;riccardo.lombardi92@email.com;+39 342 6856884;Palermo;13;2024-09-23;;
+Fabio;Gallo;fabio.romano18@email.com;+39 318 6486497;Paris;3;2024-05-28;sì;2025-02-20
+Valentina;Moretti;valentina.moretti22@email.com;+39 387 5764012;Amsterdam;14;2023-02-27;yes;2023-08-19
+Marco;Bianchi;marco.bianchi10@email.com;+39 379 6248047;Vienna;0;;;
+Sara;Esposito;sara.esposito47@email.com;+39 381 5597229;Bologna;8;2024-01-04;false;
+Matteo;Bruno;matteo.bruno78@email.com;+39 304 9756427;Torino;7;2025-01-08;si;2024-03-11
+Giulia;Giordano;giulia.giordano68@email.com;+39 335 3678062;Munich;6;2023-08-09;;
+Anna;Rossi;anna.rossi32@email.com;+39 339 3460150;Firenze;0;;yes;2023-02-01
+Silvia;Romano;silvia.romano17@email.com;+39 380 4701250;Munich;14;2026-04-11;yes;2024-07-03
+Giovanni;Greco;giovanni.greco13@email.com;+39 354 2774237;Bologna;4;2026-12-02;si;2025-12-28
+Andrea;Ferrari;andrea.ferrari33@email.com;+39 331 1847906;Genova;14;2023-03-20;yes;2025-03-10
+Laura;Russo;laura.russo15@email.com;+39 376 5067139;Torino;9;2023-07-22;no;
+Sara;Romano;sara.romano84@email.com;+39 370 3145923;Verona;6;2025-04-27;false;
+Sara;Lombardi;sara.lombardi19@email.com;+39 390 1125082;Vienna;7;2023-11-17;si;2023-08-13
+Riccardo;Rizzo;riccardo.rizzo28@email.com;+39 363 8118523;Paris;4;2026-08-11;sì;2025-07-07
+Chiara;Conti;chiara.conti71@email.com;;Palermo;13;2024-12-10;si;2024-05-26
+Matteo;Gallo;matteo.gallo68@email.com;+39 308 6606690;Zurich;10;2023-09-12;si;2024-02-15
+Francesca;Giordano;francesca.giordano73@email.com;+39 326 4187406;Vienna;7;2025-03-06;;
+Fabio;Conti;fabio.42@email.com;+39 316 6470508;Genova;11;2026-11-05;yes;2024-10-21
+Elena;Giordano;elena.giordano19@email.com;+39 307 4101863;Napoli;5;2023-01-20;sì;2023-08-05
+Alessandro;Gallo;alessandro.gallo86@email.com;+39 314 9078781;Napoli;9;2025-01-15;;
+Valentina;Lombardi;valentina.lombardi70@email.com;;Vienna;0;;yes;2024-07-15
+Davide;Bianchi;;+39 339 4724223;Paris;9;2024-11-24;sì;2025-10-21
+Anna;Rossi;anna.rossi82@email.com;+39 323 7325070;Bologna;10;2026-04-21;no;
+Chiara;De Luca;chiara.de luca22@email.com;+39 387 5537933;Firenze;13;2023-06-04;si;2024-11-09
+Chiara;Moretti;chiara.moretti49@email.com;+39 364 7477907;Geneva;15;2024-05-09;;
+Laura;Marino;laura.marino98@email.com;;Palermo;13;2025-05-02;true;2025-12-11
+Silvia;Rizzo;silvia.rizzo70@email.com;+39 350 4197972;Amsterdam;6;2024-11-20;sì;2023-11-27
+Silvia;Rossi;davide.russo90@email.com;+39 397 7158304;Torino;11;2024-04-27;si;2023-10-04
+Matteo;Colombo;matteo.colombo71@email.com;+39 305 4080145;Munich;3;2023-04-04;true;2024-03-02
+Riccardo;Giordano;giovanni.romano89@email.com;+39 313 2328461;Venezia;9;2024-09-25;yes;2023-03-10
+Marta;Esposito;marta.esposito64@email.com;+39 314 8804695;Bologna;4;2023-05-02;true;2023-03-16
+Giulia;Moretti;giulia.moretti2@email.com;+39 393 4390767;Bologna;5;2023-07-22;;
+Marco;Rossi;marco.rossi23@email.com;+39 329 3329220;Napoli;12;2023-03-03;false;
+Elena;Esposito;elena.esposito38@email.com;;Firenze;15;2023-07-15;false;
+Davide;Esposito;;+39 394 7902725;Berlin;3;2026-05-25;false;
+Sara;De Luca;sara.de luca6@email.com;+39 361 6670844;Torino;11;2025-02-02;no;
+Giovanni;Rossi;giovanni.rossi34@email.com;+39 337 7926648;Amsterdam;13;2023-12-01;si;2024-09-09
+Silvia;Ricci;silvia.ricci85@email.com;+39 365 4897224;Vienna;5;2026-04-24;false;
+Andrea;Rizzo;andrea.rizzo71@email.com;+39 346 2810933;Barcelona;6;2023-02-20;si;2024-01-14
+Laura;Russo;marco.ricci61@email.com;+39 391 5582950;Venezia;1;2025-08-19;sì;2025-02-15
+Valentina;Mancini;valentina.mancini12@email.com;;Geneva;14;2023-05-21;;
+Chiara;Rizzo;chiara.rizzo85@email.com;+39 315 2674339;London;13;2026-08-14;false;
+Luca;Lombardi;silvia.lombardi46@email.com;+39 319 2586409;Napoli;1;2024-09-01;sì;2024-08-25
+Lorenzo;Gallo;lorenzo.gallo21@email.com;+39 341 4180902;Berlin;5;2026-04-12;yes;2025-10-21
+Davide;Giordano;davide.giordano78@email.com;+39 380 6695030;Venezia;5;2023-10-08;;
+Fabio;Mancini;fabio.mancini68@email.com;+39 368 5798244;London;10;2025-03-23;si;2025-09-08
+Elena;Moretti;elena.moretti59@email.com;+39 319 8941011;Milano;7;2026-11-06;;
+Giulia;Esposito;giulia.esposito8@email.com;+39 317 2541259;Bologna;13;2026-03-07;yes;2025-06-06
+Alessandro;Gallo;alessandro.gallo47@email.com;+39 383 6141927;Vienna;2;2025-05-19;;
+Lorenzo;Greco;lorenzo.greco22@email.com;+39 370 9916731;Torino;3;2024-10-04;yes;2024-04-17
+Francesca;De Luca;francesca.de luca33@email.com;+39 375 9407200;Geneva;6;2026-06-25;true;2025-04-11
+Fabio;Esposito;fabio.esposito41@email.com;+39 383 2263230;;7;2026-09-06;yes;2024-10-06
+Lorenzo;Bruno;lorenzo.bruno65@email.com;+39 338 5003244;Torino;1;2025-11-14;true;2023-05-07
+Marco;De Luca;luca.ricci43@email.com;+39 331 8480522;Milano;1;2026-02-28;si;2023-09-16
+Lorenzo;Costa;lorenzo.costa22@email.com;+39 324 2365609;Geneva;5;2026-09-08;yes;2023-03-16
+Andrea;Esposito;andrea.esposito11@email.com;+39 370 5955264;Vienna;12;2025-03-02;true;2025-07-25
+Giulia;Ferrari;giulia.ferrari33@email.com;+39 328 9192945;Munich;13;2025-03-17;;
+Giovanni;Moretti;giovanni.moretti42@email.com;+39 327 9217105;Amsterdam;10;2026-11-27;si;2025-04-01
+Laura;Rizzo;laura.rizzo3@email.com;+39 312 1677148;Venezia;3;2024-10-02;yes;2025-11-18
+Elena;Bruno;elena.bruno18@email.com;+39 380 7875552;Verona;13;2026-07-01;no;
+Marta;Bruno;marta.bruno12@email.com;+39 321 3294753;Napoli;0;;no;
+Lorenzo;Gallo;lorenzo.gallo78@email.com;+39 347 5033288;Prague;15;2025-01-27;;
+Riccardo;De Luca;riccardo.de luca42@email.com;+39 332 6915978;Barcelona;5;2025-07-15;no;
+Fabio;Russo;fabio.russo22@email.com;;Bologna;13;2024-10-13;si;2025-05-19
+Marta;Marino;;+39 318 2010333;Venezia;0;;yes;2024-01-15
+Luca;Bruno;luca.bruno19@email.com;+39 360 6371452;Palermo;15;2025-03-20;yes;2023-12-07
+Chiara;De Luca;silvia.8@email.com;+39 318 1376178;Genova;15;2026-03-17;yes;2024-02-03
+Sara;Conti;sara.conti25@email.com;+39 305 5812635;;12;2024-04-27;no;
+Elena;Russo;elena.russo68@email.com;+39 383 8212278;Barcelona;2;2023-12-06;sì;2025-10-07
+Luca;Russo;luca.russo93@email.com;+39 358 8780891;Munich;12;2025-06-20;false;
+Giulia;Colombo;giulia.colombo43@email.com;+39 325 7010071;Genova;4;2025-06-07;no;
+Elena;Russo;elena.russo89@email.com;+39 310 4452331;Milano;10;2026-01-05;false;
+;Marino;.marino2@email.com;+39 313 6365793;Paris;13;2025-09-08;yes;2024-09-16
+Lorenzo;Bianchi;lorenzo.bianchi59@email.com;+39 336 1900602;Munich;1;2024-08-15;true;2023-06-06
+Francesca;Romano;francesca.romano99@email.com;;Zurich;12;2023-12-23;yes;2025-06-03
+Fabio;Marino;fabio.marino38@email.com;+39 398 6392695;Bologna;2;2025-03-28;false;
+Davide;Conti;davide.conti2@email.com;+39 360 9188419;Roma;12;2024-07-16;sì;2023-11-10
+Andrea;Bruno;chiara.89@email.com;+39 309 8741447;Paris;15;2023-11-08;;
+Francesca;De Luca;francesca.de luca63@email.com;+39 387 2473086;Bologna;11;2024-03-25;true;2024-03-16
+Silvia;Conti;silvia.conti12@email.com;+39 354 7564279;Munich;3;2026-11-14;yes;2024-12-15
+Luca;De Luca;luca.de luca6@email.com;+39 395 5009474;Paris;10;2023-02-08;sì;2024-10-12
+Alessandro;Lombardi;alessandro.lombardi34@email.com;;Torino;2;2024-11-23;yes;2024-10-13
+Valentina;Lombardi;valentina.lombardi98@email.com;+39 362 6103168;Roma;13;2025-03-16;true;2025-04-03
+Giulia;Marino;giulia.marino24@email.com;+39 372 2318372;Milano;9;2023-08-13;sì;2023-03-16
+Alessandro;Esposito;alessandro.esposito55@email.com;;;12;2024-03-07;yes;2025-06-08
+Marco;De Luca;marco.de luca95@email.com;+39 350 5854173;Roma;9;2024-12-06;yes;2023-01-26
+;Colombo;.colombo68@email.com;+39 388 7391063;Torino;10;2023-09-17;no;
+Andrea;Rossi;andrea.rossi88@email.com;;Barcelona;4;2025-04-21;yes;2025-11-14
+Luca;Esposito;luca.esposito11@email.com;+39 303 4508080;Berlin;9;2023-11-08;true;2023-07-21
+Sara;De Luca;chiara.esposito14@email.com;;Milano;8;2024-08-12;sì;2025-03-22
+Alessandro;Gallo;alessandro.gallo85@email.com;+39 394 6753744;Zurich;3;2023-12-08;yes;2024-08-27
+Giulia;Gallo;giulia.gallo9@email.com;;Bologna;2;2024-09-17;si;2024-10-10
+Sara;Rossi;sara.rossi76@email.com;+39 334 2497427;Munich;14;2024-09-06;false;
+Andrea;Conti;andrea.conti35@email.com;+39 303 3198490;Zurich;8;2026-08-27;yes;2025-05-07
+Valentina;Conti;valentina.conti69@email.com;+39 343 1276082;Geneva;2;2025-12-13;;
+Riccardo;Mancini;riccardo.mancini84@email.com;+39 346 4158636;Milano;4;2026-07-04;sì;2025-05-03
+Silvia;Bruno;silvia.bruno64@email.com;;Genova;7;2023-02-06;sì;2025-03-01
+Marco;Lombardi;marco.lombardi29@email.com;;London;8;2025-07-16;true;2023-05-25
+Marco;Costa;marco.costa45@email.com;;Zurich;15;2025-07-27;yes;2023-10-14
+Riccardo;Colombo;alessandro.ricci92@email.com;;Palermo;15;2023-06-17;true;2025-11-18
+Davide;De Luca;davide.de luca28@email.com;+39 375 3954424;Roma;15;2023-10-11;false;
+Davide;Russo;davide.russo50@email.com;+39 392 9991137;Berlin;1;2025-05-13;;
+Riccardo;Ricci;riccardo.ricci52@email.com;+39 373 1544132;London;10;2026-02-17;si;2023-10-17
+Elena;Bianchi;elena.bianchi17@email.com;+39 332 3938418;Geneva;6;2025-12-01;sì;2025-11-02
+Fabio;Greco;fabio.greco24@email.com;+39 379 1609875;Vienna;14;2026-07-02;si;2023-09-18
+Matteo;Romano;;;;9;2024-10-20;;
+Marta;Rizzo;marta.rizzo90@email.com;+39 312 9565329;Bologna;14;2026-07-08;si;2025-10-28
+Davide;Romano;davide.romano40@email.com;+39 315 4732292;Vienna;13;2026-07-27;false;
+Riccardo;Giordano;riccardo.giordano86@email.com;+39 397 1559846;Munich;14;2024-04-22;si;2025-08-11
+Marco;Colombo;marco.colombo62@email.com;;Vienna;10;2023-04-13;true;2025-03-13
+Chiara;Lombardi;chiara.lombardi47@email.com;+39 340 4839960;Berlin;9;2024-06-05;false;
+Valentina;Moretti;valentina.moretti67@email.com;+39 313 2882691;Vienna;11;2026-05-24;si;2023-09-28
+Valentina;Giordano;valentina.giordano53@email.com;+39 368 1155112;Roma;8;2024-08-11;si;2023-10-08
+Davide;De Luca;davide.de luca96@email.com;+39 388 5044062;Munich;7;2024-05-25;;
+Giovanni;Costa;giovanni.costa44@email.com;;Barcelona;12;2023-11-07;;
+Sara;Marino;sara.marino60@email.com;+39 367 7537807;Vienna;12;2025-08-14;;
+Sara;Colombo;sara.colombo45@email.com;+39 371 8447413;Geneva;6;2024-03-24;true;2025-02-19
+Fabio;Marino;;;Palermo;12;2025-12-04;no;
+Davide;Gallo;davide.gallo70@email.com;+39 367 5010366;Milano;11;2024-03-17;no;
+Andrea;De Luca;matteo.conti42@email.com;+39 396 7380431;Munich;6;2023-09-14;true;2025-03-03
+Sara;Rizzo;sara.rizzo81@email.com;+39 306 9788770;Barcelona;5;2026-03-17;no;
+Laura;Greco;laura.greco51@email.com;+39 331 1275922;Napoli;12;2023-04-07;sì;2023-08-06
+Matteo;Greco;matteo.greco86@email.com;+39 380 2515064;Firenze;1;2023-12-23;no;
+Francesca;Conti;francesca.conti97@email.com;+39 346 6337734;London;14;2024-03-19;sì;2025-11-11
+Anna;Ferrari;anna.ferrari40@email.com;+39 348 7955364;Milano;5;2025-07-19;;
+Marco;Esposito;marco.esposito66@email.com;+39 392 7370893;Amsterdam;13;2025-06-16;yes;2024-02-01
+Elena;Bianchi;elena.bianchi23@email.com;+39 327 9805217;Milano;2;2026-03-20;yes;2023-08-03
+;Gallo;.gallo45@email.com;+39 354 8276632;Amsterdam;6;2023-05-15;yes;2023-04-22
+Fabio;Bruno;fabio.bruno73@email.com;;Bologna;0;;yes;2025-03-06

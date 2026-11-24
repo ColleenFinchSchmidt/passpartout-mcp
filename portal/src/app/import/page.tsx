@@ -55,6 +55,14 @@ type ParseResult = {
   sections: ExtractedSection[];
   problems: Problem[];
   cost_usd: number;
+  rows_in_file?: number;
+  rows_extracted?: number;
+};
+
+type SaveStats = {
+  guestsStored: number;
+  guestsSkippedConsent: number;
+  guestsDeduplicated: number;
 };
 
 type ImportRecord = {
@@ -85,6 +93,7 @@ export default function ImportPage() {
   const [preview, setPreview] = useState<ParseResult | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveStats, setSaveStats] = useState<SaveStats | null>(null);
   const [history, setHistory] = useState<ImportRecord[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [editingMapping, setEditingMapping] = useState<{section: number; orig: string} | null>(null);
@@ -187,11 +196,12 @@ export default function ImportPage() {
         body: JSON.stringify({ sections: sectionsWithEdits, fileName: preview.fileName }),
       });
 
+      const saveResult = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || `Save failed (${res.status})`);
+        throw new Error(saveResult.error || `Save failed (${res.status})`);
       }
 
+      setSaveStats(saveResult.stats || null);
       setSaved(true);
       const histRes = await fetch("/api/import/history");
       if (histRes.ok) setHistory(await histRes.json());
@@ -302,8 +312,13 @@ export default function ImportPage() {
               <FileSpreadsheet className="w-5 h-5 text-[var(--color-accent)]" />
               <span className="text-sm font-medium">{preview.fileName}</span>
               <Badge variant="outline" className="text-[10px]">
-                ~${preview.cost_usd.toFixed(3)}
+                ~${preview.cost_usd.toFixed(4)}
               </Badge>
+              {preview.rows_in_file !== undefined && (
+                <span className="text-[10px] text-[var(--color-text-muted)]">
+                  {preview.rows_in_file} lines in file · {preview.sections.reduce((s, sec) => s + sec.rows.length, 0)} rows extracted
+                </span>
+              )}
             </div>
             <Button
               variant="ghost"
@@ -462,7 +477,20 @@ export default function ImportPage() {
             <p className="text-sm font-medium">
               {locale === "it" ? "Importazione completata!" : "Import complete!"}
             </p>
-            <Button variant="secondary" onClick={() => { setPreview(null); setSaved(false); }}>
+            {saveStats && (
+              <div className="text-xs text-[var(--color-text-muted)] space-y-1">
+                {saveStats.guestsStored > 0 && (
+                  <p>{saveStats.guestsStored} {locale === "it" ? "ospiti salvati" : "guests stored"}</p>
+                )}
+                {saveStats.guestsSkippedConsent > 0 && (
+                  <p className="text-amber-600">{saveStats.guestsSkippedConsent} {locale === "it" ? "esclusi (senza consenso marketing)" : "excluded (no marketing consent)"}</p>
+                )}
+                {saveStats.guestsDeduplicated > 0 && (
+                  <p>{saveStats.guestsDeduplicated} {locale === "it" ? "duplicati aggiornati" : "duplicates updated"}</p>
+                )}
+              </div>
+            )}
+            <Button variant="secondary" onClick={() => { setPreview(null); setSaved(false); setSaveStats(null); }}>
               {locale === "it" ? "Importa un altro file" : "Import another file"}
             </Button>
           </CardContent>

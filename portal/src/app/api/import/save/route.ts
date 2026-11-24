@@ -22,6 +22,8 @@ export async function POST(request: Request) {
     }
 
     const rowCounts: Record<string, number> = {};
+    const stats = { guestsStored: 0, guestsSkippedConsent: 0, guestsDeduplicated: 0 };
+
     for (const s of sections) {
       rowCounts[s.category] = s.rows.length;
     }
@@ -43,45 +45,68 @@ export async function POST(request: Request) {
       },
     });
 
-    // Upsert guests from "guests" sections
     for (const s of sections) {
       if (s.category !== "guests") continue;
       for (const row of s.rows) {
-        const email = row.email as string | null;
-        const phone = row.phone as string | null;
+        const email = (row.email as string)?.trim() || null;
+        const phone = (row.phone as string)?.trim() || null;
         if (!email && !phone) continue;
+
+        const hasConsent = row.marketing_consent === true || row.marketing_consent === "true" || row.marketing_consent === "yes" || row.marketing_consent === "sì" || row.marketing_consent === "si";
+        if (!hasConsent) {
+          stats.guestsSkippedConsent++;
+          continue;
+        }
 
         const guestData = {
           hotelId: HOTEL_ID,
-          batchId: batch.id,
           firstName: (row.first_name as string) || null,
           lastName: (row.last_name as string) || null,
-          email: email || null,
-          phone: phone || null,
+          email: email,
+          phone: phone,
           city: (row.city as string) || null,
           stays: typeof row.stays === "number" ? row.stays : 0,
           lastStayDate: (row.last_stay_date as string) || null,
-          marketingConsent: row.marketing_consent === true,
+          marketingConsent: true,
           consentDate: (row.consent_date as string) || null,
           consentSource: `import:${fileName}`,
         };
 
+        let existing = null;
+
         if (email) {
-          await prisma.guest.upsert({
+          existing = await prisma.guest.findUnique({
             where: { hotelId_email: { hotelId: HOTEL_ID, email } },
-            create: guestData,
-            update: {
+          });
+        }
+        if (!existing && phone) {
+          existing = await prisma.guest.findFirst({
+            where: { hotelId: HOTEL_ID, phone },
+          });
+        }
+
+        if (existing) {
+          stats.guestsDeduplicated++;
+          await prisma.guest.update({
+            where: { id: existing.id },
+            data: {
               ...guestData,
-              stays: { increment: 0 },
+              batches: { connect: { id: batch.id } },
             },
           });
         } else {
-          await prisma.guest.create({ data: guestData });
+          await prisma.guest.create({
+            data: {
+              ...guestData,
+              batches: { connect: { id: batch.id } },
+            },
+          });
         }
+        stats.guestsStored++;
       }
     }
 
-    return NextResponse.json({ importId: batch.id, saved: true });
+    return NextResponse.json({ importId: batch.id, saved: true, stats });
   } catch (err) {
     console.error("[import/save] error:", err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "Save failed" }, { status: 500 });

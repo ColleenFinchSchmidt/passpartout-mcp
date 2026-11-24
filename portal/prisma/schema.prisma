@@ -41,6 +41,8 @@ model ImportBatch {
   guests     Guest[]
 }
 
+
+
 model ImportRow {
   id         String      @id @default(cuid())
   batchId    String
@@ -51,22 +53,21 @@ model ImportRow {
 }
 
 model Guest {
-  id               String      @id @default(cuid())
+  id               String        @id @default(cuid())
   hotelId          String
-  hotel            Hotel       @relation(fields: [hotelId], references: [id])
-  batchId          String?
-  batch            ImportBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  hotel            Hotel         @relation(fields: [hotelId], references: [id])
+  batches          ImportBatch[]
   firstName        String?
   lastName         String?
   email            String?
   phone            String?
   city             String?
-  stays            Int         @default(0)
+  stays            Int           @default(0)
   lastStayDate     String?
-  marketingConsent Boolean     @default(false)
+  marketingConsent Boolean       @default(false)
   consentDate      String?
   consentSource    String?
-  createdAt        DateTime    @default(now())
+  createdAt        DateTime      @default(now())
 
   @@unique([hotelId, email])
 }

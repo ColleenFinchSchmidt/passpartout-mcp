@@ -8,14 +8,38 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No importId" }, { status: 400 });
     }
 
-    await prisma.$transaction([
-      prisma.importRow.deleteMany({ where: { batchId: importId } }),
-      prisma.guest.deleteMany({ where: { batchId: importId } }),
-      prisma.importBatch.update({
-        where: { id: importId },
-        data: { undone: true, undoneAt: new Date() },
-      }),
-    ]);
+    const batch = await prisma.importBatch.findUnique({
+      where: { id: importId },
+      include: { guests: { select: { id: true } } },
+    });
+
+    if (!batch) {
+      return NextResponse.json({ error: "Batch not found" }, { status: 404 });
+    }
+
+    await prisma.importRow.deleteMany({ where: { batchId: importId } });
+
+    // Disconnect guests from this batch, then delete orphans
+    for (const guest of batch.guests) {
+      await prisma.guest.update({
+        where: { id: guest.id },
+        data: { batches: { disconnect: { id: importId } } },
+      });
+
+      const remaining = await prisma.guest.findUnique({
+        where: { id: guest.id },
+        include: { _count: { select: { batches: true } } },
+      });
+
+      if (remaining && remaining._count.batches === 0) {
+        await prisma.guest.delete({ where: { id: guest.id } });
+      }
+    }
+
+    await prisma.importBatch.update({
+      where: { id: importId },
+      data: { undone: true, undoneAt: new Date() },
+    });
 
     return NextResponse.json({ undone: true });
   } catch (err) {

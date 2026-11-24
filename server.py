@@ -983,7 +983,7 @@ Extract ALL data you can find into these categories:
 - rooms: Room types, counts, availability windows
 - occupancy: Past occupancy data (dates, rooms sold, percentages)
 - rates: Rate rules, seasonal pricing, minimum stays
-- guests: Guest names, emails, phones, marketing consent
+- guests: Guest names, emails, phones, marketing consent. Include ALL guests in rows, with marketing_consent: true or false. The portal will filter server-side.
 - amenities: Hotel amenities/facilities
 - extras: Add-on services, packages
 
@@ -992,13 +992,21 @@ For each category found, return:
 2. "rows": array of extracted row objects with consistent keys
 3. "columns": ordered list of the keys used
 4. "mappings": object mapping original column headers (as found in file) to your standardised keys
-5. "problems": array of {message, count?} for issues found (missing consent, bad dates, etc.)
+5. "problems": array of {message, count?} for issues found. BE SPECIFIC with counts:
+   - For guests: count rows without marketing consent: {"message": "without marketing consent (will not be stored)", "count": N}
+   - For guests: count rows with missing email: {"message": "missing email address", "count": N}
+   - For guests: count rows with missing phone: {"message": "missing phone number", "count": N}
+   - For occupancy/dates: count unreadable dates: {"message": "dates could not be read", "count": N}
+   - For any section: count duplicate rows: {"message": "duplicate rows", "count": N}
+   - For any section: count rows with missing required fields: {"message": "rows with missing required fields", "count": N}
 
-For guests: flag rows WITHOUT explicit marketing consent in problems. Only include guests who have consent.
+IMPORTANT: Include every row from the file (do NOT silently drop rows). Set marketing_consent: false for guests without explicit consent. The server enforces consent filtering.
 
-Return valid JSON: {"sections": [...], "problems": [...]}
+For the "rows_in_file" field: count the total data rows in the original file (excluding headers).
+
+Return valid JSON: {"sections": [...], "problems": [...], "rows_in_file": N}
 problems at top level = file-wide issues.
-If no data found, return {"sections": [], "problems": [{"message": "No recognisable hotel data found"}]}"""
+If no data found, return {"sections": [], "problems": [{"message": "No recognisable hotel data found"}], "rows_in_file": 0}"""
 
 @api.post("/api/import/parse-file", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 async def api_import_parse(file: UploadFile = File(...)):
@@ -1066,45 +1074,93 @@ async def api_import_parse(file: UploadFile = File(...)):
             raise HTTPException(status_code=400, detail=f"Could not read PDF: {exc}")
 
     if not text.strip():
-        return {"fileName": file.filename, "sections": [], "problems": [{"message": "File appears empty"}], "cost_usd": 0}
+        return {"fileName": file.filename, "sections": [], "problems": [{"message": "File appears empty"}], "cost_usd": 0, "rows_in_file": 0}
 
-    # Truncate very long files
-    if len(text) > 100_000:
-        text = text[:100_000] + "\n\n[... truncated ...]"
-
-    # Call Claude via the shared helper
     from local_events import _ask_claude
     import json as _json
 
-    user_msg = f"File name: {file.filename}\n\n{text}"
-    est_tokens = (len(IMPORT_SYSTEM_PROMPT) + len(user_msg)) // 4
-    raw = _ask_claude(IMPORT_SYSTEM_PROMPT, user_msg)
-    cost_usd = round(est_tokens * 0.25 / 1_000_000, 4)
+    total_lines = len([l for l in text.split("\n") if l.strip()])
+    chunk_limit = 80_000
 
-    if raw is None:
-        raise HTTPException(status_code=502, detail="AI extraction failed — Claude returned no response")
-
-    # Parse Claude's response
-    try:
-        # Strip markdown code fences if present
+    def _parse_chunk(chunk_text: str, chunk_label: str) -> tuple:
+        user_msg = f"File name: {file.filename} ({chunk_label})\n\n{chunk_text}"
+        est = (len(IMPORT_SYSTEM_PROMPT) + len(user_msg)) // 4
+        raw = _ask_claude(IMPORT_SYSTEM_PROMPT, user_msg)
+        cost = round(est * 0.25 / 1_000_000, 4)
+        if raw is None:
+            return None, cost
         cleaned = raw.strip()
         if cleaned.startswith("```"):
             cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
             if cleaned.endswith("```"):
                 cleaned = cleaned[:-3]
-        result = _json.loads(cleaned)
-    except _json.JSONDecodeError:
-        _log.warning("Claude returned non-JSON for import: %s", raw[:200])
-        return {
-            "fileName": file.filename,
-            "sections": [],
-            "problems": [{"message": "AI could not extract structured data from this file"}],
-            "cost_usd": cost_usd,
-        }
+        try:
+            return _json.loads(cleaned), cost
+        except _json.JSONDecodeError:
+            _log.warning("Claude returned non-JSON for import: %s", raw[:200])
+            return None, cost
 
-    result["fileName"] = file.filename
-    result["cost_usd"] = round(cost_usd, 4)
-    return result
+    if len(text) <= chunk_limit:
+        result, cost_usd = _parse_chunk(text, "complete file")
+        if result is None:
+            return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI could not extract structured data from this file"}], "cost_usd": cost_usd, "rows_in_file": total_lines}
+        result["fileName"] = file.filename
+        result["cost_usd"] = round(cost_usd, 4)
+        result.setdefault("rows_in_file", total_lines)
+        return result
+
+    # Split into chunks for large files
+    lines = text.split("\n")
+    chunks = []
+    current_chunk = []
+    current_len = 0
+    for line in lines:
+        if current_len + len(line) > chunk_limit and current_chunk:
+            chunks.append("\n".join(current_chunk))
+            current_chunk = []
+            current_len = 0
+        current_chunk.append(line)
+        current_len += len(line) + 1
+    if current_chunk:
+        chunks.append("\n".join(current_chunk))
+
+    merged_sections: dict[str, dict] = {}
+    total_cost = 0.0
+    all_problems = []
+
+    for ci, chunk in enumerate(chunks):
+        label = f"chunk {ci+1}/{len(chunks)}"
+        result, cost = _parse_chunk(chunk, label)
+        total_cost += cost
+        if result is None:
+            all_problems.append({"message": f"Chunk {ci+1} could not be parsed"})
+            continue
+        for section in result.get("sections", []):
+            cat = section["category"]
+            if cat not in merged_sections:
+                merged_sections[cat] = {
+                    "category": cat,
+                    "rows": [],
+                    "columns": section.get("columns", []),
+                    "mappings": section.get("mappings", {}),
+                    "problems": [],
+                }
+            merged_sections[cat]["rows"].extend(section.get("rows", []))
+            merged_sections[cat]["problems"].extend(section.get("problems", []))
+        all_problems.extend(result.get("problems", []))
+
+    all_problems.append({"message": f"File was split into {len(chunks)} chunks for processing"})
+
+    total_rows = sum(len(s["rows"]) for s in merged_sections.values())
+
+    return {
+        "fileName": file.filename,
+        "sections": list(merged_sections.values()),
+        "problems": all_problems,
+        "cost_usd": round(total_cost, 4),
+        "rows_in_file": total_lines,
+        "rows_extracted": total_rows,
+    }
 
 
 # ---------- Inventory REST endpoints ----------
