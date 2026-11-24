@@ -1196,11 +1196,40 @@ async def api_import_parse(file: UploadFile = File(...), model: str | None = Que
         except Exception:
             pass
 
+    # -------- Canonical field aliases --------
+    CANONICAL_FIELDS = {
+        "camere_occupate": "rooms_occupied",
+        "rooms_sold": "rooms_occupied",
+        "occupied_rooms": "rooms_occupied",
+        "camere_totali": "total_rooms",
+        "room_count": "total_rooms",
+        "data": "date",
+        "data_giorno": "date",
+        "giorno": "date",
+        "day": "date",
+        "occupazione_pct": "occupancy_pct",
+        "percentuale_occupazione": "occupancy_pct",
+        "occ_pct": "occupancy_pct",
+        "ricavo_medio": "avg_revenue",
+        "revenue_avg": "avg_revenue",
+        "average_revenue": "avg_revenue",
+        "note": "notes",
+        "mese": "month",
+        "media_occupazione_pct": "avg_occupancy_pct",
+        "ricavo_totale": "total_revenue",
+        "revpar": "avg_revenue",
+    }
+
+    def _canonicalize_col_map(col_map: dict) -> dict:
+        """Replace non-canonical mapped keys with their canonical equivalents."""
+        return {orig: CANONICAL_FIELDS.get(mapped.lower(), mapped) for orig, mapped in col_map.items()}
+
     # -------- MULTI-SHEET EXCEL: each sheet parsed separately --------
     multi_sheet_sections = []
     if ext in ("xlsx", "xls") and parsed_rows is None:
         if len(excel_sheets) > 1:
             all_sections = []
+            sheet_errors = []
             total_rows_in_file = 0
             total_cost = 0.0
             for sheet_name, sh_headers, sh_rows in excel_sheets:
@@ -1229,8 +1258,13 @@ IMPORTANT: If this sheet contains monthly summary/aggregate data (e.g. monthly a
 set category to "monthly_occupancy" — NOT "occupancy" (which is for daily data).
 If the sheet has daily rows (one per day), use "occupancy".
 
-For occupancy: use keys: date, rooms_occupied, total_rooms, occupancy_pct, avg_revenue.
-For monthly_occupancy: use keys: month, avg_occupancy_pct, total_room_nights, avg_revenue.
+IMPORTANT: You MUST map to these exact canonical field names only:
+For occupancy: date, rooms_occupied, total_rooms, occupancy_pct, avg_revenue, free_rooms, notes.
+For monthly_occupancy: month, avg_occupancy_pct, total_room_nights, total_revenue, avg_revenue.
+For guests: first_name, last_name, email, phone, city, stays, last_stay_date, marketing_consent, consent_date.
+For rates: public_rate_eur, lowest_price_eur, max_discount_pct, min_stay.
+For extras: name, price_eur, description.
+Do NOT invent other keys or use the original Italian names as keys.
 
 File: {file.filename}, Sheet: {sheet_name}
 Headers: {sh_headers}
@@ -1242,24 +1276,28 @@ Sample data:
                 raw = _ask_claude(IMPORT_SYSTEM_PROMPT, sheet_mapping_prompt, max_tokens=4000, model=sheet_model)
                 if raw is None:
                     from local_events import _last_claude_error
-                    _log.warning("Multi-sheet: Sonnet failed for sheet '%s': %s — retrying with Haiku", sheet_name, _last_claude_error)
-                    sheet_model = "claude-haiku-3-5-20241022"
-                    raw = _ask_claude(IMPORT_SYSTEM_PROMPT, sheet_mapping_prompt, max_tokens=4000)
+                    sonnet_err = _last_claude_error or "unknown"
+                    _log.warning("Multi-sheet: Sonnet failed for sheet '%s': %s — retrying with Haiku", sheet_name, sonnet_err)
+                    sheet_model = "claude-haiku-5-5"
+                    raw = _ask_claude(IMPORT_SYSTEM_PROMPT, sheet_mapping_prompt, max_tokens=4000, model=sheet_model)
                 est_tokens = (len(IMPORT_SYSTEM_PROMPT) + len(sheet_mapping_prompt)) // 4
                 total_cost += est_tokens * 0.75 / 1_000_000
 
                 if raw is None:
                     from local_events import _last_claude_error as _err2
-                    _log.warning("Multi-sheet: Haiku also failed for sheet '%s': %s", sheet_name, _err2)
+                    haiku_err = _err2 or "unknown"
+                    _log.warning("Multi-sheet: Haiku also failed for sheet '%s': %s", sheet_name, haiku_err)
+                    sheet_errors.append({"sheet": sheet_name, "rows": len(sh_rows), "sonnet_error": sonnet_err, "haiku_error": haiku_err})
                     continue
                 try:
                     mapping = _clean_json(raw)
                 except _json.JSONDecodeError:
                     _log.warning("Multi-sheet: bad JSON for sheet '%s': %s", sheet_name, raw[:200])
+                    sheet_errors.append({"sheet": sheet_name, "rows": len(sh_rows), "error": "AI returned invalid JSON", "raw_start": raw[:200]})
                     continue
                 _log.info("Multi-sheet: sheet '%s' → category=%s, columns=%s", sheet_name, mapping.get("category"), list(mapping.get("column_mapping", {}).values()))
 
-                col_map = mapping.get("column_mapping", {})
+                col_map = _canonicalize_col_map(mapping.get("column_mapping", {}))
                 category = mapping.get("category", "occupancy")
                 problems = mapping.get("problems", [])
 
@@ -1272,7 +1310,7 @@ Sample data:
                         idx = header_idx.get(orig)
                         if idx is not None and idx < len(row):
                             val = row[idx].strip()
-                            if mapped_key in ("occupancy_pct", "avg_occupancy_pct", "avg_revenue", "rooms_occupied", "total_rooms", "total_room_nights"):
+                            if mapped_key in ("occupancy_pct", "avg_occupancy_pct", "avg_revenue", "rooms_occupied", "total_rooms", "total_room_nights", "free_rooms", "total_revenue"):
                                 try:
                                     obj[mapped_key] = float(val.replace(",", ".").replace("%", "")) if val else None
                                 except ValueError:
@@ -1280,7 +1318,6 @@ Sample data:
                             else:
                                 obj[mapped_key] = val if val else None
                     if any(v for v in obj.values()):
-                        # Validate row
                         issues = _validate_row(obj, category)
                         if issues:
                             obj["_rejected"] = True
@@ -1307,6 +1344,7 @@ Sample data:
                 "fileName": file.filename,
                 "sections": all_sections,
                 "problems": [],
+                "sheet_errors": sheet_errors,
                 "cost_usd": round(total_cost, 4),
                 "rows_in_file": total_rows_in_file,
                 "rows_extracted": sum(len(s["rows"]) for s in all_sections),
@@ -1360,7 +1398,7 @@ Sample data:
         except _json.JSONDecodeError:
             return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI returned invalid mapping"}], "cost_usd": cost_usd, "rows_in_file": len(parsed_rows), "model_used": mapping_model}
 
-        col_map = mapping.get("column_mapping", {})
+        col_map = _canonicalize_col_map(mapping.get("column_mapping", {}))
         category = mapping.get("category", "guests")
         problems = mapping.get("problems", [])
 
@@ -1382,7 +1420,7 @@ Sample data:
                             obj[mapped_key] = int(val) if val else 0
                         except ValueError:
                             obj[mapped_key] = 0
-                    elif mapped_key in ("occupancy_pct", "avg_revenue", "rooms_occupied", "total_rooms"):
+                    elif mapped_key in ("occupancy_pct", "avg_revenue", "rooms_occupied", "total_rooms", "free_rooms", "total_revenue"):
                         try:
                             obj[mapped_key] = float(val.replace(",", ".").replace("%", "")) if val else None
                         except ValueError:
@@ -1476,19 +1514,25 @@ def _api_import_apply_inner(body: dict):
             total_rooms = hotel.get("rooms", 85)
             for row in rows:
                 d = row.get("date") or row.get("data")
+                free_direct = row.get("free_rooms")
                 occupied = row.get("rooms_occupied") or row.get("camere_occupate")
                 pct = row.get("occupancy_pct") or row.get("occupazione_pct")
-                if d and occupied is not None:
+                if d and free_direct is not None:
                     try:
-                        free = max(0, total_rooms - int(occupied))
-                        free_rooms_data[str(d)] = free
+                        free_rooms_data[str(d)[:10]] = max(0, int(free_direct))
+                    except (ValueError, TypeError):
+                        pass
+                elif d and occupied is not None:
+                    try:
+                        free = max(0, total_rooms - int(float(str(occupied))))
+                        free_rooms_data[str(d)[:10]] = free
                     except (ValueError, TypeError):
                         pass
                 elif d and pct is not None:
                     try:
                         occ_rate = float(str(pct).replace("%", "").replace(",", ".")) / 100
                         free = max(0, total_rooms - round(total_rooms * occ_rate))
-                        free_rooms_data[str(d)] = free
+                        free_rooms_data[str(d)[:10]] = free
                     except (ValueError, TypeError):
                         pass
 
