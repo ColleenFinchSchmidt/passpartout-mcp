@@ -788,14 +788,17 @@ def _fetch_historical_aq(lat: float, lon: float, start: date, end: date) -> dict
 def _real_aq_score(aq_day: dict) -> float:
     """Score a single day's AQ from real Open-Meteo data.
 
-    EU AQI bands: 0-20 Good, 20-40 Fair, 40-60 Moderate, 60-80 Poor, 80+ Very Poor.
-    Only "Poor" and above should trigger a moment.
+    Thresholds set high enough that only genuinely bad days fire:
+    - PM2.5 > 50 µg/m³ (double the EU annual limit, serious smog)
+    - PM10 > 75 µg/m³ (well above EU daily limit of 50)
+    - EU AQI > 70 (solidly in "Poor" band)
+    Po Valley winter averages 30-40 PM2.5 — that's normal, not a moment.
     """
-    if aq_day.get("pm25", 0) > 35:
+    if aq_day.get("pm25", 0) > 50:
         return 0.7
-    if aq_day.get("pm10", 0) > 50:
+    if aq_day.get("pm10", 0) > 75:
         return 0.6
-    if aq_day.get("aqi", 0) > 60:
+    if aq_day.get("aqi", 0) > 70:
         return 0.5
     return 0.0
 
