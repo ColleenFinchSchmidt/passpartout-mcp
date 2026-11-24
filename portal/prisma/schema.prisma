@@ -22,6 +22,53 @@ model Hotel {
   blackoutDates  String[]
   createdAt      DateTime      @default(now())
   actions        OfferAction[]
+  imports        ImportBatch[]
+  guests         Guest[]
+}
+
+model ImportBatch {
+  id         String       @id @default(cuid())
+  hotelId    String
+  hotel      Hotel        @relation(fields: [hotelId], references: [id])
+  fileName   String
+  categories String[]
+  rowCounts  Json
+  costUsd    Float        @default(0)
+  createdAt  DateTime     @default(now())
+  undone     Boolean      @default(false)
+  undoneAt   DateTime?
+  rows       ImportRow[]
+  guests     Guest[]
+}
+
+model ImportRow {
+  id         String      @id @default(cuid())
+  batchId    String
+  batch      ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  category   String
+  data       Json
+  createdAt  DateTime    @default(now())
+}
+
+model Guest {
+  id               String      @id @default(cuid())
+  hotelId          String
+  hotel            Hotel       @relation(fields: [hotelId], references: [id])
+  batchId          String?
+  batch            ImportBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  firstName        String?
+  lastName         String?
+  email            String?
+  phone            String?
+  city             String?
+  stays            Int         @default(0)
+  lastStayDate     String?
+  marketingConsent Boolean     @default(false)
+  consentDate      String?
+  consentSource    String?
+  createdAt        DateTime    @default(now())
+
+  @@unique([hotelId, email])
 }
 
 model OfferAction {

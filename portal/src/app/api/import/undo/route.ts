@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -7,8 +8,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No importId" }, { status: 400 });
     }
 
-    // TODO: Undo import in Postgres (delete rows by import batch).
-    console.log(`[import/undo] Undoing import ${importId}`);
+    await prisma.$transaction([
+      prisma.importRow.deleteMany({ where: { batchId: importId } }),
+      prisma.guest.deleteMany({ where: { batchId: importId } }),
+      prisma.importBatch.update({
+        where: { id: importId },
+        data: { undone: true, undoneAt: new Date() },
+      }),
+    ]);
 
     return NextResponse.json({ undone: true });
   } catch (err) {

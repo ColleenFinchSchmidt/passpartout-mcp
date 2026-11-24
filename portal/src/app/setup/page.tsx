@@ -304,6 +304,9 @@ export default async function SetupPage() {
                     Upload your files — we&apos;ll extract rooms, occupancy, rates,
                     and guest data automatically.
                   </p>
+                  <p className="text-[10px] text-amber-600 mt-1">
+                    A data processing agreement is required before importing guest data.
+                  </p>
                 </div>
                 <span className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent)] transition-colors text-lg">→</span>
               </CardContent>

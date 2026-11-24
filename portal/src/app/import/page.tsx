@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { useLocale } from "@/components/LocaleProvider";
 import { t } from "@/i18n";
 import {
@@ -24,6 +25,9 @@ import {
   X,
   History,
   Trash2,
+  Pencil,
+  ChevronDown,
+  Shield,
 } from "lucide-react";
 
 const ACCEPTED_TYPES = [
@@ -83,11 +87,25 @@ export default function ImportPage() {
   const [saved, setSaved] = useState(false);
   const [history, setHistory] = useState<ImportRecord[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [editingMapping, setEditingMapping] = useState<{section: number; orig: string} | null>(null);
+  const [editedMappings, setEditedMappings] = useState<Record<number, Record<string, string>>>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
   const categoryLabel = useCallback((cat: DataCategory) => {
     return labels[cat] || cat;
   }, [labels]);
+
+  const getMappedName = useCallback((sectionIdx: number, orig: string, defaultMapped: string) => {
+    return editedMappings[sectionIdx]?.[orig] ?? defaultMapped;
+  }, [editedMappings]);
+
+  const setMappedName = useCallback((sectionIdx: number, orig: string, newName: string) => {
+    setEditedMappings(prev => ({
+      ...prev,
+      [sectionIdx]: { ...prev[sectionIdx], [orig]: newName },
+    }));
+    setEditingMapping(null);
+  }, []);
 
   const handleFiles = useCallback(async (files: FileList | File[]) => {
     const file = files[0];
@@ -110,6 +128,8 @@ export default function ImportPage() {
     setError(null);
     setPreview(null);
     setSaved(false);
+    setEditedMappings({});
+    setEditingMapping(null);
     setUploading(true);
 
     try {
@@ -152,11 +172,19 @@ export default function ImportPage() {
     setSaving(true);
     setError(null);
 
+    const sectionsWithEdits = preview.sections.map((section, idx) => {
+      const edits = editedMappings[idx];
+      if (!edits) return section;
+      return { ...section, mappings: { ...section.mappings, ...Object.fromEntries(
+        Object.entries(section.mappings).map(([orig, def]) => [orig, edits[orig] ?? def])
+      )}};
+    });
+
     try {
       const res = await fetch("/api/import/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sections: preview.sections, fileName: preview.fileName }),
+        body: JSON.stringify({ sections: sectionsWithEdits, fileName: preview.fileName }),
       });
 
       if (!res.ok) {
@@ -311,13 +339,38 @@ export default function ImportPage() {
                   </span>
                 </div>
 
-                {/* Column mappings */}
+                {/* Column mappings (editable) */}
                 <div className="flex flex-wrap gap-1.5">
-                  {Object.entries(section.mappings).map(([orig, mapped]) => (
-                    <Badge key={orig} variant="outline" className="text-[10px]">
-                      {orig} → {mapped}
-                    </Badge>
-                  ))}
+                  {Object.entries(section.mappings).map(([orig, defaultMapped]) => {
+                    const mapped = getMappedName(i, orig, defaultMapped);
+                    const isEditing = editingMapping?.section === i && editingMapping?.orig === orig;
+                    return isEditing ? (
+                      <span key={orig} className="inline-flex items-center gap-1 border border-[var(--color-accent)] rounded-full px-2 py-0.5 text-[10px] bg-white">
+                        <span className="text-[var(--color-text-muted)]">{orig} →</span>
+                        <Input
+                          autoFocus
+                          defaultValue={mapped}
+                          className="h-5 w-24 text-[10px] px-1 py-0 border-0 bg-transparent focus-visible:ring-0"
+                          onBlur={(e) => setMappedName(i, orig, e.target.value || defaultMapped)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") setMappedName(i, orig, (e.target as HTMLInputElement).value || defaultMapped);
+                            if (e.key === "Escape") setEditingMapping(null);
+                          }}
+                        />
+                      </span>
+                    ) : (
+                      <button
+                        key={orig}
+                        className="inline-flex items-center gap-1 border border-[var(--color-border)] rounded-full px-2 py-0.5 text-[10px] hover:border-[var(--color-accent)]/50 transition-colors group"
+                        onClick={() => setEditingMapping({ section: i, orig })}
+                      >
+                        <span className="text-[var(--color-text-muted)]">{orig}</span>
+                        <span>→</span>
+                        <span className="font-medium">{mapped}</span>
+                        <Pencil className="w-2.5 h-2.5 text-[var(--color-text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* Sample rows */}
@@ -463,6 +516,23 @@ export default function ImportPage() {
               </div>
             )
           )}
+        </CardContent>
+      </Card>
+
+      {/* DPA / Privacy notice */}
+      <Card>
+        <CardContent className="p-5 flex items-start gap-3">
+          <Shield className="w-5 h-5 text-[var(--color-accent)] shrink-0 mt-0.5" />
+          <div className="text-xs text-[var(--color-text-muted)] space-y-1">
+            <p className="font-medium text-[var(--color-text)]">
+              {locale === "it" ? "Privacy e trattamento dati" : "Privacy & data processing"}
+            </p>
+            <p>{t(locale).setup.dpaNotice}</p>
+            <p>{locale === "it"
+              ? "I dati degli ospiti sono visibili solo a questo hotel. I dati importati possono essere eliminati in qualsiasi momento."
+              : "Guest data is visible only to this hotel. Imported data can be deleted at any time."
+            }</p>
+          </div>
         </CardContent>
       </Card>
 
