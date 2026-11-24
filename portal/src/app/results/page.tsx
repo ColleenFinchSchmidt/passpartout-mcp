@@ -73,6 +73,9 @@ type BacktestData = {
   per_type: BacktestType;
   flagged_total: number;
   flagged: BacktestRow[];
+  aq_source?: string;
+  has_spa?: boolean;
+  recurring_events_loaded?: number;
 };
 
 type ResultsData = {
@@ -153,8 +156,10 @@ function BacktestChart({ data, locale }: { data: BacktestData; locale: "en" | "i
     school_holiday: "bg-orange-400",
     public_holiday: "bg-red-400",
     seasonal: "bg-emerald-400",
+    recurring_event: "bg-teal-400",
     low_occupancy: "bg-gray-400",
     hotel_rain_penalty: "bg-rose-300",
+    spa_escape: "bg-cyan-400",
     poor_air_quality: "bg-violet-400",
   };
 
@@ -168,6 +173,25 @@ function BacktestChart({ data, locale }: { data: BacktestData; locale: "en" | "i
           <span className="text-xs text-[var(--color-text-muted)]">
             {data.flagged_total} {labels.flagged}
           </span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {data.aq_source && (
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              AQ: {data.aq_source === "real"
+                ? (locale === "it" ? "dati reali" : "real data")
+                : (locale === "it" ? "stima stagionale" : "seasonal estimate")}
+            </Badge>
+          )}
+          {data.has_spa && (
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              {locale === "it" ? "Spa escape attivo" : "Spa escape active"}
+            </Badge>
+          )}
+          {(data.recurring_events_loaded ?? 0) > 0 && (
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              {data.recurring_events_loaded} {locale === "it" ? "eventi ricorrenti" : "recurring events"}
+            </Badge>
+          )}
         </div>
 
         <div className="flex items-end gap-1" style={{ height: 160 }}>

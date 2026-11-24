@@ -754,6 +754,101 @@ def _seasonal_aq_score(city: dict, d: date) -> float:
     return 0.0
 
 
+def _fetch_historical_aq(lat: float, lon: float, start: date, end: date) -> dict:
+    """Fetch historical AQ from Open-Meteo. Returns {date_str: {pm25, pm10, aqi}}."""
+    data = _cached_get(
+        f"https://air-quality-api.open-meteo.com/v1/air-quality"
+        f"?latitude={lat}&longitude={lon}"
+        f"&hourly=pm2_5,pm10,european_aqi"
+        f"&timezone=Europe/Rome"
+        f"&start_date={start.isoformat()}&end_date={end.isoformat()}"
+    )
+    if not data or "hourly" not in data:
+        return {}
+    hourly = data["hourly"]
+    times = hourly.get("time", [])
+    pm25 = hourly.get("pm2_5", [])
+    pm10 = hourly.get("pm10", [])
+    aqi = hourly.get("european_aqi", [])
+    daily: dict = {}
+    for i, t in enumerate(times):
+        day_str = t[:10]
+        if day_str not in daily:
+            daily[day_str] = {"pm25": [], "pm10": [], "aqi": []}
+        if i < len(pm25) and pm25[i] is not None:
+            daily[day_str]["pm25"].append(pm25[i])
+        if i < len(pm10) and pm10[i] is not None:
+            daily[day_str]["pm10"].append(pm10[i])
+        if i < len(aqi) and aqi[i] is not None:
+            daily[day_str]["aqi"].append(aqi[i])
+    result = {}
+    for day_str, vals in daily.items():
+        result[day_str] = {
+            "pm25": sum(vals["pm25"]) / max(len(vals["pm25"]), 1),
+            "pm10": sum(vals["pm10"]) / max(len(vals["pm10"]), 1),
+            "aqi": sum(vals["aqi"]) / max(len(vals["aqi"]), 1),
+        }
+    return result
+
+
+def _real_aq_score(aq_day: dict) -> float:
+    """Score a single day's AQ from real Open-Meteo data."""
+    if aq_day.get("pm25", 0) > 25:
+        return 0.7
+    if aq_day.get("pm10", 0) > 50:
+        return 0.6
+    if aq_day.get("aqi", 0) > 3:
+        return 0.5
+    return 0.0
+
+
+def _load_recurring_events(hotel_id: str, data_dir: Path, start: date, end: date) -> list:
+    """Load this year's discovered events and project them onto the backtest period."""
+    from events_db import load_events
+    db_data = load_events(hotel_id) if hotel_id else None
+    events_list = []
+    if db_data and db_data.get("events"):
+        events_list = db_data["events"]
+    else:
+        hotel_events_file = data_dir / f"local_events_{hotel_id}.json" if hotel_id else None
+        if hotel_events_file and hotel_events_file.exists():
+            try:
+                edata = json.loads(hotel_events_file.read_text())
+                events_list = edata.get("events", [])
+            except (json.JSONDecodeError, KeyError):
+                pass
+    if not events_list:
+        return []
+    projected = []
+    for ev in events_list:
+        if ev.get("hidden"):
+            continue
+        dates = ev.get("dates", {})
+        efrom = dates.get("from", "")
+        eto = dates.get("to", efrom)
+        if not efrom:
+            continue
+        try:
+            orig_start = date.fromisoformat(efrom)
+            orig_end = date.fromisoformat(eto)
+        except ValueError:
+            continue
+        for year_offset in (-1, -2):
+            try:
+                shifted_start = orig_start.replace(year=orig_start.year + year_offset)
+                shifted_end = orig_end.replace(year=orig_end.year + year_offset)
+            except ValueError:
+                continue
+            if shifted_end < start or shifted_start > end:
+                continue
+            projected.append({
+                **ev,
+                "dates": {"from": shifted_start.isoformat(), "to": shifted_end.isoformat()},
+                "recurring": True,
+            })
+    return projected
+
+
 def run_backtest(hotel: dict, settings: dict, months: int = 12,
                  data_dir: Path | None = None) -> dict:
     if data_dir is None:
@@ -765,9 +860,13 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
     min_score = settings.get("min_score_to_fire", 0.50)
     min_free = settings.get("min_free_rooms", 1)
     blackout_md = {bd[5:] for bd in hotel.get("blackout_dates", [])}
+    hotel_id = hotel.get("id", hotel.get("hotel_id", ""))
+    has_spa = bool({"spa", "indoor_pool"} & set(hotel.get("amenities", [])))
 
     holidays_path = data_dir / "holidays.json"
     holidays_data = json.loads(holidays_path.read_text()) if holidays_path.exists() else {}
+
+    recurring_events = _load_recurring_events(hotel_id, data_dir, start_date, end_date)
 
     hotel_data = _cached_get(
         f"https://archive-api.open-meteo.com/v1/archive"
@@ -777,6 +876,8 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
     )
 
     city_data = {}
+    city_aq_data = {}
+    aq_source = "real"
     for city in hotel["guest_cities"]:
         time.sleep(0.3)
         city_data[city["name"]] = _cached_get(
@@ -785,6 +886,14 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
             f"&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum"
             f"&timezone=Europe/Rome&start_date={start_date.isoformat()}&end_date={end_date.isoformat()}"
         )
+        time.sleep(0.3)
+        aq = _fetch_historical_aq(
+            city["coords"]["lat"], city["coords"]["lon"], start_date, end_date
+        )
+        if aq:
+            city_aq_data[city["name"]] = aq
+    if not city_aq_data:
+        aq_source = "estimate"
 
     if not hotel_data or not all(city_data.values()):
         return {"error": "Could not fetch historical weather data."}
@@ -838,7 +947,14 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                 grey_hotel = sum(1 for c in hotel_codes if is_grey(c))
 
                 hotel_weather_penalty = 0.0
-                if rain_hotel >= 3:
+                spa_escape_bonus = 0.0
+                if rain_hotel >= 2 and has_spa:
+                    spa_escape_bonus = 0.15 if rain_hotel >= 3 else 0.10
+                    weather_reasons.append(
+                        f"Spa escape: rain at hotel ({rain_hotel} days) — cosy spa getaway"
+                    )
+                    weather_types.append("spa_escape")
+                elif rain_hotel >= 3:
                     hotel_weather_penalty = 0.30
                     weather_reasons.append(f"Bad weather at hotel ({rain_hotel} rainy days) — penalty")
                 elif rain_hotel >= 2:
@@ -881,12 +997,27 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                         weather_types.append("sunny_rebound")
 
                 holidays = score_holidays(d, settings, data_dir)
-                seasonal = score_seasonal(d, data_dir)
+                seasonal = score_seasonal(d, data_dir, hotel_id=hotel_id)
 
-                aq_score = _seasonal_aq_score(city, d)
+                recurring_score = 0.0
+                recurring_reasons = []
+                for rev in recurring_events:
+                    from moments_sources import _event_active_on, _ai_event_weight
+                    if _event_active_on(rev, d):
+                        w = _ai_event_weight(rev)
+                        recurring_score = max(recurring_score, min(w * rev.get("relevance", 0.5), 0.8))
+                        recurring_reasons.append(f"{rev['name']} (recurring)")
+                seasonal_total = max(seasonal["score"], recurring_score)
+
+                city_aq = city_aq_data.get(city_name, {})
+                day_aq = city_aq.get(d.isoformat())
+                if day_aq:
+                    aq_score = _real_aq_score(day_aq)
+                else:
+                    aq_score = _seasonal_aq_score(city, d)
 
                 combined = _additive_score(
-                    weather_score, aq_score, seasonal["score"],
+                    weather_score + spa_escape_bonus, aq_score, seasonal_total,
                     free, hotel["rooms"], holidays, min_free,
                     hotel_weather_penalty=hotel_weather_penalty,
                 )
@@ -902,20 +1033,24 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                     moment_types.append("school_holiday")
                 if h_class["public"] and free >= min_free and empty_ratio > 0.30:
                     moment_types.append("public_holiday")
-                if seasonal["score"] > 0:
+                if seasonal_total > 0:
                     moment_types.append("seasonal")
+                if recurring_reasons:
+                    moment_types.append("recurring_event")
                 if empty_ratio >= 0.40:
                     moment_types.append("low_occupancy")
-                if hotel_weather_penalty > 0:
+                if hotel_weather_penalty > 0 and not has_spa:
                     moment_types.append("hotel_rain_penalty")
 
                 all_reasons = (
                     weather_reasons
                     + holidays.get("reasons", [])
                     + seasonal.get("reasons", [])
+                    + recurring_reasons
                 )
                 if aq_score >= 0.5:
-                    all_reasons.append(f"Poor air quality in {city_name} (seasonal estimate)")
+                    aq_label = "real data" if day_aq else "seasonal estimate"
+                    all_reasons.append(f"Poor air quality in {city_name} ({aq_label})")
                 if empty_ratio >= 0.40:
                     all_reasons.append(f"Low occupancy ({free}/{hotel['rooms']} rooms free)")
 
@@ -933,9 +1068,11 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                     "source_scores": {
                         "weather": round(weather_score, 2),
                         "air_quality": round(aq_score, 2),
+                        "aq_source": "real" if day_aq else "estimate",
+                        "spa_escape": round(spa_escape_bonus, 2),
                         "hotel_weather_penalty": round(hotel_weather_penalty, 2),
                         "holiday": holidays["score"],
-                        "seasonal": seasonal["score"],
+                        "seasonal": round(seasonal_total, 2),
                         "occupancy": round(empty_ratio, 2),
                     },
                 })
@@ -971,6 +1108,9 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
         "flagged_total": len(kept),
         "per_month": dict(sorted(month_counts.items())),
         "per_type": dict(type_counts.most_common()),
+        "aq_source": aq_source,
+        "has_spa": has_spa,
+        "recurring_events_loaded": len(recurring_events),
         "scoring": {
             "model": "additive",
             "min_score": min_score,
