@@ -1714,11 +1714,20 @@ def api_calendar(
                 "status": off["status"],
             })
 
+    # Load imported availability so calendar matches what the engine sees
+    avail_file = load_json(MOMENTS_DATA / "availability.json")
+    imported_free = {}
+    if avail_file.get("hotel_id") == hotel["id"] and avail_file.get("free_rooms"):
+        imported_free = avail_file["free_rooms"]
+
     days = []
     d = first_day
     while d <= last_day:
         ds = d.isoformat()
-        free = _free_rooms(hotel, d, holidays_data)
+        if ds in imported_free:
+            free = imported_free[ds]
+        else:
+            free = _free_rooms(hotel, d, holidays_data)
 
         day_events = []
         for ev in events:
