@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { connection } from "next/server";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -99,28 +101,27 @@ function formatLabel(s: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-export default async function SetupPage() {
+async function SetupContent() {
+  await connection();
   const { hotel, settings, processStartedAt } = await fetchHotelAndSettings();
   const allSegments = settings?.segments ?? {};
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold font-[family-name:var(--font-space-grotesk)]">
-        Hotel set-up
-      </h1>
+  if (!hotel) {
+    return (
+      <Card>
+        <CardContent className="py-8">
+          <p className="text-sm text-[var(--color-text-muted)]">
+            Hotel profile will appear here once the engine is connected.
+            The setup page reads amenities, segments, and experiences from
+            the hotel configuration.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
-      {!hotel ? (
-        <Card>
-          <CardContent className="py-8">
-            <p className="text-sm text-[var(--color-text-muted)]">
-              Hotel profile will appear here once the engine is connected.
-              The setup page reads amenities, segments, and experiences from
-              the hotel configuration.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
+  return (
+    <>
           <Card>
             <CardContent className="p-5 space-y-4">
               <h2 className="text-sm font-semibold text-[var(--color-text)]">
@@ -364,7 +365,24 @@ export default async function SetupPage() {
             </p>
           )}
         </>
-      )}
+  );
+}
+
+export default function SetupPage() {
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-semibold font-[family-name:var(--font-space-grotesk)]">
+        Hotel set-up
+      </h1>
+      <Suspense fallback={
+        <Card>
+          <CardContent className="py-8">
+            <p className="text-sm text-[var(--color-text-muted)]">Loading hotel profile...</p>
+          </CardContent>
+        </Card>
+      }>
+        <SetupContent />
+      </Suspense>
     </div>
   );
 }
