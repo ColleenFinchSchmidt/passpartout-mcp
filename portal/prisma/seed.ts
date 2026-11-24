@@ -22,8 +22,8 @@ async function main() {
       lon: 8.5333,
       totalRooms: 85,
       publicRateEur: 280,
-      lowestPriceEur: 210,
-      maxDiscountPct: 25,
+      lowestPriceEur: 195,
+      maxDiscountPct: 30,
       blackoutDates: [
         "2026-12-24",
         "2026-12-25",

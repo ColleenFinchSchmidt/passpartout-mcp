@@ -41,8 +41,8 @@
     "coords": { "lat": 45.8833, "lon": 8.5333 },
     "rooms": 85,
     "public_rate_eur": 280,
-    "lowest_price_eur": 210,
-    "max_discount_pct": 25,
+    "lowest_price_eur": 195,
+    "max_discount_pct": 30,
     "max_rooms_per_offer": 6,
     "blackout_dates": ["2026-12-24", "2026-12-25", "2026-12-26", "2026-12-31", "2027-01-01"],
     "guest_cities": [
@@ -69,7 +69,8 @@
       {"id": "dinner", "name": "Dinner", "value_to_guest": 45, "cost_to_hotel": 25, "unit": "per_night_per_person", "limit": "up to €35 pp", "segments": ["retirees", "young_couples", "friends_groups"]},
       {"id": "late_checkout", "name": "Late check-out (2 pm)", "value_to_guest": 20, "cost_to_hotel": 0, "unit": "per_stay_per_room", "limit": "subject to availability", "segments": ["retirees", "remote_workers", "young_couples"]},
       {"id": "welcome_prosecco", "name": "Welcome prosecco", "value_to_guest": 15, "cost_to_hotel": 5, "unit": "per_stay_per_room", "limit": "1 per room on arrival", "segments": ["young_couples", "friends_groups"]},
-      {"id": "parking", "name": "Free parking", "value_to_guest": 15, "cost_to_hotel": 0, "unit": "per_stay_per_room", "limit": "1 car per room", "segments": ["families", "retirees"]}
+      {"id": "parking", "name": "Free parking", "value_to_guest": 15, "cost_to_hotel": 0, "unit": "per_stay_per_room", "limit": "1 car per room", "segments": ["families", "retirees"]},
+      {"id": "yoga", "name": "Morning yoga session", "value_to_guest": 25, "cost_to_hotel": 10, "unit": "per_night_per_person", "limit": "1 per person per day", "segments": ["young_couples", "retirees", "remote_workers"]}
     ]
   }
 ]

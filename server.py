@@ -1848,8 +1848,8 @@ def api_get_rules(
         raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
     return {
         "public_rate_eur": hotel.get("public_rate_eur", 280),
-        "lowest_price_eur": hotel.get("lowest_price_eur", 210),
-        "max_discount_pct": hotel.get("max_discount_pct", 25),
+        "lowest_price_eur": hotel.get("lowest_price_eur", 195),
+        "max_discount_pct": hotel.get("max_discount_pct", 30),
         "max_rooms_per_offer": hotel.get("max_rooms_per_offer", 6),
         "blackout_dates": hotel.get("blackout_dates", []),
         "booking_window_days": MOMENTS_SETTINGS.get("booking_window_days", [2, 14]),
