@@ -737,20 +737,14 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
 def _seasonal_aq_score(city: dict, d: date) -> float:
     """Estimate AQ score from month for Po Valley cities (Milan, Turin, etc.).
 
-    Based on EU/ARPA Lombardia seasonal PM2.5 patterns: winter months see
-    30-50 µg/m³ PM2.5 due to thermal inversion and stagnant air, while
-    summer is typically 8-15 µg/m³.  Cities above ~44°N latitude in the
-    Po Valley are affected; coastal or mountain cities less so."""
+    Only the worst winter months (Dec-Feb) reliably hit "Poor" EU AQI (>60).
+    Spring/autumn are usually "Moderate" and should not trigger."""
     lat = city.get("coords", {}).get("lat", 0)
     if lat < 44.0 or lat > 46.5:
         return 0.0
     m = d.month
-    if m in (11, 12, 1, 2):
-        return 0.7
-    if m in (3, 10):
-        return 0.4
-    if m in (4, 9):
-        return 0.2
+    if m in (12, 1, 2):
+        return 0.6
     return 0.0
 
 
@@ -792,18 +786,29 @@ def _fetch_historical_aq(lat: float, lon: float, start: date, end: date) -> dict
 
 
 def _real_aq_score(aq_day: dict) -> float:
-    """Score a single day's AQ from real Open-Meteo data."""
-    if aq_day.get("pm25", 0) > 25:
+    """Score a single day's AQ from real Open-Meteo data.
+
+    EU AQI bands: 0-20 Good, 20-40 Fair, 40-60 Moderate, 60-80 Poor, 80+ Very Poor.
+    Only "Poor" and above should trigger a moment.
+    """
+    if aq_day.get("pm25", 0) > 35:
         return 0.7
     if aq_day.get("pm10", 0) > 50:
         return 0.6
-    if aq_day.get("aqi", 0) > 3:
+    if aq_day.get("aqi", 0) > 60:
         return 0.5
     return 0.0
 
 
+MAX_RECURRING_EVENT_DAYS = 14
+
+
 def _load_recurring_events(hotel_id: str, data_dir: Path, start: date, end: date) -> list:
-    """Load this year's discovered events and project them onto the backtest period."""
+    """Load this year's discovered events and project them onto the backtest period.
+
+    Only keeps dated/highlight events (<=14 days). Season-long programmes
+    like theatre seasons or year-round cultural series are excluded.
+    """
     from events_db import load_events
     db_data = load_events(hotel_id) if hotel_id else None
     events_list = []
@@ -832,6 +837,9 @@ def _load_recurring_events(hotel_id: str, data_dir: Path, start: date, end: date
             orig_start = date.fromisoformat(efrom)
             orig_end = date.fromisoformat(eto)
         except ValueError:
+            continue
+        duration = (orig_end - orig_start).days + 1
+        if duration > MAX_RECURRING_EVENT_DAYS:
             continue
         for year_offset in (-1, -2):
             try:
