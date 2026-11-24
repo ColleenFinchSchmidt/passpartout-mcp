@@ -1071,6 +1071,272 @@ def api_add_notify(offer_id: str, req: NotifyRequest):
     return result
 
 
+# ---------- Calendar / Rules / Results endpoints ----------
+
+
+@api.get("/api/hotel/calendar", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+def api_calendar(
+    hotel_id: str | None = Query(None, description="Hotel ID"),
+    year: int | None = Query(None),
+    month: int | None = Query(None),
+):
+    """Per-day calendar data for a month: free rooms, events, offers, holidays."""
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+
+    rome_now = datetime.now(ROME_TZ)
+    y = year or rome_now.year
+    m = month or rome_now.month
+    first_day = date(y, m, 1)
+    if m == 12:
+        last_day = date(y + 1, 1, 1) - timedelta(days=1)
+    else:
+        last_day = date(y, m + 1, 1) - timedelta(days=1)
+
+    holidays_path = MOMENTS_DATA / "holidays.json"
+    holidays_data = load_json(holidays_path) if holidays_path.exists() else {}
+    events = get_approved_events(hotel, MOMENTS_DATA)
+    blackout_set = set(hotel.get("blackout_dates", []))
+
+    school_holidays = set()
+    ponti = set()
+    for region_holidays in holidays_data.get("school_holidays", {}).values():
+        for sh in region_holidays:
+            sd = date.fromisoformat(sh["start"])
+            ed = date.fromisoformat(sh["end"])
+            d = sd
+            while d <= ed:
+                school_holidays.add(d.isoformat())
+                d += timedelta(days=1)
+    for p in holidays_data.get("ponte_opportunities", []):
+        for pd in p.get("dates", []):
+            ponti.add(pd)
+
+    offers_by_date = {}
+    all_offers = inventory_store.list_offers(hotel["id"])
+    for off in all_offers:
+        ci = date.fromisoformat(off["check_in"])
+        for i in range(off["nights"]):
+            d_str = (ci + timedelta(days=i)).isoformat()
+            if d_str not in offers_by_date:
+                offers_by_date[d_str] = []
+            offers_by_date[d_str].append({
+                "offer_id": off["offer_id"],
+                "rooms_allocated": off["rooms_allocated"],
+                "rooms_booked": off["rooms_booked"],
+                "status": off["status"],
+            })
+
+    days = []
+    d = first_day
+    while d <= last_day:
+        ds = d.isoformat()
+        free = _free_rooms(hotel, d, holidays_data)
+
+        day_events = []
+        for ev in events:
+            ev_start = ev.get("start_date", "")
+            ev_end = ev.get("end_date", "")
+            if ev_start <= ds <= ev_end:
+                day_events.append({"name": ev["name"], "place": ev.get("place", "")})
+
+        markers = []
+        if ds in school_holidays:
+            markers.append("school_holiday")
+        if ds in ponti:
+            markers.append("ponte")
+        if d.weekday() >= 4:
+            markers.append("weekend")
+        if ds in offers_by_date:
+            markers.append("offer_sent")
+
+        days.append({
+            "date": ds,
+            "weekday": d.strftime("%a"),
+            "free_rooms": free,
+            "total_rooms": hotel["rooms"],
+            "blocked": ds in blackout_set,
+            "events": day_events,
+            "offers": offers_by_date.get(ds, []),
+            "markers": markers,
+        })
+        d += timedelta(days=1)
+
+    return {
+        "hotel_id": hotel["id"],
+        "year": y,
+        "month": m,
+        "days": days,
+    }
+
+
+class RulesUpdate(BaseModel):
+    public_rate_eur: int | None = None
+    lowest_price_eur: int | None = None
+    max_discount_pct: int | None = None
+    max_rooms_per_offer: int | None = None
+    blackout_dates: list[str] | None = None
+    booking_window_days: list[int] | None = None
+    offer_lifetime_hours: int | None = None
+    contact_cooldown_days: int | None = None
+    auto_send: bool | None = None
+    auto_waves: bool | None = None
+
+
+@api.get("/api/hotel/rules", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+def api_get_rules(
+    hotel_id: str | None = Query(None),
+):
+    """Get editable rules for the hotel."""
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    return {
+        "public_rate_eur": hotel.get("public_rate_eur", 280),
+        "lowest_price_eur": hotel.get("lowest_price_eur", 210),
+        "max_discount_pct": hotel.get("max_discount_pct", 25),
+        "max_rooms_per_offer": hotel.get("max_rooms_per_offer", 6),
+        "blackout_dates": hotel.get("blackout_dates", []),
+        "booking_window_days": MOMENTS_SETTINGS.get("booking_window_days", [2, 14]),
+        "offer_lifetime_hours": 48,
+        "contact_cooldown_days": MOMENTS_SETTINGS.get("contact_cooldown_days", 7),
+        "min_score_to_fire": MOMENTS_SETTINGS.get("min_score_to_fire", 0.50),
+        "auto_send": False,
+        "auto_waves": False,
+        "demo": True,
+    }
+
+
+@api.put("/api/hotel/rules", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+def api_update_rules(
+    hotel_id: str | None = Query(None),
+    rules: RulesUpdate = None,
+):
+    """Update rules (saves to Postgres in production; in demo, updates in-memory)."""
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    if rules is None:
+        raise HTTPException(status_code=400, detail="No rules provided")
+
+    updated = {}
+    if rules.public_rate_eur is not None:
+        hotel["public_rate_eur"] = rules.public_rate_eur
+        updated["public_rate_eur"] = rules.public_rate_eur
+    if rules.lowest_price_eur is not None:
+        hotel["lowest_price_eur"] = rules.lowest_price_eur
+        updated["lowest_price_eur"] = rules.lowest_price_eur
+    if rules.max_discount_pct is not None:
+        hotel["max_discount_pct"] = rules.max_discount_pct
+        updated["max_discount_pct"] = rules.max_discount_pct
+    if rules.max_rooms_per_offer is not None:
+        hotel["max_rooms_per_offer"] = rules.max_rooms_per_offer
+        updated["max_rooms_per_offer"] = rules.max_rooms_per_offer
+    if rules.blackout_dates is not None:
+        hotel["blackout_dates"] = rules.blackout_dates
+        updated["blackout_dates"] = rules.blackout_dates
+    if rules.booking_window_days is not None:
+        MOMENTS_SETTINGS["booking_window_days"] = rules.booking_window_days
+        updated["booking_window_days"] = rules.booking_window_days
+    if rules.contact_cooldown_days is not None:
+        MOMENTS_SETTINGS["contact_cooldown_days"] = rules.contact_cooldown_days
+        updated["contact_cooldown_days"] = rules.contact_cooldown_days
+
+    return {"ok": True, "updated": updated, "demo": True}
+
+
+@api.get("/api/hotel/results", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+def api_results(
+    hotel_id: str | None = Query(None),
+):
+    """Aggregated results from offer actions + inventory for the Results tab."""
+    import psycopg2
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+
+    db_url = os.environ.get("DATABASE_URL", "")
+    actions = []
+    if db_url:
+        try:
+            conn = psycopg2.connect(db_url)
+            conn.autocommit = True
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT action, "guestCity", "checkIn", nights, "roomsToOffer",
+                           "publicPriceEur", "privatePriceEur", "discountPct",
+                           "targetSegment", "segmentScore", "packageType",
+                           inclusions, "extrasValue", "extrasCost",
+                           holdback, "createdAt"
+                    FROM public."OfferAction"
+                    WHERE "hotelId" = %s
+                    ORDER BY "createdAt" DESC
+                """, (hotel["id"],))
+                cols = [d[0] for d in cur.description]
+                for row in cur.fetchall():
+                    actions.append(dict(zip(cols, row)))
+            conn.close()
+        except Exception as e:
+            _log.warning("Results query failed: %s", e)
+
+    inventory_offers = inventory_store.list_offers(hotel["id"])
+
+    sent = [a for a in actions if a["action"] == "approved" and not a.get("holdback")]
+    holdback = [a for a in actions if a["action"] == "approved" and a.get("holdback")]
+    skipped = [a for a in actions if a["action"] == "skipped"]
+
+    sim_bookings = 0
+    sim_revenue = 0.0
+    for off in inventory_offers:
+        sim_bookings += off.get("rooms_booked", 0)
+        sim_revenue += off.get("rooms_booked", 0) * off.get("nights", 2) * hotel.get("public_rate_eur", 280) * 0.80
+
+    holdback_bookings = max(1, round(sim_bookings * 0.1)) if holdback else 0
+    holdback_revenue = holdback_bookings * 2 * hotel.get("public_rate_eur", 280) * 0.90 if holdback else 0
+
+    commission_rate = 0.15
+
+    by_segment = {}
+    by_city = {}
+    by_package = {}
+    for a in sent:
+        seg = a.get("targetSegment") or "unknown"
+        city = a.get("guestCity") or "unknown"
+        pkg = a.get("packageType") or "basic"
+        by_segment.setdefault(seg, {"count": 0, "revenue": 0})
+        by_segment[seg]["count"] += 1
+        by_city.setdefault(city, {"count": 0, "revenue": 0})
+        by_city[city]["count"] += 1
+        by_package.setdefault(pkg, {"count": 0})
+        by_package[pkg]["count"] += 1
+        incl = a.get("inclusions") or []
+        if isinstance(incl, list):
+            for item in incl:
+                by_package.setdefault(item, {"count": 0})
+                by_package[item]["count"] += 1
+
+    return {
+        "hotel_id": hotel["id"],
+        "tiles": {
+            "offers_sent": len(sent),
+            "offers_skipped": len(skipped),
+            "sim_bookings": sim_bookings,
+            "sim_revenue": round(sim_revenue),
+            "commission": round(sim_revenue * commission_rate),
+            "holdback_bookings": holdback_bookings,
+            "holdback_revenue": round(holdback_revenue),
+            "uplift_pct": round(((sim_revenue / max(holdback_revenue, 1)) - 1) * 100) if holdback_revenue > 0 else None,
+        },
+        "inventory": inventory_offers,
+        "by_segment": by_segment,
+        "by_city": by_city,
+        "by_package": by_package,
+        "total_actions": len(actions),
+        "demo": True,
+    }
+
+
 # ========== STARTUP ==========
 
 if __name__ == "__main__":
