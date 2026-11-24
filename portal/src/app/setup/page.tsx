@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-import { connection } from "next/server";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -105,7 +103,6 @@ function formatLabel(s: string): string {
 }
 
 async function SetupContent() {
-  await connection();
   const { hotel, settings, processStartedAt } = await fetchHotelAndSettings();
   const allSegments = settings?.segments ?? {};
 
@@ -371,21 +368,13 @@ async function SetupContent() {
   );
 }
 
-export default function SetupPage() {
+export default async function SetupPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold font-[family-name:var(--font-space-grotesk)]">
         Hotel set-up
       </h1>
-      <Suspense fallback={
-        <Card>
-          <CardContent className="py-8">
-            <p className="text-sm text-[var(--color-text-muted)]">Loading hotel profile...</p>
-          </CardContent>
-        </Card>
-      }>
-        <SetupContent />
-      </Suspense>
+      <SetupContent />
     </div>
   );
 }
