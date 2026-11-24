@@ -12,6 +12,7 @@ MCP endpoint:    http://127.0.0.1:8000/mcp
 """
 
 import hashlib
+import json
 import logging
 import os
 import sys
