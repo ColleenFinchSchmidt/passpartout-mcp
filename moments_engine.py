@@ -806,11 +806,18 @@ def _real_aq_score(aq_day: dict) -> float:
 MAX_RECURRING_EVENT_DAYS = 14
 
 
-def _load_recurring_events(hotel_id: str, data_dir: Path, start: date, end: date) -> list:
-    """Load this year's discovered events and project them onto the backtest period.
+def _is_highlight_event(ev: dict) -> bool:
+    """Highlight events (Christmas markets, light shows, major festivals)
+    count even when they span more than 14 days."""
+    return (ev.get("relevance", 0) >= 0.7
+            and ev.get("crowd_size", "") == "large")
 
-    Only keeps dated/highlight events (<=14 days). Season-long programmes
-    like theatre seasons or year-round cultural series are excluded.
+
+def _load_recurring_events(hotel_id: str, data_dir: Path, start: date, end: date) -> list:
+    """Load this year's discovered events and project onto the backtest period.
+
+    Keeps: short events (<=14 days) and highlight events (relevance>=0.7, crowd large).
+    Drops: season-long low-relevance programmes (theatre/dance seasons, culture series).
     """
     from events_db import load_events
     db_data = load_events(hotel_id) if hotel_id else None
@@ -842,7 +849,7 @@ def _load_recurring_events(hotel_id: str, data_dir: Path, start: date, end: date
         except ValueError:
             continue
         duration = (orig_end - orig_start).days + 1
-        if duration > MAX_RECURRING_EVENT_DAYS:
+        if duration > MAX_RECURRING_EVENT_DAYS and not _is_highlight_event(ev):
             continue
         for year_offset in (-1, -2):
             try:

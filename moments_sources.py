@@ -412,7 +412,9 @@ def score_seasonal(target_date: date, data_dir: Path, hotel_id: str | None = Non
         weight = _ai_event_weight(ev)
         relevance = ev.get("relevance", 0.5) * weight
         label = f"{ev['name']} ({ev.get('place', 'nearby')})"
-        if duration is not None and duration > MAX_SPECIFIC_EVENT_DAYS:
+        is_highlight = (ev.get("relevance", 0) >= 0.7
+                        and ev.get("crowd_size", "") == "large")
+        if duration is not None and duration > MAX_SPECIFIC_EVENT_DAYS and not is_highlight:
             also_on.append(label)
             score = max(score, min(relevance * 0.4, 0.3))
         else:
