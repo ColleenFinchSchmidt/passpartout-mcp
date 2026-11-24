@@ -1660,8 +1660,9 @@ def api_import_reset(hotel_id: str = Query("bristol-stresa", description="Hotel 
     if not hotel:
         raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
     engine_db.delete_hotel_data(hotel_id)
-    # Reload defaults from the JSON file
-    for orig in MOMENTS_HOTELS:
+    # Re-read the original file to get untouched defaults (MOMENTS_HOTELS is modified in-place)
+    originals = load_json(MOMENTS_DATA / "hotels.json")
+    for orig in originals:
         if orig["id"] == hotel_id:
             for key in ("public_rate_eur", "lowest_price_eur", "max_discount_pct",
                         "rooms", "extras", "room_types"):
