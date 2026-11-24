@@ -51,14 +51,14 @@ def _fetch_page_text(url: str, max_chars: int = 15000) -> str | None:
         return None
 
 
-def _ask_claude(system: str, user: str) -> str | None:
+def _ask_claude(system: str, user: str, max_tokens: int = 8000, model: str | None = None) -> str | None:
     if not ANTHROPIC_API_KEY:
         return None
     try:
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         message = client.messages.create(
-            model=ANTHROPIC_MODEL,
-            max_tokens=8000,
+            model=model or ANTHROPIC_MODEL,
+            max_tokens=max_tokens,
             system=system,
             messages=[{"role": "user", "content": user}],
         )

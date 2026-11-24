@@ -1080,12 +1080,12 @@ async def api_import_parse(file: UploadFile = File(...)):
     import json as _json
 
     total_lines = len([l for l in text.split("\n") if l.strip()])
-    chunk_limit = 80_000
+    chunk_limit = 30_000
 
-    def _parse_chunk(chunk_text: str, chunk_label: str) -> tuple:
+    def _parse_chunk(chunk_text: str, chunk_label: str, model: str | None = None) -> tuple:
         user_msg = f"File name: {file.filename} ({chunk_label})\n\n{chunk_text}"
         est = (len(IMPORT_SYSTEM_PROMPT) + len(user_msg)) // 4
-        raw = _ask_claude(IMPORT_SYSTEM_PROMPT, user_msg)
+        raw = _ask_claude(IMPORT_SYSTEM_PROMPT, user_msg, max_tokens=16000, model=model)
         cost = round(est * 0.25 / 1_000_000, 4)
         if raw is None:
             return None, cost
