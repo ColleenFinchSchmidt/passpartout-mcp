@@ -485,13 +485,21 @@ def _free_rooms(hotel: dict, d: date, holidays_data: dict) -> int:
 # ---------------------------------------------------------------------------
 
 def _build_availability(hotel: dict, data_dir: Path, start: date, end: date) -> dict:
-    """Generate availability from the occupancy model for dates not in the JSON."""
+    """Generate availability, using imported data when available."""
     holidays_path = data_dir / "holidays.json"
     holidays_data = json.loads(holidays_path.read_text()) if holidays_path.exists() else {}
+    avail_file = load_json(data_dir / "availability.json")
+    imported_free = {}
+    if avail_file.get("hotel_id") == hotel["id"] and avail_file.get("free_rooms"):
+        imported_free = avail_file["free_rooms"]
     free = {}
     d = start
     while d <= end:
-        free[d.isoformat()] = _free_rooms(hotel, d, holidays_data)
+        ds = d.isoformat()
+        if ds in imported_free:
+            free[ds] = imported_free[ds]
+        else:
+            free[ds] = _free_rooms(hotel, d, holidays_data)
         d += timedelta(days=1)
     return {"free_rooms": free}
 
