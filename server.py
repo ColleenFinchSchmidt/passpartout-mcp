@@ -1428,6 +1428,14 @@ Sample data:
 @api.post("/api/import/apply", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_import_apply(body: dict):
     """Apply imported data to the engine's data files so it's used immediately."""
+    import traceback as _tb
+    try:
+        return _api_import_apply_inner(body)
+    except Exception as exc:
+        _log.error("import/apply error: %s\n%s", exc, _tb.format_exc())
+        raise HTTPException(status_code=500, detail=str(exc))
+
+def _api_import_apply_inner(body: dict):
     hotel_id = body.get("hotel_id", "bristol-stresa")
     hotel = _resolve_hotel(hotel_id)
     if not hotel:
