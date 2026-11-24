@@ -734,6 +734,26 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
 # Backtest
 # ---------------------------------------------------------------------------
 
+def _seasonal_aq_score(city: dict, d: date) -> float:
+    """Estimate AQ score from month for Po Valley cities (Milan, Turin, etc.).
+
+    Based on EU/ARPA Lombardia seasonal PM2.5 patterns: winter months see
+    30-50 µg/m³ PM2.5 due to thermal inversion and stagnant air, while
+    summer is typically 8-15 µg/m³.  Cities above ~44°N latitude in the
+    Po Valley are affected; coastal or mountain cities less so."""
+    lat = city.get("coords", {}).get("lat", 0)
+    if lat < 44.0 or lat > 46.5:
+        return 0.0
+    m = d.month
+    if m in (11, 12, 1, 2):
+        return 0.7
+    if m in (3, 10):
+        return 0.4
+    if m in (4, 9):
+        return 0.2
+    return 0.0
+
+
 def run_backtest(hotel: dict, settings: dict, months: int = 12,
                  data_dir: Path | None = None) -> dict:
     if data_dir is None:
@@ -863,13 +883,17 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                 holidays = score_holidays(d, settings, data_dir)
                 seasonal = score_seasonal(d, data_dir)
 
+                aq_score = _seasonal_aq_score(city, d)
+
                 combined = _additive_score(
-                    weather_score, 0.0, seasonal["score"],
+                    weather_score, aq_score, seasonal["score"],
                     free, hotel["rooms"], holidays, min_free,
                     hotel_weather_penalty=hotel_weather_penalty,
                 )
 
                 moment_types = list(set(weather_types))
+                if aq_score >= 0.5:
+                    moment_types.append("poor_air_quality")
                 h_class = _classify_holidays(holidays)
                 empty_ratio = free / max(hotel["rooms"], 1)
                 if h_class["ponte"] and free >= min_free:
@@ -890,6 +914,8 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                     + holidays.get("reasons", [])
                     + seasonal.get("reasons", [])
                 )
+                if aq_score >= 0.5:
+                    all_reasons.append(f"Poor air quality in {city_name} (seasonal estimate)")
                 if empty_ratio >= 0.40:
                     all_reasons.append(f"Low occupancy ({free}/{hotel['rooms']} rooms free)")
 
@@ -906,6 +932,7 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                     "free_rooms": free,
                     "source_scores": {
                         "weather": round(weather_score, 2),
+                        "air_quality": round(aq_score, 2),
                         "hotel_weather_penalty": round(hotel_weather_penalty, 2),
                         "holiday": holidays["score"],
                         "seasonal": seasonal["score"],

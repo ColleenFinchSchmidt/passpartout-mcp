@@ -1300,24 +1300,44 @@ def api_results(
 
     commission_rate = 0.15
 
-    by_segment = {}
-    by_city = {}
-    by_package = {}
+    by_segment: dict[str, dict] = {}
+    by_city: dict[str, dict] = {}
+    by_extra: dict[str, dict] = {}
+
+    for off in inventory_offers:
+        for w in off.get("waves", []):
+            seg = w.get("segment") or "unknown"
+            city = w.get("city") or "unknown"
+            m = w.get("metrics", {})
+            by_segment.setdefault(seg, {"sent": 0, "booked": 0})
+            by_segment[seg]["sent"] += m.get("sent", 0)
+            by_segment[seg]["booked"] += m.get("booked", 0)
+            by_city.setdefault(city, {"sent": 0, "booked": 0})
+            by_city[city]["sent"] += m.get("sent", 0)
+            by_city[city]["booked"] += m.get("booked", 0)
+
     for a in sent:
-        seg = a.get("targetSegment") or "unknown"
-        city = a.get("guestCity") or "unknown"
-        pkg = a.get("packageType") or "basic"
-        by_segment.setdefault(seg, {"count": 0, "revenue": 0})
-        by_segment[seg]["count"] += 1
-        by_city.setdefault(city, {"count": 0, "revenue": 0})
-        by_city[city]["count"] += 1
-        by_package.setdefault(pkg, {"count": 0})
-        by_package[pkg]["count"] += 1
         incl = a.get("inclusions") or []
         if isinstance(incl, list):
             for item in incl:
-                by_package.setdefault(item, {"count": 0})
-                by_package[item]["count"] += 1
+                by_extra.setdefault(item, {"count": 0})
+                by_extra[item]["count"] += 1
+
+    extra_labels = {
+        "late_checkout": "Late check-out",
+        "welcome_prosecco": "Welcome prosecco",
+        "spa_day": "Spa day",
+        "parking": "Parking",
+        "kids_free": "Kids stay free",
+        "four_for_three": "4-for-3 nights",
+        "breakfast": "Breakfast included",
+        "minibar": "Minibar",
+        "room_upgrade": "Room upgrade",
+    }
+    by_extra_labeled = {}
+    for key, info in by_extra.items():
+        label = extra_labels.get(key, key.replace("_", " ").title())
+        by_extra_labeled[label] = info
 
     return {
         "hotel_id": hotel["id"],
@@ -1334,7 +1354,7 @@ def api_results(
         "inventory": inventory_offers,
         "by_segment": by_segment,
         "by_city": by_city,
-        "by_package": by_package,
+        "by_package": by_extra_labeled,
         "total_actions": len(actions),
         "demo": True,
     }

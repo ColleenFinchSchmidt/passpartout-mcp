@@ -78,8 +78,8 @@ type BacktestData = {
 type ResultsData = {
   tiles: Tiles;
   inventory: InventoryOffer[];
-  by_segment: Record<string, { count: number; revenue: number }>;
-  by_city: Record<string, { count: number; revenue: number }>;
+  by_segment: Record<string, { sent: number; booked: number }>;
+  by_city: Record<string, { sent: number; booked: number }>;
   by_package: Record<string, { count: number }>;
   total_actions: number;
 };
@@ -155,6 +155,7 @@ function BacktestChart({ data, locale }: { data: BacktestData; locale: "en" | "i
     seasonal: "bg-emerald-400",
     low_occupancy: "bg-gray-400",
     hotel_rain_penalty: "bg-rose-300",
+    poor_air_quality: "bg-violet-400",
   };
 
   return (
@@ -199,32 +200,43 @@ function BacktestChart({ data, locale }: { data: BacktestData; locale: "en" | "i
 
 function Learnings({ data, locale }: { data: ResultsData; locale: "en" | "it" }) {
   const labels = t(locale).results;
-  const hasData = data.total_actions >= 3;
+  const totalBookings = Object.values(data.by_segment).reduce((s, v) => s + v.booked, 0);
+  const hasEnoughData = totalBookings >= 20;
 
   const insights: string[] = [];
-  if (hasData) {
-    const topSeg = Object.entries(data.by_segment).sort((a, b) => b[1].count - a[1].count)[0];
+  if (hasEnoughData) {
+    const segsWithRate = Object.entries(data.by_segment)
+      .filter(([, v]) => v.sent > 0 && v.booked >= 5)
+      .map(([seg, v]) => [seg, v.booked / v.sent, v] as const)
+      .sort((a, b) => b[1] - a[1]);
+    const topSeg = segsWithRate[0];
     if (topSeg) {
+      const rate = Math.round(topSeg[1] * 100);
       insights.push(
         locale === "it"
-          ? `${formatLabel(topSeg[0])} è il segmento più reattivo (${topSeg[1].count} offerte inviate)`
-          : `${formatLabel(topSeg[0])} is the most responsive segment (${topSeg[1].count} offers sent)`,
+          ? `${formatLabel(topSeg[0])} ha il miglior tasso di prenotazione (${rate}%)`
+          : `${formatLabel(topSeg[0])} has the best booking rate (${rate}%)`,
       );
     }
-    const topCity = Object.entries(data.by_city).sort((a, b) => b[1].count - a[1].count)[0];
+    const citiesWithRate = Object.entries(data.by_city)
+      .filter(([, v]) => v.sent > 0 && v.booked >= 5)
+      .map(([city, v]) => [city, v.booked / v.sent, v] as const)
+      .sort((a, b) => b[1] - a[1]);
+    const topCity = citiesWithRate[0];
     if (topCity) {
+      const rate = Math.round(topCity[1] * 100);
       insights.push(
         locale === "it"
-          ? `${topCity[0]} genera più prenotazioni`
-          : `${topCity[0]} drives the most bookings`,
+          ? `${topCity[0]} ha il miglior tasso di conversione (${rate}%)`
+          : `${topCity[0]} has the best conversion rate (${rate}%)`,
       );
     }
     const topPkg = Object.entries(data.by_package).sort((a, b) => b[1].count - a[1].count)[0];
     if (topPkg) {
       insights.push(
         locale === "it"
-          ? `"${formatLabel(topPkg[0])}" è l'extra più incluso`
-          : `"${formatLabel(topPkg[0])}" is the most included extra`,
+          ? `"${topPkg[0]}" è l'extra più incluso`
+          : `"${topPkg[0]}" is the most included extra`,
       );
     }
   }
@@ -239,8 +251,12 @@ function Learnings({ data, locale }: { data: ResultsData; locale: "en" | "it" })
           </h2>
         </div>
 
-        {!hasData ? (
-          <p className="text-xs text-[var(--color-text-muted)]">{labels.noData}</p>
+        {!hasEnoughData ? (
+          <p className="text-xs text-[var(--color-text-muted)]">
+            {locale === "it"
+              ? `Dati insufficienti (${totalBookings} prenotazioni — servono almeno 20)`
+              : `Not enough data yet (${totalBookings} bookings — need at least 20)`}
+          </p>
         ) : (
           <ul className="space-y-1.5">
             {insights.map((ins, i) => (
@@ -334,7 +350,9 @@ export default function ResultsPage() {
           icon={<TrendingUp className="w-4 h-4 text-blue-600" />}
           label={labels.uplift}
           value={tiles.uplift_pct !== null ? `+${tiles.uplift_pct}%` : "—"}
-          sub={labels.holdback}
+          sub={tiles.uplift_pct !== null
+            ? `${labels.holdback}: ${tiles.holdback_bookings} ${locale === "it" ? "pren." : "book."}`
+            : (locale === "it" ? "Dati insufficienti" : "Not enough data")}
           color={tiles.uplift_pct !== null && tiles.uplift_pct > 0 ? "text-emerald-600" : "text-[var(--color-text)]"}
         />
       </div>
@@ -346,6 +364,11 @@ export default function ResultsPage() {
             <h2 className="text-sm font-semibold font-[family-name:var(--font-space-grotesk)]">
               {labels.perOffer}
             </h2>
+            <p className="text-[10px] text-[var(--color-text-muted)]">
+              {locale === "it"
+                ? "Ogni offerta ha onde successive inviate a segmenti diversi"
+                : "Each offer sends waves to different city × segment groups"}
+            </p>
 
             {data.inventory.map((inv) => (
               <div key={inv.offer_id} className="border border-[var(--color-border)] rounded-lg p-3 space-y-3">
@@ -425,11 +448,14 @@ export default function ResultsPage() {
             ) : (
               <div className="space-y-2">
                 {Object.entries(data.by_segment)
-                  .sort((a, b) => b[1].count - a[1].count)
+                  .sort((a, b) => b[1].booked - a[1].booked)
                   .map(([seg, info]) => (
                     <div key={seg} className="flex items-center justify-between text-xs">
                       <Badge variant="segment" className="text-[10px]">{formatLabel(seg)}</Badge>
-                      <span className="tabular-nums font-medium">{info.count} {labels.sent.toLowerCase()}</span>
+                      <span className="tabular-nums">
+                        <span className="font-medium text-emerald-600">{info.booked}</span>
+                        <span className="text-[var(--color-text-muted)]"> / {info.sent} {labels.sent.toLowerCase()}</span>
+                      </span>
                     </div>
                   ))}
               </div>
@@ -449,11 +475,14 @@ export default function ResultsPage() {
             ) : (
               <div className="space-y-2">
                 {Object.entries(data.by_city)
-                  .sort((a, b) => b[1].count - a[1].count)
+                  .sort((a, b) => b[1].booked - a[1].booked)
                   .map(([city, info]) => (
                     <div key={city} className="flex items-center justify-between text-xs">
                       <span className="font-medium text-[var(--color-text)]">{city}</span>
-                      <span className="tabular-nums">{info.count} {labels.sent.toLowerCase()}</span>
+                      <span className="tabular-nums">
+                        <span className="font-medium text-emerald-600">{info.booked}</span>
+                        <span className="text-[var(--color-text-muted)]"> / {info.sent} {labels.sent.toLowerCase()}</span>
+                      </span>
                     </div>
                   ))}
               </div>
