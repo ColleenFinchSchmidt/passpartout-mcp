@@ -1089,11 +1089,16 @@ async def api_import_parse(file: UploadFile = File(...), model: str | None = Que
     total_lines = len([l for l in text.split("\n") if l.strip()])
 
     def _clean_json(raw: str):
+        import re as _re_json
         cleaned = raw.strip()
-        if cleaned.startswith("```"):
+        # Strip markdown code fences: ```json ... ``` or ``` ... ```
+        fence = _re_json.search(r'```(?:json)?\s*\n([\s\S]*?)```', cleaned)
+        if fence:
+            cleaned = fence.group(1).strip()
+        elif cleaned.startswith("```"):
             cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
-            if cleaned.endswith("```"):
-                cleaned = cleaned[:-3]
+            if cleaned.rstrip().endswith("```"):
+                cleaned = cleaned.rstrip()[:-3]
         return _json.loads(cleaned)
 
     def _validate_row(obj: dict, category: str) -> list[str]:
@@ -1293,7 +1298,7 @@ Sample data:
                     mapping = _clean_json(raw)
                 except _json.JSONDecodeError:
                     _log.warning("Multi-sheet: bad JSON for sheet '%s': %s", sheet_name, raw[:200])
-                    sheet_errors.append({"sheet": sheet_name, "rows": len(sh_rows), "error": "AI returned invalid JSON", "raw_start": raw[:200]})
+                    sheet_errors.append({"sheet": sheet_name, "rows": len(sh_rows), "error": "AI returned invalid JSON", "raw_start": raw[:300]})
                     continue
                 _log.info("Multi-sheet: sheet '%s' → category=%s, columns=%s", sheet_name, mapping.get("category"), list(mapping.get("column_mapping", {}).values()))
 
