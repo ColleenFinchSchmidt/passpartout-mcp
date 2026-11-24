@@ -1226,6 +1226,18 @@ async def api_import_parse(file: UploadFile = File(...), model: str | None = Que
         "media_occupazione_pct": "avg_occupancy_pct",
         "ricavo_totale": "total_revenue",
         "revpar": "avg_revenue",
+        "guest_price_eur": "value_to_guest_eur",
+        "price_eur": "value_to_guest_eur",
+        "valore_ospite_eur": "value_to_guest_eur",
+        "hotel_cost_eur": "cost_to_hotel_eur",
+        "cost_eur": "cost_to_hotel_eur",
+        "costo_hotel_eur": "cost_to_hotel_eur",
+        "nome_extra": "name",
+        "nome": "name",
+        "unità": "unit",
+        "limite": "limit",
+        "segmenti": "segments",
+        "mesi_disponibili": "available_months",
     }
 
     def _canonicalize_col_map(col_map: dict) -> dict:
@@ -1590,8 +1602,8 @@ def _api_import_apply_inner(body: dict):
                 eid = row.get("id") or row.get("name", "").lower().replace(" ", "_")
                 if eid:
                     # Accept both old and new field names
-                    vtg = row.get("value_to_guest_eur") or row.get("value_to_guest") or 0
-                    cth = row.get("cost_to_hotel_eur") or row.get("cost_to_hotel") or 0
+                    vtg = row.get("value_to_guest_eur") or row.get("value_to_guest") or row.get("guest_price_eur") or row.get("price_eur") or 0
+                    cth = row.get("cost_to_hotel_eur") or row.get("cost_to_hotel") or row.get("hotel_cost_eur") or row.get("cost_eur") or 0
                     try:
                         vtg = float(vtg)
                     except (ValueError, TypeError):
