@@ -22,8 +22,10 @@ export async function GET(req: NextRequest) {
   });
 
   if (!res.ok) {
+    let detail = "";
+    try { detail = await res.text(); } catch {}
     return NextResponse.json(
-      { error: `Engine returned ${res.status}` },
+      { error: `Engine returned ${res.status}`, detail },
       { status: res.status },
     );
   }
