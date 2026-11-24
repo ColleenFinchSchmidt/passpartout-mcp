@@ -65,9 +65,9 @@ async function fetchHotelAndSettings(): Promise<{
     const headers: Record<string, string> = {};
     if (API_KEY) headers["x-api-key"] = API_KEY;
 
-    const signal = AbortSignal.timeout(30000);
+    const signal = AbortSignal.timeout(15000);
     const [hRes, sRes] = await Promise.all([
-      fetch(`${ENGINE_URL}/api/hotel/suggest?hotel_id=bristol-stresa`, {
+      fetch(`${ENGINE_URL}/api/hotel/profile?hotel_id=bristol-stresa`, {
         cache: "no-store",
         headers,
         signal,

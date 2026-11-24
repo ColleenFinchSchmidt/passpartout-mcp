@@ -659,6 +659,35 @@ def api_book(booking: BookingRequest):
 
 # ---------- Hotel-side REST endpoints ----------
 
+@api.get("/api/hotel/profile", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+def api_hotel_profile(
+    hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
+):
+    """Hotel profile data only (no moment evaluation). Fast endpoint for the portal Setup page."""
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    return {
+        "hotel_id": hotel["id"],
+        "_hotel_profile": {
+            "id": hotel["id"],
+            "name": hotel["name"],
+            "town": hotel.get("town", ""),
+            "amenities": hotel.get("amenities", []),
+            "segments_wanted": hotel.get("segments_wanted", []),
+            "segments_excluded": hotel.get("segments_excluded", []),
+            "experiences": hotel.get("experiences", []),
+            "extras": hotel.get("extras", []),
+            "rooms": hotel.get("rooms", 0),
+            "public_rate_eur": hotel.get("public_rate_eur", 0),
+            "lowest_price_eur": hotel.get("lowest_price_eur", 0),
+            "max_discount_pct": hotel.get("max_discount_pct", 0),
+            "room_types": hotel.get("room_types", []),
+        },
+        "process_started_at": _PROCESS_STARTED_AT,
+    }
+
+
 @api.get("/api/hotel/suggest", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_suggest_offers(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
