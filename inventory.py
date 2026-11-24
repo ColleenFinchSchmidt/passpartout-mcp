@@ -50,8 +50,21 @@ def _get_conn():
 
 def _ensure_tables(conn):
     with conn.cursor() as cur:
+        cur.execute("CREATE SCHEMA IF NOT EXISTS engine")
+        # Migrate old public-schema tables if they exist
+        for tbl in ("inventory_holds", "inventory_waves", "inventory_offers"):
+            cur.execute(f"""
+                DO $$
+                BEGIN
+                    IF EXISTS (SELECT 1 FROM information_schema.tables
+                               WHERE table_schema = 'public'
+                               AND table_name = '{tbl}') THEN
+                        ALTER TABLE public.{tbl} SET SCHEMA engine;
+                    END IF;
+                END $$;
+            """)
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS inventory_offers (
+            CREATE TABLE IF NOT EXISTS engine.inventory_offers (
                 offer_id      TEXT PRIMARY KEY,
                 hotel_id      TEXT NOT NULL,
                 check_in      TEXT NOT NULL,
@@ -68,9 +81,9 @@ def _ensure_tables(conn):
             )
         """)
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS inventory_waves (
+            CREATE TABLE IF NOT EXISTS engine.inventory_waves (
                 id            SERIAL PRIMARY KEY,
-                offer_id      TEXT NOT NULL REFERENCES inventory_offers(offer_id),
+                offer_id      TEXT NOT NULL REFERENCES engine.inventory_offers(offer_id),
                 wave_number   INT NOT NULL,
                 city          TEXT NOT NULL,
                 segment       TEXT NOT NULL,
@@ -87,9 +100,9 @@ def _ensure_tables(conn):
             )
         """)
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS inventory_holds (
+            CREATE TABLE IF NOT EXISTS engine.inventory_holds (
                 id         SERIAL PRIMARY KEY,
-                offer_id   TEXT NOT NULL REFERENCES inventory_offers(offer_id),
+                offer_id   TEXT NOT NULL REFERENCES engine.inventory_offers(offer_id),
                 guest_ref  TEXT NOT NULL,
                 created_at REAL NOT NULL
             )
@@ -117,7 +130,7 @@ def _active_holds(conn, offer_id: str) -> int:
     cutoff = time.time() - HOLD_DURATION_SECONDS
     with conn.cursor() as cur:
         cur.execute(
-            "SELECT COUNT(*) FROM inventory_holds WHERE offer_id = %s AND created_at >= %s",
+            "SELECT COUNT(*) FROM engine.inventory_holds WHERE offer_id = %s AND created_at >= %s",
             (offer_id, cutoff),
         )
         return cur.fetchone()[0]
@@ -126,7 +139,7 @@ def _active_holds(conn, offer_id: str) -> int:
 def _expire_holds(conn, offer_id: str):
     cutoff = time.time() - HOLD_DURATION_SECONDS
     with conn.cursor() as cur:
-        cur.execute("DELETE FROM inventory_holds WHERE offer_id = %s AND created_at < %s",
+        cur.execute("DELETE FROM engine.inventory_holds WHERE offer_id = %s AND created_at < %s",
                     (offer_id, cutoff))
 
 
@@ -215,7 +228,7 @@ class InventoryStore:
 
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO inventory_offers
+                INSERT INTO engine.inventory_offers
                     (offer_id, hotel_id, check_in, nights, rooms_allocated,
                      auto_waves, booking_rate)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -226,7 +239,7 @@ class InventoryStore:
                 recip = int(rooms_allocated / max(booking_rate, 0.01))
                 recip = min(recip, cs.get("contact_limit", 500))
                 cur.execute("""
-                    INSERT INTO inventory_waves
+                    INSERT INTO engine.inventory_waves
                         (offer_id, wave_number, city, segment, segment_label, recipients)
                     VALUES (%s, %s, %s, %s, %s, %s)
                 """, (offer_id, i + 1, cs["city"], cs["segment"],
@@ -244,7 +257,7 @@ class InventoryStore:
             return
         seed = _deterministic_seed(offer_id, wave_number)
         with conn.cursor() as cur:
-            cur.execute("SELECT recipients FROM inventory_waves WHERE offer_id=%s AND wave_number=%s",
+            cur.execute("SELECT recipients FROM engine.inventory_waves WHERE offer_id=%s AND wave_number=%s",
                         (offer_id, wave_number))
             row = cur.fetchone()
             if not row:
@@ -254,7 +267,7 @@ class InventoryStore:
         metrics = _simulate_wave_metrics(recip, booking_rate, seed)
         with conn.cursor() as cur:
             cur.execute("""
-                UPDATE inventory_waves
+                UPDATE engine.inventory_waves
                 SET status='sent', sent_at=NOW(),
                     sent=%s, opened=%s, clicked=%s, booked=%s
                 WHERE offer_id=%s AND wave_number=%s
@@ -262,7 +275,7 @@ class InventoryStore:
                   metrics["booked"], offer_id, wave_number))
 
             cur.execute("""
-                UPDATE inventory_offers
+                UPDATE engine.inventory_offers
                 SET rooms_booked = LEAST(rooms_allocated, rooms_booked + %s)
                 WHERE offer_id = %s
             """, (metrics["booked"], offer_id))
@@ -295,10 +308,10 @@ class InventoryStore:
         new_recip = max(1, min(new_recip, 500))
 
         with conn.cursor() as cur:
-            cur.execute("UPDATE inventory_waves SET recipients=%s WHERE offer_id=%s AND wave_number=%s",
+            cur.execute("UPDATE engine.inventory_waves SET recipients=%s WHERE offer_id=%s AND wave_number=%s",
                         (new_recip, offer_id, wn))
             if extra_to_add:
-                cur.execute("UPDATE inventory_waves SET extra_added=%s WHERE offer_id=%s AND wave_number=%s",
+                cur.execute("UPDATE engine.inventory_waves SET extra_added=%s WHERE offer_id=%s AND wave_number=%s",
                             (extra_to_add, offer_id, wn))
 
         self._send_wave(offer_id, wn, offer["booking_rate"])
@@ -316,7 +329,7 @@ class InventoryStore:
         if offer["rooms_left"] <= 0:
             return {"error": "No rooms available", "sold_out": True}
         with conn.cursor() as cur:
-            cur.execute("INSERT INTO inventory_holds (offer_id, guest_ref, created_at) VALUES (%s, %s, %s)",
+            cur.execute("INSERT INTO engine.inventory_holds (offer_id, guest_ref, created_at) VALUES (%s, %s, %s)",
                         (offer_id, guest_ref, time.time()))
         return {"ok": True, "held_until": int(time.time() + HOLD_DURATION_SECONDS)}
 
@@ -328,11 +341,11 @@ class InventoryStore:
         if not offer:
             return {"error": f"Offer not found: {offer_id}"}
         with conn.cursor() as cur:
-            cur.execute("DELETE FROM inventory_holds WHERE offer_id=%s AND guest_ref=%s",
+            cur.execute("DELETE FROM engine.inventory_holds WHERE offer_id=%s AND guest_ref=%s",
                         (offer_id, guest_ref))
             if offer["rooms_booked"] >= offer["rooms_allocated"]:
                 return {"error": "No rooms available", "sold_out": True}
-            cur.execute("UPDATE inventory_offers SET rooms_booked = rooms_booked + 1 WHERE offer_id=%s",
+            cur.execute("UPDATE engine.inventory_offers SET rooms_booked = rooms_booked + 1 WHERE offer_id=%s",
                         (offer_id,))
         return {"ok": True, "offer": self.get_offer(offer_id)}
 
@@ -341,14 +354,14 @@ class InventoryStore:
         if not conn:
             return {"error": "Database not available"}
         with conn.cursor() as cur:
-            cur.execute("SELECT notify_list FROM inventory_offers WHERE offer_id=%s", (offer_id,))
+            cur.execute("SELECT notify_list FROM engine.inventory_offers WHERE offer_id=%s", (offer_id,))
             row = cur.fetchone()
             if not row:
                 return {"error": f"Offer not found: {offer_id}"}
             current = row[0] if isinstance(row[0], list) else json.loads(row[0] or "[]")
             if email not in current:
                 current.append(email)
-                cur.execute("UPDATE inventory_offers SET notify_list=%s WHERE offer_id=%s",
+                cur.execute("UPDATE engine.inventory_offers SET notify_list=%s WHERE offer_id=%s",
                             (json.dumps(current), offer_id))
         return {"ok": True, "waitlist_count": len(current)}
 
@@ -357,11 +370,11 @@ class InventoryStore:
         if not conn:
             return None
         with conn.cursor() as cur:
-            cur.execute("SELECT * FROM inventory_offers WHERE offer_id=%s", (offer_id,))
+            cur.execute("SELECT * FROM engine.inventory_offers WHERE offer_id=%s", (offer_id,))
             offer_row = cur.fetchone()
             if not offer_row:
                 return None
-            cur.execute("SELECT * FROM inventory_waves WHERE offer_id=%s ORDER BY wave_number",
+            cur.execute("SELECT * FROM engine.inventory_waves WHERE offer_id=%s ORDER BY wave_number",
                         (offer_id,))
             waves = cur.fetchall()
         return _offer_to_dict(conn, offer_row, waves)
@@ -372,17 +385,17 @@ class InventoryStore:
             return []
         with conn.cursor() as cur:
             if hotel_id:
-                cur.execute("SELECT * FROM inventory_offers WHERE hotel_id=%s ORDER BY created_at DESC",
+                cur.execute("SELECT * FROM engine.inventory_offers WHERE hotel_id=%s ORDER BY created_at DESC",
                             (hotel_id,))
             else:
-                cur.execute("SELECT * FROM inventory_offers ORDER BY created_at DESC")
+                cur.execute("SELECT * FROM engine.inventory_offers ORDER BY created_at DESC")
             offer_rows = cur.fetchall()
 
         result = []
         for orow in offer_rows:
             oid = orow[0]
             with conn.cursor() as cur:
-                cur.execute("SELECT * FROM inventory_waves WHERE offer_id=%s ORDER BY wave_number", (oid,))
+                cur.execute("SELECT * FROM engine.inventory_waves WHERE offer_id=%s ORDER BY wave_number", (oid,))
                 waves = cur.fetchall()
             result.append(_offer_to_dict(conn, orow, waves))
         return result

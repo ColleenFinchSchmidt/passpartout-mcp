@@ -53,9 +53,13 @@ Rules:
 - The theme is 3-7 words, evocative, specific to this segment and these signals.
   Examples: "Lights on the lake", "Swap smog for lake air", "Christmas on the lakefront",
   "Quiet lake before the holidays", "Spa weekend while Milan shivers".
-- "Spa escape" only when rain/bad weather at the hotel is the top signal.
+- PRIORITY: When events are listed (festivals, markets, lights, exhibitions), the theme MUST
+  reference the strongest event by name or concept. Events always beat air quality or haze as
+  the lead signal. Only fall back to weather/air themes when no events are active.
+- "Spa escape" only when rain/bad weather at the hotel is the top signal AND no events.
 - Reasons are 1 sentence each, plain language, factual. No scores, no "AQI", no "penalty".
-  Mention specific events by name when they exist. Mention weather conditions naturally.
+  The first reason should mention the strongest event by name when one exists.
+  Mention weather conditions naturally as supporting reasons, not leads.
 - Italian translations should be natural, not literal.
 
 Return ONLY valid JSON, no other text:
@@ -109,14 +113,14 @@ Stay: {check_in}, {nights} nights
 Target cities: {', '.join(cities)}
 Segments: {', '.join(f"{s['segment']} ({s['label']})" for s in segments)}
 
-Signals that fired:
-{chr(10).join(f'- {r}' for r in reasons)}
+{events_text if events_text else "No local events during this stay."}
 
-{events_text}
+Other signals:
+{chr(10).join(f'- {r}' for r in reasons)}
 
 Source scores: weather={source_scores.get('weather', 0)}, air={source_scores.get('air_quality', 0)}, seasonal={source_scores.get('seasonal', 0)}, holiday={source_scores.get('holiday', 0)}
 
-Generate themes for each city × segment combination."""
+Generate themes for each city × segment combination. If events are listed above, the theme must reference them."""
 
     response = _ask_claude(THEME_SYSTEM, prompt)
     if not response:

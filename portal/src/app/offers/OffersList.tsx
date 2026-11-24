@@ -194,18 +194,23 @@ function guestCities(s: Suggestion): string[] {
   return [];
 }
 
+function parseDate(iso: string): Date {
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  return parseDate(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
 function formatDateShort(iso: string) {
-  const d = new Date(iso);
+  const d = parseDate(iso);
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   return `${days[d.getDay()]} ${d.getDate()}`;
 }
 
 function checkOutDate(checkIn: string, nights: number) {
-  const d = new Date(checkIn);
+  const d = parseDate(checkIn);
   d.setDate(d.getDate() + nights);
   return formatDate(d.toISOString());
 }

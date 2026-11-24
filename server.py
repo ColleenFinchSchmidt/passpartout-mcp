@@ -694,10 +694,11 @@ def api_offers_timeline(
     if not hotel:
         raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
     periods = evaluate_timeline(hotel, MOMENTS_SETTINGS, MOMENTS_DATA)
+    rome_today = datetime.now(ZoneInfo("Europe/Rome")).date()
     return {
         "hotel": hotel["name"],
         "hotel_id": hotel["id"],
-        "date": date.today().isoformat(),
+        "date": rome_today.isoformat(),
         "periods": periods,
         "_hotel_profile": {
             "id": hotel["id"],

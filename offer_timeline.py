@@ -7,8 +7,9 @@ event-aligned dates and Claude-generated themes) or explain why not.
 
 import json
 import logging
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from moments_engine import (
     _additive_score,
@@ -265,7 +266,8 @@ def _skip_reason(scores: dict, reasons: list[str], min_score: float,
 def evaluate_timeline(hotel: dict, settings: dict, data_dir: Path,
                       today: date | None = None) -> list[dict]:
     """Evaluate all periods in the next 2 weeks, returning offer or skip for each."""
-    today = today or date.today()
+    if today is None:
+        today = datetime.now(ZoneInfo("Europe/Rome")).date()
     min_nights = settings.get("min_nights", 2)
     min_score = settings.get("min_score_to_fire", 0.5)
     min_free = settings.get("min_free_rooms", 1)
@@ -301,13 +303,13 @@ def _evaluate_period(period: dict, hotel: dict, settings: dict, data_dir: Path,
     hotel_rain = False
     has_events = False
 
+    forecast_horizon = 7
     for city in hotel["guest_cities"]:
         weather = score_weather(hotel, city, settings)
         air = score_air_quality(city, settings)
         if "rain at" in " ".join(weather.get("reasons", [])).lower():
             hotel_rain = True
 
-        # Try each day in the period as check-in
         best_day_score = 0
         best_day_data = None
 
@@ -321,6 +323,20 @@ def _evaluate_period(period: dict, hotel: dict, settings: dict, data_dir: Path,
             if blocked:
                 d += timedelta(days=1)
                 continue
+
+            days_out = (d - today).days
+            if days_out < forecast_horizon:
+                w_score = weather["score"]
+                w_penalty = weather.get("hotel_weather_penalty", 0.0)
+                a_score = air["score"]
+                w_reasons = weather["reasons"]
+                a_reasons = air["reasons"]
+            else:
+                w_score = 0.0
+                w_penalty = 0.0
+                a_score = 0.0
+                w_reasons = []
+                a_reasons = []
 
             check_out = d + timedelta(days=min_nights)
             holidays = score_holidays(d, settings, data_dir, stay_end=check_out)
@@ -339,15 +355,15 @@ def _evaluate_period(period: dict, hotel: dict, settings: dict, data_dir: Path,
             best_rooms_free = max(best_rooms_free, rooms_free)
 
             combined = _additive_score(
-                weather["score"], air["score"], seasonal["score"],
+                w_score, a_score, seasonal["score"],
                 rooms_free, hotel["rooms"], holidays, min_free,
-                hotel_weather_penalty=weather.get("hotel_weather_penalty", 0.0),
+                hotel_weather_penalty=w_penalty,
             )
 
             if combined > best_day_score:
                 best_day_score = combined
                 reasons = (
-                    weather["reasons"] + air["reasons"]
+                    w_reasons + a_reasons
                     + holidays["reasons"] + seasonal["reasons"]
                 )
                 best_day_data = {
@@ -356,14 +372,14 @@ def _evaluate_period(period: dict, hotel: dict, settings: dict, data_dir: Path,
                     "rooms_free": rooms_free,
                     "rooms_to_offer": best_window["rooms_to_offer"],
                     "combined": combined,
-                    "weather": weather,
-                    "air": air,
+                    "weather": weather if days_out < forecast_horizon else {"score": 0, "reasons": [], "hotel_weather_penalty": 0},
+                    "air": air if days_out < forecast_horizon else {"score": 0, "reasons": []},
                     "holidays": holidays,
                     "seasonal": seasonal,
                     "reasons": reasons,
                     "source_scores": {
-                        "weather": weather["score"],
-                        "air_quality": air["score"],
+                        "weather": w_score,
+                        "air_quality": a_score,
                         "holiday": holidays["score"],
                         "seasonal": seasonal["score"],
                         "availability": round(rooms_free / max(hotel["rooms"], 1), 2),

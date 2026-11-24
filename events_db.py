@@ -39,13 +39,28 @@ def _get_conn():
 
 def _ensure_table(conn):
     with conn.cursor() as cur:
+        cur.execute("CREATE SCHEMA IF NOT EXISTS engine")
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS discovered_events (
+            CREATE TABLE IF NOT EXISTS engine.discovered_events (
                 hotel_id TEXT PRIMARY KEY,
                 events JSONB NOT NULL DEFAULT '[]',
                 sources JSONB NOT NULL DEFAULT '[]',
                 discovered_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             )
+        """)
+        # Migrate data from old public-schema table if it exists
+        cur.execute("""
+            DO $$
+            BEGIN
+                IF EXISTS (SELECT 1 FROM information_schema.tables
+                           WHERE table_schema = 'public'
+                           AND table_name = 'discovered_events') THEN
+                    INSERT INTO engine.discovered_events
+                    SELECT * FROM public.discovered_events
+                    ON CONFLICT (hotel_id) DO NOTHING;
+                    DROP TABLE public.discovered_events;
+                END IF;
+            END $$;
         """)
 
 
@@ -64,7 +79,7 @@ def save_events(hotel_id: str, events: list, sources: list) -> bool:
     try:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO discovered_events (hotel_id, events, sources, discovered_at)
+                INSERT INTO engine.discovered_events (hotel_id, events, sources, discovered_at)
                 VALUES (%s, %s, %s, NOW())
                 ON CONFLICT (hotel_id) DO UPDATE
                 SET events = EXCLUDED.events,
@@ -85,7 +100,7 @@ def load_events(hotel_id: str) -> dict | None:
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT events, sources, discovered_at FROM discovered_events WHERE hotel_id = %s",
+                "SELECT events, sources, discovered_at FROM engine.discovered_events WHERE hotel_id = %s",
                 (hotel_id,),
             )
             row = cur.fetchone()
@@ -109,7 +124,7 @@ def get_discovered_at(hotel_id: str) -> date | None:
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT discovered_at FROM discovered_events WHERE hotel_id = %s",
+                "SELECT discovered_at FROM engine.discovered_events WHERE hotel_id = %s",
                 (hotel_id,),
             )
             row = cur.fetchone()
