@@ -1235,11 +1235,14 @@ Sample data:
 {sample_text}"""
 
                 raw = _ask_claude(IMPORT_SYSTEM_PROMPT, sheet_mapping_prompt, max_tokens=4000, model="claude-sonnet-5-5")
+                if raw is None:
+                    _log.warning("Multi-sheet: AI returned None for sheet '%s', retrying with Haiku", sheet_name)
+                    raw = _ask_claude(IMPORT_SYSTEM_PROMPT, sheet_mapping_prompt, max_tokens=4000)
                 est_tokens = (len(IMPORT_SYSTEM_PROMPT) + len(sheet_mapping_prompt)) // 4
-                total_cost += est_tokens * 0.75 / 1_000_000  # Sonnet pricing
+                total_cost += est_tokens * 0.75 / 1_000_000
 
                 if raw is None:
-                    _log.warning("Multi-sheet: AI returned None for sheet '%s'", sheet_name)
+                    _log.warning("Multi-sheet: AI returned None for sheet '%s' on retry", sheet_name)
                     continue
                 try:
                     mapping = _clean_json(raw)
