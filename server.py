@@ -715,6 +715,35 @@ def api_offers_timeline(
     }
 
 
+@api.get("/api/debug/engine-counts", tags=["Debug"], dependencies=[Depends(require_hotel_api_key)])
+def api_engine_counts():
+    """Count rows in engine-schema tables to verify data survives deploys."""
+    import psycopg2
+    db_url = os.environ.get("DATABASE_URL", "")
+    if not db_url:
+        return {"error": "No DATABASE_URL"}
+    conn = psycopg2.connect(db_url)
+    conn.autocommit = True
+    counts = {}
+    with conn.cursor() as cur:
+        for tbl in ("discovered_events", "inventory_offers", "inventory_waves", "inventory_holds"):
+            try:
+                cur.execute(f"SELECT COUNT(*) FROM engine.{tbl}")
+                counts[tbl] = cur.fetchone()[0]
+            except Exception as e:
+                counts[tbl] = f"error: {e}"
+                conn.rollback()
+        cur.execute("""
+            SELECT hotel_id, jsonb_array_length(events) AS event_count
+            FROM engine.discovered_events
+        """)
+        counts["events_detail"] = [
+            {"hotel_id": r[0], "event_count": r[1]} for r in cur.fetchall()
+        ]
+    conn.close()
+    return counts
+
+
 @api.get("/api/hotel/settings", tags=["Hotel tools"])
 def api_hotel_settings():
     """Return segment definitions and configuration for the portal."""
