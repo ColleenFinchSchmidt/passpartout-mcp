@@ -59,10 +59,20 @@ type ExtractedSection = {
   model_used?: string;
 };
 
+type SheetError = {
+  sheet: string;
+  rows: number;
+  sonnet_error?: string;
+  haiku_error?: string;
+  error?: string;
+  raw_start?: string;
+};
+
 type ParseResult = {
   fileName: string;
   sections: ExtractedSection[];
   problems: Problem[];
+  sheet_errors?: SheetError[];
   cost_usd: number;
   rows_in_file?: number;
   rows_extracted?: number;
@@ -499,6 +509,26 @@ export default function ImportPage() {
               </CardContent>
             </Card>
           ))}
+
+          {/* Sheet errors (failed sheets) */}
+          {preview.sheet_errors && preview.sheet_errors.length > 0 && (
+            <Card className="border-red-200">
+              <CardContent className="p-4 space-y-2">
+                <p className="text-xs font-medium text-red-700">Sheets that failed to parse</p>
+                {preview.sheet_errors.map((e, ei) => (
+                  <div key={ei} className="text-xs text-red-600 space-y-0.5">
+                    <p className="flex items-center gap-1.5">
+                      <AlertTriangle className="w-3 h-3 shrink-0" />
+                      <strong>{e.sheet}</strong> ({e.rows} rows)
+                    </p>
+                    {e.sonnet_error && <p className="ml-5 text-[10px] font-mono">Sonnet: {e.sonnet_error}</p>}
+                    {e.haiku_error && <p className="ml-5 text-[10px] font-mono">Haiku: {e.haiku_error}</p>}
+                    {e.error && <p className="ml-5 text-[10px] font-mono">{e.error}</p>}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Global problems */}
           {preview.problems.length > 0 && (
