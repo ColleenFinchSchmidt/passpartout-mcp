@@ -120,8 +120,15 @@ export async function POST(request: Request) {
       });
       if (engineRes.ok) {
         engineApplied = await engineRes.json();
+      } else {
+        const errText = await engineRes.text().catch(() => "");
+        console.error(`[import/save] engine apply failed: ${engineRes.status} ${errText}`);
+        engineApplied = { error: `Engine ${engineRes.status}`, detail: errText.slice(0, 200) };
       }
-    } catch {}
+    } catch (e) {
+      console.error("[import/save] engine apply error:", e instanceof Error ? e.message : e);
+      engineApplied = { error: "Engine unreachable", detail: e instanceof Error ? e.message : String(e) };
+    }
 
     return NextResponse.json({ importId: batch.id, saved: true, stats, engineApplied });
   } catch (err) {
