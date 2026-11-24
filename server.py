@@ -1090,8 +1090,8 @@ async def api_import_parse(file: UploadFile = File(...)):
         out_tok = response.usage.output_tokens
         cost_usd = (in_tok * 0.25 + out_tok * 1.25) / 1_000_000
     except Exception as exc:
-        _log.error("Claude API failed during import parse: %s", exc)
-        raise HTTPException(status_code=502, detail="AI extraction failed — please try again")
+        _log.error("Claude API failed during import parse: %s — %s", type(exc).__name__, exc)
+        raise HTTPException(status_code=502, detail=f"AI extraction failed: {type(exc).__name__}")
 
     # Parse Claude's response
     try:
