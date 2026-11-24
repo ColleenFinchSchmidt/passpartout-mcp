@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -291,6 +292,23 @@ export default async function SetupPage() {
               )}
             </CardContent>
           </Card>
+
+          <Link href="/import">
+            <Card className="group hover:border-[var(--color-accent)]/50 transition-colors cursor-pointer">
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-semibold text-[var(--color-text)]">
+                    Import data
+                  </h2>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-1">
+                    Upload your files — we&apos;ll extract rooms, occupancy, rates,
+                    and guest data automatically.
+                  </p>
+                </div>
+                <span className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent)] transition-colors text-lg">→</span>
+              </CardContent>
+            </Card>
+          </Link>
 
           <Card>
             <CardContent className="p-5 space-y-4">

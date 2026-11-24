@@ -85,7 +85,38 @@ type TranslationStrings = {
     roomsLeft: string;
     skipped: string;
   };
-  setup: { title: string; comingSoon: string; amenities: string; segments: string; experiences: string; guardrails: string };
+  setup: { title: string; comingSoon: string; amenities: string; segments: string; experiences: string; guardrails: string; importData: string; importHint: string; dpaNotice: string };
+  import: {
+    title: string;
+    subtitle: string;
+    dropHere: string;
+    browse: string;
+    formats: string;
+    maxSize: string;
+    uploading: string;
+    parsing: string;
+    preview: string;
+    confirm: string;
+    cancel: string;
+    back: string;
+    noData: string;
+    found: string;
+    rows: string;
+    problems: string;
+    rooms: string;
+    occupancy: string;
+    rates: string;
+    guests: string;
+    amenities: string;
+    extras: string;
+    history: string;
+    undo: string;
+    deleteGuests: string;
+    deleteGuestsConfirm: string;
+    consentMissing: string;
+    duplicateEmails: string;
+    unreadableDates: string;
+  };
 };
 
 const translations: Record<Locale, TranslationStrings> = {
@@ -186,6 +217,40 @@ const translations: Record<Locale, TranslationStrings> = {
       segments: "Target segments",
       experiences: "Experiences",
       guardrails: "Pricing guardrails",
+      importData: "Import data",
+      importHint: "Upload your files — we'll extract rooms, occupancy, rates, and guest data automatically.",
+      dpaNotice: "A data processing agreement is required before importing guest data.",
+    },
+    import: {
+      title: "Import data",
+      subtitle: "Upload your hotel files and we'll extract the data automatically",
+      dropHere: "Drop files here",
+      browse: "Browse files",
+      formats: "Excel, CSV, Word, PDF, or text",
+      maxSize: "Max 10 MB per file",
+      uploading: "Uploading…",
+      parsing: "Reading your file with AI…",
+      preview: "Preview",
+      confirm: "Confirm import",
+      cancel: "Cancel",
+      back: "Back to set-up",
+      noData: "No data found in this file",
+      found: "Found",
+      rows: "rows",
+      problems: "Problems",
+      rooms: "Rooms & availability",
+      occupancy: "Past occupancy",
+      rates: "Rates & rules",
+      guests: "Guest list",
+      amenities: "Amenities",
+      extras: "Extras",
+      history: "Import history",
+      undo: "Undo",
+      deleteGuests: "Delete all guest data",
+      deleteGuestsConfirm: "This will permanently delete all imported guest data. Are you sure?",
+      consentMissing: "guests without marketing consent",
+      duplicateEmails: "duplicate emails",
+      unreadableDates: "dates could not be read",
     },
   },
   it: {
@@ -285,6 +350,40 @@ const translations: Record<Locale, TranslationStrings> = {
       segments: "Segmenti target",
       experiences: "Esperienze",
       guardrails: "Regole di prezzo",
+      importData: "Importa dati",
+      importHint: "Carica i tuoi file — estrarremo camere, occupazione, tariffe e dati ospiti automaticamente.",
+      dpaNotice: "È necessario un accordo sul trattamento dei dati prima di importare dati degli ospiti.",
+    },
+    import: {
+      title: "Importa dati",
+      subtitle: "Carica i file del tuo hotel e estrarremo i dati automaticamente",
+      dropHere: "Trascina i file qui",
+      browse: "Sfoglia file",
+      formats: "Excel, CSV, Word, PDF o testo",
+      maxSize: "Max 10 MB per file",
+      uploading: "Caricamento…",
+      parsing: "Lettura del file con IA…",
+      preview: "Anteprima",
+      confirm: "Conferma importazione",
+      cancel: "Annulla",
+      back: "Torna alle impostazioni",
+      noData: "Nessun dato trovato in questo file",
+      found: "Trovati",
+      rows: "righe",
+      problems: "Problemi",
+      rooms: "Camere e disponibilità",
+      occupancy: "Occupazione passata",
+      rates: "Tariffe e regole",
+      guests: "Lista ospiti",
+      amenities: "Servizi",
+      extras: "Extra",
+      history: "Storico importazioni",
+      undo: "Annulla",
+      deleteGuests: "Elimina tutti i dati ospiti",
+      deleteGuestsConfirm: "Questo eliminerà permanentemente tutti i dati ospiti importati. Sei sicuro?",
+      consentMissing: "ospiti senza consenso marketing",
+      duplicateEmails: "email duplicate",
+      unreadableDates: "date non leggibili",
     },
   },
 };
