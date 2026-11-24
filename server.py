@@ -1099,10 +1099,15 @@ async def api_import_parse(file: UploadFile = File(...), model: str | None = Que
             d = obj.get("date") or obj.get("month")
             if d:
                 import re as _re
-                # Check if date string is parseable
                 cleaned_d = str(d).strip()
-                if not _re.match(r'\d{4}[-/]\d{1,2}[-/]\d{1,2}', cleaned_d) and not _re.match(r'\d{1,2}[-/]\d{1,2}[-/]\d{4}', cleaned_d) and not _re.match(r'\d{4}[-/]\d{1,2}$', cleaned_d):
-                    issues.append(f"unparseable date: {cleaned_d[:30]}")
+                if category == "monthly_occupancy":
+                    # Month names (Italian/English) or YYYY-MM are valid for monthly data
+                    month_names = {"gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre","january","february","march","april","may","june","july","august","september","october","november","december"}
+                    if cleaned_d.lower() not in month_names and not _re.match(r'\d{4}[-/]\d{1,2}$', cleaned_d):
+                        issues.append(f"unparseable month: {cleaned_d[:30]}")
+                else:
+                    if not _re.match(r'\d{4}[-/]\d{1,2}[-/]\d{1,2}', cleaned_d) and not _re.match(r'\d{1,2}[-/]\d{1,2}[-/]\d{4}', cleaned_d) and not _re.match(r'\d{4}[-/]\d{1,2}$', cleaned_d):
+                        issues.append(f"unparseable date: {cleaned_d[:30]}")
             occ = obj.get("rooms_occupied")
             total = obj.get("total_rooms")
             if occ is not None and total is not None:
