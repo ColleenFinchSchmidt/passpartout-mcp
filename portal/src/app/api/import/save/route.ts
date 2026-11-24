@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 
 const HOTEL_ID = "bristol-stresa";
+const ENGINE_URL = process.env.ENGINE_URL || "https://web-production-eb412a2e.up.railway.app";
+const API_KEY = process.env.HOTEL_API_KEY || "";
 
 type Section = {
   category: string;
@@ -106,7 +108,22 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ importId: batch.id, saved: true, stats });
+    // Apply to engine (best-effort — don't fail the import if engine is down)
+    let engineApplied = null;
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (API_KEY) headers["x-api-key"] = API_KEY;
+      const engineRes = await fetch(`${ENGINE_URL}/api/import/apply`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ hotel_id: HOTEL_ID, sections }),
+      });
+      if (engineRes.ok) {
+        engineApplied = await engineRes.json();
+      }
+    } catch {}
+
+    return NextResponse.json({ importId: batch.id, saved: true, stats, engineApplied });
   } catch (err) {
     console.error("[import/save] error:", err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "Save failed" }, { status: 500 });

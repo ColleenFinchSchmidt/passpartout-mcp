@@ -1163,6 +1163,132 @@ async def api_import_parse(file: UploadFile = File(...)):
     }
 
 
+# ---------- Import → Engine integration ----------
+
+@api.post("/api/import/apply", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+def api_import_apply(body: dict):
+    """Apply imported data to the engine's data files so it's used immediately."""
+    hotel_id = body.get("hotel_id", "bristol-stresa")
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+
+    sections = body.get("sections", [])
+    applied = {}
+
+    for section in sections:
+        cat = section.get("category")
+        rows = section.get("rows", [])
+        if not rows:
+            continue
+
+        if cat == "occupancy":
+            free_rooms_data = {}
+            total_rooms = hotel.get("rooms", 85)
+            for row in rows:
+                d = row.get("date") or row.get("data")
+                occupied = row.get("rooms_occupied") or row.get("camere_occupate")
+                pct = row.get("occupancy_pct") or row.get("occupazione_pct")
+                if d and occupied is not None:
+                    try:
+                        free = max(0, total_rooms - int(occupied))
+                        free_rooms_data[str(d)] = free
+                    except (ValueError, TypeError):
+                        pass
+                elif d and pct is not None:
+                    try:
+                        occ_rate = float(str(pct).replace("%", "").replace(",", ".")) / 100
+                        free = max(0, total_rooms - round(total_rooms * occ_rate))
+                        free_rooms_data[str(d)] = free
+                    except (ValueError, TypeError):
+                        pass
+
+            if free_rooms_data:
+                avail_path = MOMENTS_DATA / "availability.json"
+                existing = load_json(avail_path)
+                if existing.get("hotel_id") != hotel_id:
+                    existing = {"hotel_id": hotel_id, "free_rooms": {}}
+                existing.setdefault("free_rooms", {}).update(free_rooms_data)
+                avail_path.write_text(json.dumps(existing, indent=2))
+                applied["occupancy"] = len(free_rooms_data)
+
+        elif cat == "rates":
+            hotel_cfg_path = MOMENTS_DATA / "hotels.json"
+            hotels_list = load_json(hotel_cfg_path)
+            for h in hotels_list:
+                if h["id"] == hotel_id:
+                    for row in rows:
+                        if "public_rate" in row or "public_rate_eur" in row:
+                            try:
+                                h["public_rate_eur"] = int(row.get("public_rate_eur") or row.get("public_rate"))
+                            except (ValueError, TypeError):
+                                pass
+                        if "lowest_price" in row or "lowest_price_eur" in row:
+                            try:
+                                h["lowest_price_eur"] = int(row.get("lowest_price_eur") or row.get("lowest_price"))
+                            except (ValueError, TypeError):
+                                pass
+                        if "max_discount_pct" in row:
+                            try:
+                                h["max_discount_pct"] = int(row["max_discount_pct"])
+                            except (ValueError, TypeError):
+                                pass
+                    break
+            hotel_cfg_path.write_text(json.dumps(hotels_list, indent=2))
+            applied["rates"] = len(rows)
+
+        elif cat == "extras":
+            hotel_cfg_path = MOMENTS_DATA / "hotels.json"
+            hotels_list = load_json(hotel_cfg_path)
+            for h in hotels_list:
+                if h["id"] == hotel_id:
+                    existing_extras = {e["id"]: e for e in h.get("extras", [])}
+                    for row in rows:
+                        eid = row.get("id") or row.get("name", "").lower().replace(" ", "_")
+                        if eid:
+                            existing_extras[eid] = {
+                                "id": eid,
+                                "name": row.get("name", eid),
+                                "value_to_guest": row.get("value_to_guest", 0),
+                                "cost_to_hotel": row.get("cost_to_hotel", 0),
+                                "unit": row.get("unit", "per_stay"),
+                                "limit": row.get("limit", "unlimited"),
+                                "segments": row.get("segments", []),
+                            }
+                    h["extras"] = list(existing_extras.values())
+                    break
+            hotel_cfg_path.write_text(json.dumps(hotels_list, indent=2))
+            applied["extras"] = len(rows)
+
+        elif cat == "rooms":
+            hotel_cfg_path = MOMENTS_DATA / "hotels.json"
+            hotels_list = load_json(hotel_cfg_path)
+            for h in hotels_list:
+                if h["id"] == hotel_id:
+                    total = 0
+                    room_types = []
+                    for row in rows:
+                        count = row.get("count") or row.get("rooms") or row.get("numero")
+                        try:
+                            total += int(count) if count else 0
+                        except (ValueError, TypeError):
+                            pass
+                        room_types.append(row.get("type") or row.get("tipo") or "unknown")
+                    if total > 0:
+                        h["rooms"] = total
+                    h["room_types"] = room_types
+                    break
+            hotel_cfg_path.write_text(json.dumps(hotels_list, indent=2))
+            applied["rooms"] = len(rows)
+
+    # Reload hotels in memory
+    global MOMENTS_HOTELS, MOMENTS_HOTEL_BY_ID
+    MOMENTS_HOTELS = load_json(MOMENTS_DATA / "hotels.json")
+    MOMENTS_HOTEL_BY_ID = {h["id"]: h for h in MOMENTS_HOTELS}
+
+    return {"applied": applied, "hotel_id": hotel_id}
+
+
 # ---------- Inventory REST endpoints ----------
 
 class CreateOfferRequest(BaseModel):
