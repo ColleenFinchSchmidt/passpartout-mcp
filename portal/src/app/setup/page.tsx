@@ -279,7 +279,7 @@ async function SetupContent() {
                           )}
                         </span>
                         <div className="flex gap-1">
-                          {ex.segments.map((s) => (
+                          {(ex.segments ?? []).map((s) => (
                             <Badge key={s} variant="segment" className="text-[10px] px-1.5 py-0">
                               {allSegments[s]?.label ?? formatLabel(s)}
                             </Badge>
