@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+const ENGINE_URL =
+  process.env.ENGINE_URL || "https://web-production-eb412a2e.up.railway.app";
+const API_KEY = process.env.HOTEL_API_KEY || "";
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export async function POST(request: Request) {
@@ -30,28 +33,28 @@ export async function POST(request: Request) {
       );
     }
 
-    // TODO: Send file bytes to Claude for extraction.
-    // For now return a stub preview so we can test the UI end-to-end.
-    const stubResult = {
-      fileName: file.name,
-      sections: [
-        {
-          category: "occupancy" as const,
-          rows: [
-            { date: "2025-01-15", rooms_sold: 42, rooms_available: 85, occupancy_pct: "49%" },
-            { date: "2025-02-15", rooms_sold: 55, rooms_available: 85, occupancy_pct: "65%" },
-            { date: "2025-03-15", rooms_sold: 60, rooms_available: 85, occupancy_pct: "71%" },
-          ],
-          columns: ["date", "rooms_sold", "rooms_available", "occupancy_pct"],
-          mappings: { "Data": "date", "Camere vendute": "rooms_sold", "Disponibili": "rooms_available" },
-          problems: [],
-        },
-      ],
-      problems: [],
-      cost_usd: 0.003,
-    };
+    // Forward the file to the engine's parse endpoint
+    const engineForm = new FormData();
+    engineForm.append("file", file);
 
-    return NextResponse.json(stubResult);
+    const headers: Record<string, string> = {};
+    if (API_KEY) headers["x-api-key"] = API_KEY;
+
+    const res = await fetch(`${ENGINE_URL}/api/import/parse-file`, {
+      method: "POST",
+      headers,
+      body: engineForm,
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({ detail: `Engine returned ${res.status}` }));
+      return NextResponse.json(
+        { error: data.detail || data.error || `Parse failed (${res.status})` },
+        { status: res.status },
+      );
+    }
+
+    return NextResponse.json(await res.json());
   } catch (err) {
     console.error("[import/parse] error:", err instanceof Error ? err.message : err);
     return NextResponse.json(

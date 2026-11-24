@@ -21,7 +21,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import uvicorn
-from fastapi import Depends, FastAPI, Header, HTTPException, Query
+from fastapi import Depends, FastAPI, File, Header, HTTPException, Query, UploadFile
 from fastapi.responses import RedirectResponse
 from mcp.server.mcpserver import MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
@@ -972,6 +972,147 @@ def api_backtest(
     result = run_backtest(hotel, MOMENTS_SETTINGS, months, MOMENTS_DATA)
     if "error" in result:
         raise HTTPException(status_code=502, detail=result["error"])
+    return result
+
+
+# ---------- Import / file parsing ----------
+
+IMPORT_SYSTEM_PROMPT = """You are a hotel data extractor. You receive the text content of a file uploaded by a hotel (Excel, CSV, Word, PDF, or plain text). The file may be in Italian or English, have messy formatting, merged cells, or multiple sections.
+
+Extract ALL data you can find into these categories:
+- rooms: Room types, counts, availability windows
+- occupancy: Past occupancy data (dates, rooms sold, percentages)
+- rates: Rate rules, seasonal pricing, minimum stays
+- guests: Guest names, emails, phones, marketing consent
+- amenities: Hotel amenities/facilities
+- extras: Add-on services, packages
+
+For each category found, return:
+1. "category": one of the above category names
+2. "rows": array of extracted row objects with consistent keys
+3. "columns": ordered list of the keys used
+4. "mappings": object mapping original column headers (as found in file) to your standardised keys
+5. "problems": array of {message, count?} for issues found (missing consent, bad dates, etc.)
+
+For guests: flag rows WITHOUT explicit marketing consent in problems. Only include guests who have consent.
+
+Return valid JSON: {"sections": [...], "problems": [...]}
+problems at top level = file-wide issues.
+If no data found, return {"sections": [], "problems": [{"message": "No recognisable hotel data found"}]}"""
+
+@api.post("/api/import/parse-file", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+async def api_import_parse(file: UploadFile = File(...)):
+    """Parse an uploaded hotel file using Claude and return structured preview."""
+    from local_events import ANTHROPIC_API_KEY as _ak
+
+    if not _ak:
+        raise HTTPException(status_code=503, detail="ANTHROPIC_API_KEY not configured")
+
+    max_size = 10 * 1024 * 1024
+    contents = await file.read()
+    if len(contents) > max_size:
+        raise HTTPException(status_code=400, detail="File too large (max 10 MB)")
+
+    ext = (file.filename or "").rsplit(".", 1)[-1].lower()
+    if ext not in ("xlsx", "xls", "csv", "docx", "pdf", "txt"):
+        raise HTTPException(status_code=400, detail=f"Unsupported file type: .{ext}")
+
+    # Convert file to text
+    text = ""
+    if ext == "csv":
+        text = contents.decode("utf-8", errors="replace")
+    elif ext == "txt":
+        text = contents.decode("utf-8", errors="replace")
+    elif ext in ("xlsx", "xls"):
+        try:
+            import openpyxl
+            import io
+            wb = openpyxl.load_workbook(io.BytesIO(contents), data_only=True)
+            parts = []
+            for sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+                parts.append(f"=== Sheet: {sheet_name} ===")
+                for row in ws.iter_rows(values_only=True):
+                    vals = [str(c) if c is not None else "" for c in row]
+                    if any(v.strip() for v in vals):
+                        parts.append("\t".join(vals))
+            text = "\n".join(parts)
+        except Exception as exc:
+            _log.warning("openpyxl failed for %s: %s", file.filename, exc)
+            raise HTTPException(status_code=400, detail=f"Could not read Excel file: {exc}")
+    elif ext == "docx":
+        try:
+            import docx
+            import io
+            doc = docx.Document(io.BytesIO(contents))
+            text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
+            for table in doc.tables:
+                for row in table.rows:
+                    text += "\n" + "\t".join(cell.text for cell in row.cells)
+        except Exception as exc:
+            _log.warning("python-docx failed for %s: %s", file.filename, exc)
+            raise HTTPException(status_code=400, detail=f"Could not read Word file: {exc}")
+    elif ext == "pdf":
+        try:
+            import fitz  # PyMuPDF
+            import io
+            pdf = fitz.open(stream=contents, filetype="pdf")
+            parts = []
+            for page in pdf:
+                parts.append(page.get_text())
+            text = "\n".join(parts)
+        except Exception as exc:
+            _log.warning("PDF read failed for %s: %s", file.filename, exc)
+            raise HTTPException(status_code=400, detail=f"Could not read PDF: {exc}")
+
+    if not text.strip():
+        return {"fileName": file.filename, "sections": [], "problems": [{"message": "File appears empty"}], "cost_usd": 0}
+
+    # Truncate very long files
+    if len(text) > 100_000:
+        text = text[:100_000] + "\n\n[... truncated ...]"
+
+    # Call Claude
+    import anthropic
+    import json as _json
+    client = anthropic.Anthropic(api_key=_ak)
+    input_tokens = len(text) // 4  # rough estimate
+    try:
+        response = client.messages.create(
+            model="claude-haiku-5-5",
+            max_tokens=4096,
+            system=IMPORT_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": f"File name: {file.filename}\n\n{text}"}],
+        )
+        raw = response.content[0].text
+        # Calculate cost: Haiku input $0.25/MTok, output $1.25/MTok
+        in_tok = response.usage.input_tokens
+        out_tok = response.usage.output_tokens
+        cost_usd = (in_tok * 0.25 + out_tok * 1.25) / 1_000_000
+    except Exception as exc:
+        _log.error("Claude API failed during import parse: %s", exc)
+        raise HTTPException(status_code=502, detail="AI extraction failed — please try again")
+
+    # Parse Claude's response
+    try:
+        # Strip markdown code fences if present
+        cleaned = raw.strip()
+        if cleaned.startswith("```"):
+            cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
+            if cleaned.endswith("```"):
+                cleaned = cleaned[:-3]
+        result = _json.loads(cleaned)
+    except _json.JSONDecodeError:
+        _log.warning("Claude returned non-JSON for import: %s", raw[:200])
+        return {
+            "fileName": file.filename,
+            "sections": [],
+            "problems": [{"message": "AI could not extract structured data from this file"}],
+            "cost_usd": cost_usd,
+        }
+
+    result["fileName"] = file.filename
+    result["cost_usd"] = round(cost_usd, 4)
     return result
 
 
