@@ -60,6 +60,9 @@ Rules:
 - Reasons are 1 sentence each, plain language, factual. No scores, no "AQI", no "penalty".
   The first reason should mention the strongest event by name when one exists.
   Mention weather conditions naturally as supporting reasons, not leads.
+- "Also on" items (theatre seasons, dance seasons, long-running programmes) are background
+  context ONLY. Never use them as a headline theme or as a main reason. They may appear in
+  an "also on" aside at most, never as the lead.
 - Italian translations should be natural, not literal.
 
 Return ONLY valid JSON, no other text:
@@ -102,11 +105,11 @@ def generate_themes(
 
     events_text = ""
     if event_sources:
-        events_text = "Active events: " + ", ".join(
+        events_text = "Active events (use these for themes and reasons): " + ", ".join(
             f"{e['name']} ({e.get('place', '')})" for e in event_sources[:8]
         )
     if also_on:
-        events_text += "\nAlso on: " + ", ".join(also_on[:6])
+        events_text += "\nAlso on (background only — do NOT use as theme or reason): " + ", ".join(also_on[:6])
 
     prompt = f"""Hotel: {hotel_name} in {hotel_town}
 Stay: {check_in}, {nights} nights

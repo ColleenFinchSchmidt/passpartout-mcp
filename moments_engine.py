@@ -197,13 +197,38 @@ def _compute_segment_package(
     extras_budget = max(0, total_budget - headline_discount_total)
 
     free_extras = [c for c in candidates if c["stay_cost"] == 0]
+    paid = [c for c in candidates if c["stay_cost"] > 0]
+
+    # Deduplicate same-amenity extras (e.g. spa_pass vs spa_day):
+    # keep the per-stay variant when the per-night one exceeds budget.
+    amenity_groups: dict[str, list] = {}
+    for c in paid:
+        prefix = c["id"].rsplit("_", 1)[0]
+        amenity_groups.setdefault(prefix, []).append(c)
+    deduped_paid = []
+    for prefix, group in amenity_groups.items():
+        if len(group) == 1:
+            deduped_paid.extend(group)
+        else:
+            per_stay = [c for c in group if "per_stay" in c["unit"]]
+            per_night = [c for c in group if "per_night" in c["unit"]]
+            if per_stay and per_night:
+                cheapest_per_stay = min(per_stay, key=lambda c: c["stay_cost"])
+                cheapest_per_night = min(per_night, key=lambda c: c["stay_cost"])
+                if cheapest_per_night["stay_cost"] <= extras_budget:
+                    deduped_paid.append(cheapest_per_night)
+                else:
+                    deduped_paid.append(cheapest_per_stay)
+            else:
+                deduped_paid.extend(group)
+
     paid_preferred = sorted(
-        [c for c in candidates if c["stay_cost"] > 0 and c["is_preferred"]],
+        [c for c in deduped_paid if c["is_preferred"]],
         key=lambda c: c["stay_value"] / max(c["stay_cost"], 0.01),
         reverse=True,
     )
     paid_rest = sorted(
-        [c for c in candidates if c["stay_cost"] > 0 and not c["is_preferred"]],
+        [c for c in deduped_paid if not c["is_preferred"]],
         key=lambda c: c["stay_value"] / max(c["stay_cost"], 0.01),
         reverse=True,
     )

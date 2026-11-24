@@ -42,15 +42,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const discountPerNight = hotel.publicRateEur - finalPrice;
-    const extrasPerNight = extrasCost ?? 0;
-    const totalGiveaway = discountPerNight + extrasPerNight;
-    const maxGiveaway = hotel.publicRateEur * (hotel.maxDiscountPct / 100);
+    const discountTotal = (hotel.publicRateEur - finalPrice) * nights;
+    const extrasCostTotal = extrasCost ?? 0;
+    const totalGiveaway = discountTotal + extrasCostTotal;
+    const maxGiveaway = hotel.publicRateEur * (hotel.maxDiscountPct / 100) * nights;
 
     if (totalGiveaway > maxGiveaway) {
       return NextResponse.json(
         {
-          error: `Total give-away €${totalGiveaway}/night (€${discountPerNight} discount + €${extrasPerNight} extras) exceeds max €${maxGiveaway}/night`,
+          error: `Total give-away €${totalGiveaway} (€${discountTotal} discount + €${extrasCostTotal} extras) exceeds max €${maxGiveaway} for ${nights} nights`,
         },
         { status: 422 },
       );
