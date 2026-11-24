@@ -1009,7 +1009,7 @@ problems at top level = file-wide issues.
 If no data found, return {"sections": [], "problems": [{"message": "No recognisable hotel data found"}], "rows_in_file": 0}"""
 
 @api.post("/api/import/parse-file", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
-async def api_import_parse(file: UploadFile = File(...)):
+async def api_import_parse(file: UploadFile = File(...), model: str | None = Query(None, description="Override AI model (e.g. claude-sonnet-4-20250514)")):
     """Parse an uploaded hotel file using Claude and return structured preview."""
     from local_events import ANTHROPIC_API_KEY as _ak
 
@@ -1101,7 +1101,7 @@ async def api_import_parse(file: UploadFile = File(...)):
             return None, cost
 
     if len(text) <= chunk_limit:
-        result, cost_usd = _parse_chunk(text, "complete file")
+        result, cost_usd = _parse_chunk(text, "complete file", model=model)
         if result is None:
             return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI could not extract structured data from this file"}], "cost_usd": cost_usd, "rows_in_file": total_lines}
         result["fileName"] = file.filename
@@ -1130,7 +1130,7 @@ async def api_import_parse(file: UploadFile = File(...)):
 
     for ci, chunk in enumerate(chunks):
         label = f"chunk {ci+1}/{len(chunks)}"
-        result, cost = _parse_chunk(chunk, label)
+        result, cost = _parse_chunk(chunk, label, model=model)
         total_cost += cost
         if result is None:
             all_problems.append({"message": f"Chunk {ci+1} could not be parsed"})

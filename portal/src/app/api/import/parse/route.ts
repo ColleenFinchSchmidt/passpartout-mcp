@@ -40,7 +40,12 @@ export async function POST(request: Request) {
     const headers: Record<string, string> = {};
     if (API_KEY) headers["x-api-key"] = API_KEY;
 
-    const res = await fetch(`${ENGINE_URL}/api/import/parse-file`, {
+    const url = new URL(request.url);
+    const modelParam = url.searchParams.get("model");
+    const parseUrl = new URL(`${ENGINE_URL}/api/import/parse-file`);
+    if (modelParam) parseUrl.searchParams.set("model", modelParam);
+
+    const res = await fetch(parseUrl.toString(), {
       method: "POST",
       headers,
       body: engineForm,
