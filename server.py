@@ -721,20 +721,84 @@ def api_suggest_offers(
     }
 
 
+_timeline_cache: dict[str, dict] = {}  # hotel_id -> {"result": ..., "ts": datetime, "date": date}
+_TIMELINE_TTL_SECONDS = 6 * 3600  # 6 hours
+
+def _invalidate_timeline_cache(hotel_id: str | None = None):
+    """Clear cached timeline for a hotel (or all hotels)."""
+    if hotel_id:
+        _timeline_cache.pop(hotel_id, None)
+    else:
+        _timeline_cache.clear()
+
+def _daily_cache_refresh():
+    """Background thread: clear timeline cache at 06:00 Rome time each day."""
+    import time as _time
+    while True:
+        now_rome = datetime.now(ZoneInfo("Europe/Rome"))
+        next_6am = now_rome.replace(hour=6, minute=0, second=0, microsecond=0)
+        if now_rome >= next_6am:
+            next_6am += timedelta(days=1)
+        wait_secs = (next_6am - now_rome).total_seconds()
+        _time.sleep(wait_secs)
+        _invalidate_timeline_cache()
+        _log.info("Daily 06:00 cache refresh — timeline cache cleared")
+
+threading.Thread(target=_daily_cache_refresh, daemon=True).start()
+
+def _warm_timeline_cache():
+    """Pre-populate the timeline cache for the demo hotel on startup."""
+    import time as _time
+    _time.sleep(5)  # let the server finish starting
+    try:
+        from offer_timeline import evaluate_timeline
+        for hotel in MOMENTS_HOTELS:
+            hid = hotel["id"]
+            rome_today = datetime.now(ZoneInfo("Europe/Rome")).date()
+            periods = evaluate_timeline(hotel, MOMENTS_SETTINGS, MOMENTS_DATA)
+            result = {
+                "hotel": hotel["name"], "hotel_id": hid,
+                "date": rome_today.isoformat(), "periods": periods,
+                "_hotel_profile": {
+                    "id": hid, "name": hotel["name"],
+                    "town": hotel.get("town", ""),
+                    "rooms": hotel.get("rooms", 0),
+                    "public_rate_eur": hotel.get("public_rate_eur", 0),
+                    "lowest_price_eur": hotel.get("lowest_price_eur", 0),
+                    "max_discount_pct": hotel.get("max_discount_pct", 0),
+                    "amenities": hotel.get("amenities", []),
+                    "extras": hotel.get("extras", []),
+                },
+                "demo": True,
+            }
+            _timeline_cache[hid] = {"result": result, "ts": datetime.now(timezone.utc), "date": rome_today}
+            _log.info("Warmed timeline cache for %s", hid)
+    except Exception as exc:
+        _log.warning("Cache warm-up failed: %s", exc)
+
+threading.Thread(target=_warm_timeline_cache, daemon=True).start()
+
 @api.get("/api/hotel/offers-timeline", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_offers_timeline(
     hotel_id: str | None = Query(None, description="Hotel ID (defaults to demo hotel)"),
+    refresh: bool = Query(False, description="Force refresh the cache"),
 ):
     """2-week timeline of offer periods with themes, aligned dates, and skip reasons."""
     from offer_timeline import evaluate_timeline
     hotel = _resolve_hotel(hotel_id)
     if not hotel:
         raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
-    periods = evaluate_timeline(hotel, MOMENTS_SETTINGS, MOMENTS_DATA)
+    hid = hotel["id"]
     rome_today = datetime.now(ZoneInfo("Europe/Rome")).date()
-    return {
+    cached = _timeline_cache.get(hid)
+    if cached and not refresh:
+        age = (datetime.now(timezone.utc) - cached["ts"]).total_seconds()
+        if age < _TIMELINE_TTL_SECONDS and cached["date"] == rome_today:
+            return {**cached["result"], "cached": True, "cache_age_s": int(age)}
+    periods = evaluate_timeline(hotel, MOMENTS_SETTINGS, MOMENTS_DATA)
+    result = {
         "hotel": hotel["name"],
-        "hotel_id": hotel["id"],
+        "hotel_id": hid,
         "date": rome_today.isoformat(),
         "periods": periods,
         "_hotel_profile": {
@@ -750,35 +814,8 @@ def api_offers_timeline(
         },
         "demo": True,
     }
-
-
-@api.get("/api/debug/engine-counts", tags=["Debug"], dependencies=[Depends(require_hotel_api_key)])
-def api_engine_counts():
-    """Count rows in engine-schema tables to verify data survives deploys."""
-    import psycopg2
-    db_url = os.environ.get("DATABASE_URL", "")
-    if not db_url:
-        return {"error": "No DATABASE_URL"}
-    conn = psycopg2.connect(db_url)
-    conn.autocommit = True
-    counts = {}
-    with conn.cursor() as cur:
-        for tbl in ("discovered_events", "inventory_offers", "inventory_waves", "inventory_holds"):
-            try:
-                cur.execute(f"SELECT COUNT(*) FROM engine.{tbl}")
-                counts[tbl] = cur.fetchone()[0]
-            except Exception as e:
-                counts[tbl] = f"error: {e}"
-                conn.rollback()
-        cur.execute("""
-            SELECT hotel_id, jsonb_array_length(events) AS event_count
-            FROM engine.discovered_events
-        """)
-        counts["events_detail"] = [
-            {"hotel_id": r[0], "event_count": r[1]} for r in cur.fetchall()
-        ]
-    conn.close()
-    return counts
+    _timeline_cache[hid] = {"result": result, "ts": datetime.now(timezone.utc), "date": rome_today}
+    return {**result, "cached": False}
 
 
 @api.get("/api/hotel/settings", tags=["Hotel tools"])
@@ -1691,6 +1728,7 @@ def _api_import_apply_inner(body: dict):
             engine_db.upsert_hotel_config(hotel_id, config_updates)
             applied["rooms"] = len(rows)
 
+    _invalidate_timeline_cache(hotel_id)
     return {"applied": applied, "hotel_id": hotel_id}
 
 
@@ -1701,6 +1739,7 @@ def api_import_reset(hotel_id: str = Query("bristol-stresa", description="Hotel 
     if not hotel:
         raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
     engine_db.delete_hotel_data(hotel_id)
+    _invalidate_timeline_cache(hotel_id)
     # Re-read the original file to get untouched defaults (MOMENTS_HOTELS is modified in-place)
     originals = load_json(MOMENTS_DATA / "hotels.json")
     for orig in originals:
