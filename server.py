@@ -30,7 +30,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from data import DEMO_MEMBER_CODE, HOTELS, OFFERS
 from weather import get_weather_moments, is_offer_triggered, get_offer_forecast
-from moments_engine import evaluate_hotel, explain_moments, run_backtest, load_json
+from moments_engine import evaluate_hotel, explain_moments, run_backtest, load_json, _free_rooms
 from data_refresh import refresh_holidays
 from local_events import discover_events, get_approved_events
 from demand_signals import fetch_predicthq_events, fetch_competitor_prices
