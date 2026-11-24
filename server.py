@@ -1081,94 +1081,100 @@ def api_calendar(
     month: int | None = Query(None),
 ):
     """Per-day calendar data for a month: free rooms, events, offers, holidays."""
-    hotel = _resolve_hotel(hotel_id)
-    if not hotel:
-        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    import traceback as _tb
+    try:
+        hotel = _resolve_hotel(hotel_id)
+        if not hotel:
+            raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
 
-    rome_now = datetime.now(ROME_TZ)
-    y = year or rome_now.year
-    m = month or rome_now.month
-    first_day = date(y, m, 1)
-    if m == 12:
-        last_day = date(y + 1, 1, 1) - timedelta(days=1)
-    else:
-        last_day = date(y, m + 1, 1) - timedelta(days=1)
+        rome_now = datetime.now(ROME_TZ)
+        y = year or rome_now.year
+        m = month or rome_now.month
+        first_day = date(y, m, 1)
+        if m == 12:
+            last_day = date(y + 1, 1, 1) - timedelta(days=1)
+        else:
+            last_day = date(y, m + 1, 1) - timedelta(days=1)
 
-    holidays_path = MOMENTS_DATA / "holidays.json"
-    holidays_data = load_json(holidays_path) if holidays_path.exists() else {}
-    events = get_approved_events(hotel, MOMENTS_DATA)
-    blackout_set = set(hotel.get("blackout_dates", []))
+        holidays_path = MOMENTS_DATA / "holidays.json"
+        holidays_data = load_json(holidays_path) if holidays_path.exists() else {}
+        events = get_approved_events(hotel, MOMENTS_DATA)
+        blackout_set = set(hotel.get("blackout_dates", []))
 
-    school_holidays = set()
-    ponti = set()
-    for region_holidays in holidays_data.get("school_holidays", {}).values():
-        for sh in region_holidays:
-            sd = date.fromisoformat(sh["start"])
-            ed = date.fromisoformat(sh["end"])
-            d = sd
-            while d <= ed:
-                school_holidays.add(d.isoformat())
-                d += timedelta(days=1)
-    for p in holidays_data.get("ponte_opportunities", []):
-        for pd in p.get("dates", []):
-            ponti.add(pd)
+        school_holidays = set()
+        ponti = set()
+        for region_holidays in holidays_data.get("school_holidays", {}).values():
+            for sh in region_holidays:
+                sd = date.fromisoformat(sh["start"])
+                ed = date.fromisoformat(sh["end"])
+                d = sd
+                while d <= ed:
+                    school_holidays.add(d.isoformat())
+                    d += timedelta(days=1)
+        for p in holidays_data.get("ponte_opportunities", []):
+            for pd in p.get("dates", []):
+                ponti.add(pd)
 
-    offers_by_date = {}
-    all_offers = inventory_store.list_offers(hotel["id"])
-    for off in all_offers:
-        ci = date.fromisoformat(off["check_in"])
-        for i in range(off["nights"]):
-            d_str = (ci + timedelta(days=i)).isoformat()
-            if d_str not in offers_by_date:
-                offers_by_date[d_str] = []
-            offers_by_date[d_str].append({
-                "offer_id": off["offer_id"],
-                "rooms_allocated": off["rooms_allocated"],
-                "rooms_booked": off["rooms_booked"],
-                "status": off["status"],
+        offers_by_date = {}
+        all_offers = inventory_store.list_offers(hotel["id"])
+        for off in all_offers:
+            ci = date.fromisoformat(off["check_in"])
+            for i in range(off["nights"]):
+                d_str = (ci + timedelta(days=i)).isoformat()
+                if d_str not in offers_by_date:
+                    offers_by_date[d_str] = []
+                offers_by_date[d_str].append({
+                    "offer_id": off["offer_id"],
+                    "rooms_allocated": off["rooms_allocated"],
+                    "rooms_booked": off["rooms_booked"],
+                    "status": off["status"],
+                })
+
+        days = []
+        d = first_day
+        while d <= last_day:
+            ds = d.isoformat()
+            free = _free_rooms(hotel, d, holidays_data)
+
+            day_events = []
+            for ev in events:
+                ev_start = ev.get("start_date", "")
+                ev_end = ev.get("end_date", "")
+                if ev_start <= ds <= ev_end:
+                    day_events.append({"name": ev["name"], "place": ev.get("place", "")})
+
+            markers = []
+            if ds in school_holidays:
+                markers.append("school_holiday")
+            if ds in ponti:
+                markers.append("ponte")
+            if d.weekday() >= 4:
+                markers.append("weekend")
+            if ds in offers_by_date:
+                markers.append("offer_sent")
+
+            days.append({
+                "date": ds,
+                "weekday": d.strftime("%a"),
+                "free_rooms": free,
+                "total_rooms": hotel["rooms"],
+                "blocked": ds in blackout_set,
+                "events": day_events,
+                "offers": offers_by_date.get(ds, []),
+                "markers": markers,
             })
+            d += timedelta(days=1)
 
-    days = []
-    d = first_day
-    while d <= last_day:
-        ds = d.isoformat()
-        free = _free_rooms(hotel, d, holidays_data)
-
-        day_events = []
-        for ev in events:
-            ev_start = ev.get("start_date", "")
-            ev_end = ev.get("end_date", "")
-            if ev_start <= ds <= ev_end:
-                day_events.append({"name": ev["name"], "place": ev.get("place", "")})
-
-        markers = []
-        if ds in school_holidays:
-            markers.append("school_holiday")
-        if ds in ponti:
-            markers.append("ponte")
-        if d.weekday() >= 4:
-            markers.append("weekend")
-        if ds in offers_by_date:
-            markers.append("offer_sent")
-
-        days.append({
-            "date": ds,
-            "weekday": d.strftime("%a"),
-            "free_rooms": free,
-            "total_rooms": hotel["rooms"],
-            "blocked": ds in blackout_set,
-            "events": day_events,
-            "offers": offers_by_date.get(ds, []),
-            "markers": markers,
-        })
-        d += timedelta(days=1)
-
-    return {
-        "hotel_id": hotel["id"],
-        "year": y,
-        "month": m,
-        "days": days,
-    }
+        return {
+            "hotel_id": hotel["id"],
+            "year": y,
+            "month": m,
+            "days": days,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"{type(exc).__name__}: {exc}\n{''.join(_tb.format_tb(exc.__traceback__))}")
 
 
 class RulesUpdate(BaseModel):
