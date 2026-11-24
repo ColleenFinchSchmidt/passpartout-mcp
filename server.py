@@ -1239,11 +1239,14 @@ Sample data:
                 total_cost += est_tokens * 0.75 / 1_000_000  # Sonnet pricing
 
                 if raw is None:
+                    _log.warning("Multi-sheet: AI returned None for sheet '%s'", sheet_name)
                     continue
                 try:
                     mapping = _clean_json(raw)
                 except _json.JSONDecodeError:
+                    _log.warning("Multi-sheet: bad JSON for sheet '%s': %s", sheet_name, raw[:200])
                     continue
+                _log.info("Multi-sheet: sheet '%s' → category=%s, columns=%s", sheet_name, mapping.get("category"), list(mapping.get("column_mapping", {}).values()))
 
                 col_map = mapping.get("column_mapping", {})
                 category = mapping.get("category", "occupancy")
