@@ -215,7 +215,7 @@ def _compute_segment_package(
             if per_stay and per_night:
                 cheapest_per_stay = min(per_stay, key=lambda c: c["stay_cost"])
                 cheapest_per_night = min(per_night, key=lambda c: c["stay_cost"])
-                if cheapest_per_night["stay_cost"] <= extras_budget:
+                if cheapest_per_night["stay_cost"] * 2 <= extras_budget:
                     deduped_paid.append(cheapest_per_night)
                 else:
                     deduped_paid.append(cheapest_per_stay)
