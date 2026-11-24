@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 
@@ -14,7 +14,11 @@ type Section = {
   problems: { message: string; count?: number }[];
 };
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const isLoggedIn = request.cookies.get("passpartout_demo")?.value === "1";
+  if (!isLoggedIn) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const body = await request.json();
     const { sections, fileName, modelUsed } = body as { sections: Section[]; fileName: string; modelUsed?: string };

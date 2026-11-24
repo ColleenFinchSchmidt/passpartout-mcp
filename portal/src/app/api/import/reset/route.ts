@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 const HOTEL_ID = "bristol-stresa";
 const ENGINE_URL = process.env.ENGINE_URL || "https://web-production-eb412a2e.up.railway.app";
 const API_KEY = process.env.HOTEL_API_KEY || "";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const isLoggedIn = request.cookies.get("passpartout_demo")?.value === "1";
+  if (!isLoggedIn) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     // Clear engine Postgres data
     const headers: Record<string, string> = { "Content-Type": "application/json" };

@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const ENGINE_URL =
   process.env.ENGINE_URL || "https://web-production-eb412a2e.up.railway.app";
 const API_KEY = process.env.HOTEL_API_KEY || "";
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const isLoggedIn = request.cookies.get("passpartout_demo")?.value === "1";
+  if (!isLoggedIn) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const formData = await request.formData();
     const file = formData.get("file");
