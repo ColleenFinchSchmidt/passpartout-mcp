@@ -919,6 +919,14 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
     hotel_daily = hotel_data["daily"]
     hotel_index = {d: i for i, d in enumerate(hotel_daily["time"])}
 
+    # Load imported availability if present
+    avail_file = load_json(data_dir / "availability.json")
+    imported_free_rooms = {}
+    if avail_file.get("hotel_id") == hotel_id and avail_file.get("free_rooms"):
+        imported_free_rooms = avail_file["free_rooms"]
+    imported_dates_used = 0
+    simulated_dates_used = 0
+
     rows = []
     d = start_date
     while d <= end_date:
@@ -931,7 +939,13 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                 d += timedelta(days=1)
                 continue
 
-            free = _free_rooms(hotel, d, holidays_data)
+            d_str = d.isoformat()
+            if d_str in imported_free_rooms:
+                free = imported_free_rooms[d_str]
+                imported_dates_used += 1
+            else:
+                free = _free_rooms(hotel, d, holidays_data)
+                simulated_dates_used += 1
             if free < min_free:
                 d += timedelta(days=1)
                 continue
@@ -1127,6 +1141,9 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
         "per_month": dict(sorted(month_counts.items())),
         "per_type": dict(type_counts.most_common()),
         "aq_source": aq_source,
+        "occupancy_source": "imported" if imported_dates_used > simulated_dates_used else ("mixed" if imported_dates_used > 0 else "simulated"),
+        "occupancy_imported_dates": imported_dates_used,
+        "occupancy_simulated_dates": simulated_dates_used,
         "has_spa": has_spa,
         "recurring_events_loaded": len(recurring_events),
         "scoring": {

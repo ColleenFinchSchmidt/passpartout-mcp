@@ -105,6 +105,7 @@ type TranslationStrings = {
     problems: string;
     rooms: string;
     occupancy: string;
+    monthly_occupancy: string;
     rates: string;
     guests: string;
     amenities: string;
@@ -239,7 +240,8 @@ const translations: Record<Locale, TranslationStrings> = {
       rows: "rows",
       problems: "Problems",
       rooms: "Rooms & availability",
-      occupancy: "Past occupancy",
+      occupancy: "Past occupancy (daily)",
+      monthly_occupancy: "Past occupancy (monthly)",
       rates: "Rates & rules",
       guests: "Guest list",
       amenities: "Amenities",
@@ -372,7 +374,8 @@ const translations: Record<Locale, TranslationStrings> = {
       rows: "righe",
       problems: "Problemi",
       rooms: "Camere e disponibilità",
-      occupancy: "Occupazione passata",
+      occupancy: "Occupazione passata (giornaliera)",
+      monthly_occupancy: "Occupazione passata (mensile)",
       rates: "Tariffe e regole",
       guests: "Lista ospiti",
       amenities: "Servizi",

@@ -1091,6 +1091,48 @@ async def api_import_parse(file: UploadFile = File(...), model: str | None = Que
                 cleaned = cleaned[:-3]
         return _json.loads(cleaned)
 
+    def _validate_row(obj: dict, category: str) -> list[str]:
+        """Validate a mapped row. Returns list of issues (empty = valid)."""
+        issues = []
+        if category in ("occupancy", "monthly_occupancy"):
+            d = obj.get("date") or obj.get("month")
+            if d:
+                import re as _re
+                # Check if date string is parseable
+                cleaned_d = str(d).strip()
+                if not _re.match(r'\d{4}[-/]\d{1,2}[-/]\d{1,2}', cleaned_d) and not _re.match(r'\d{1,2}[-/]\d{1,2}[-/]\d{4}', cleaned_d) and not _re.match(r'\d{4}[-/]\d{1,2}$', cleaned_d):
+                    issues.append(f"unparseable date: {cleaned_d[:30]}")
+            occ = obj.get("rooms_occupied")
+            total = obj.get("total_rooms")
+            if occ is not None and total is not None:
+                try:
+                    if float(occ) > float(total):
+                        issues.append(f"rooms_occupied ({occ}) > total_rooms ({total})")
+                except (ValueError, TypeError):
+                    pass
+            pct = obj.get("occupancy_pct") or obj.get("avg_occupancy_pct")
+            if pct is not None:
+                try:
+                    p = float(pct)
+                    if p < 0 or p > 100:
+                        issues.append(f"occupancy_pct out of range: {p}")
+                except (ValueError, TypeError):
+                    issues.append(f"occupancy_pct not a number: {pct}")
+        elif category == "guests":
+            email = obj.get("email")
+            phone = obj.get("phone")
+            if not email and not phone:
+                issues.append("missing both email and phone")
+            stays = obj.get("stays")
+            if stays is not None:
+                try:
+                    s = int(stays)
+                    if s < 0:
+                        issues.append(f"negative stays: {s}")
+                except (ValueError, TypeError):
+                    issues.append(f"stays not a number: {stays}")
+        return issues
+
     # -------- STRUCTURED FILES (CSV/Excel): two-phase approach --------
     # Phase 1: Parse file ourselves into rows
     # Phase 2: Send sample to Claude for mapping only, apply to all rows
@@ -1109,11 +1151,13 @@ async def api_import_parse(file: UploadFile = File(...), model: str | None = Que
         except Exception:
             pass
 
-    elif ext in ("xlsx", "xls"):
+    excel_sheets = []  # list of (sheet_name, headers, rows)
+
+    if ext in ("xlsx", "xls"):
         try:
             import openpyxl
             wb = openpyxl.load_workbook(_io.BytesIO(contents), data_only=True)
-            # Use the first sheet with data for structured parsing
+            # Parse each sheet separately to detect its type
             for sheet_name in wb.sheetnames:
                 ws = wb[sheet_name]
                 sheet_rows = []
@@ -1121,17 +1165,136 @@ async def api_import_parse(file: UploadFile = File(...), model: str | None = Que
                     vals = [str(c) if c is not None else "" for c in row]
                     if any(v.strip() for v in vals):
                         sheet_rows.append(vals)
-                if sheet_rows:
-                    if headers is None:
-                        headers = sheet_rows[0]
-                        parsed_rows = sheet_rows[1:]
-                    else:
-                        parsed_rows.extend(sheet_rows[1:])
+                if len(sheet_rows) >= 2:
+                    excel_sheets.append((sheet_name, sheet_rows[0], sheet_rows[1:]))
+            # If single sheet or sheets with same headers, merge
+            if len(excel_sheets) == 1:
+                headers = excel_sheets[0][1]
+                parsed_rows = excel_sheets[0][2]
+            elif len(excel_sheets) > 1:
+                # Check if sheets have different structure (different headers)
+                h0 = excel_sheets[0][1]
+                all_same = all(s[1] == h0 for s in excel_sheets)
+                if all_same:
+                    headers = h0
+                    parsed_rows = []
+                    for _, _, rows in excel_sheets:
+                        parsed_rows.extend(rows)
+                else:
+                    # Different sheets = different categories: use multi-sheet mode
+                    pass  # handled below in multi_sheet_sections
         except Exception:
             pass
 
+    # -------- MULTI-SHEET EXCEL: each sheet parsed separately --------
+    multi_sheet_sections = []
+    if ext in ("xlsx", "xls") and parsed_rows is None:
+        if len(excel_sheets) > 1:
+            all_sections = []
+            total_rows_in_file = 0
+            total_cost = 0.0
+            for sheet_name, sh_headers, sh_rows in excel_sheets:
+                total_rows_in_file += len(sh_rows)
+                sample_size = min(30, len(sh_rows))
+                sample_text = "\t".join(sh_headers) + "\n"
+                for row in sh_rows[:sample_size]:
+                    sample_text += "\t".join(row[:len(sh_headers)]) + "\n"
+
+                sheet_mapping_prompt = f"""You are a hotel data mapper. I have a sheet named "{sheet_name}" with {len(sh_rows)} rows.
+Here are the headers and first {sample_size} rows.
+
+DO NOT return the row data. Return a mapping plan.
+
+Return valid JSON:
+{{
+  "category": "guests"|"occupancy"|"monthly_occupancy"|"rates"|"rooms"|"amenities"|"extras",
+  "column_mapping": {{"original_header": "standardised_key", ...}},
+  "problems": [{{"message": "...", "count": N}}, ...],
+  "consent_column": null,
+  "consent_true_values": ["sì", "si", "yes", "true"],
+  "skip_columns": ["columns to ignore"]
+}}
+
+IMPORTANT: If this sheet contains monthly summary/aggregate data (e.g. monthly averages, totals by month),
+set category to "monthly_occupancy" — NOT "occupancy" (which is for daily data).
+If the sheet has daily rows (one per day), use "occupancy".
+
+For occupancy: use keys: date, rooms_occupied, total_rooms, occupancy_pct, avg_revenue.
+For monthly_occupancy: use keys: month, avg_occupancy_pct, total_room_nights, avg_revenue.
+
+File: {file.filename}, Sheet: {sheet_name}
+Headers: {sh_headers}
+
+Sample data:
+{sample_text}"""
+
+                raw = _ask_claude(IMPORT_SYSTEM_PROMPT, sheet_mapping_prompt, max_tokens=4000, model="claude-sonnet-5-5")
+                est_tokens = (len(IMPORT_SYSTEM_PROMPT) + len(sheet_mapping_prompt)) // 4
+                total_cost += est_tokens * 0.75 / 1_000_000  # Sonnet pricing
+
+                if raw is None:
+                    continue
+                try:
+                    mapping = _clean_json(raw)
+                except _json.JSONDecodeError:
+                    continue
+
+                col_map = mapping.get("column_mapping", {})
+                category = mapping.get("category", "occupancy")
+                problems = mapping.get("problems", [])
+
+                header_idx = {h: i for i, h in enumerate(sh_headers)}
+                mapped_rows = []
+                rejected_rows = []
+                for row_num, row in enumerate(sh_rows, start=2):
+                    obj = {}
+                    for orig, mapped_key in col_map.items():
+                        idx = header_idx.get(orig)
+                        if idx is not None and idx < len(row):
+                            val = row[idx].strip()
+                            if mapped_key in ("occupancy_pct", "avg_occupancy_pct", "avg_revenue", "rooms_occupied", "total_rooms", "total_room_nights"):
+                                try:
+                                    obj[mapped_key] = float(val.replace(",", ".").replace("%", "")) if val else None
+                                except ValueError:
+                                    obj[mapped_key] = None
+                            else:
+                                obj[mapped_key] = val if val else None
+                    if any(v for v in obj.values()):
+                        # Validate row
+                        issues = _validate_row(obj, category)
+                        if issues:
+                            obj["_rejected"] = True
+                            obj["_rejection_reason"] = "; ".join(issues)
+                            rejected_rows.append({"row": row_num, "data": obj, "reasons": issues})
+                        else:
+                            mapped_rows.append(obj)
+
+                if rejected_rows:
+                    problems.append({"message": f"rejected rows (validation failed)", "count": len(rejected_rows)})
+
+                all_sections.append({
+                    "category": category,
+                    "rows": mapped_rows,
+                    "columns": list(col_map.values()),
+                    "mappings": {orig: col_map[orig] for orig in col_map},
+                    "problems": problems,
+                    "sheet_name": sheet_name,
+                    "rejected_rows": rejected_rows[:20],
+                })
+
+            return {
+                "fileName": file.filename,
+                "sections": all_sections,
+                "problems": [],
+                "cost_usd": round(total_cost, 4),
+                "rows_in_file": total_rows_in_file,
+                "rows_extracted": sum(len(s["rows"]) for s in all_sections),
+                "model_used": "claude-sonnet-5-5",
+            }
+
     if parsed_rows is not None and headers and len(parsed_rows) > 50:
-        # Large structured file: use mapping-only prompt
+        # Large structured file: use mapping-only prompt with Sonnet
+        mapping_model = "claude-sonnet-5-5"
         sample_size = min(30, len(parsed_rows))
         sample_text = "\t".join(headers) + "\n"
         for row in parsed_rows[:sample_size]:
@@ -1163,28 +1326,28 @@ Headers: {headers}
 Sample data:
 {sample_text}"""
 
-        raw = _ask_claude(IMPORT_SYSTEM_PROMPT, mapping_prompt, max_tokens=4000, model=model)
-        est_tokens = (len(IMPORT_SYSTEM_PROMPT) + len(mapping_prompt)) // 4
-        cost_usd = round(est_tokens * 0.25 / 1_000_000, 4)
+        raw = _ask_claude(IMPORT_SYSTEM_PROMPT, mapping_prompt, max_tokens=4000, model=mapping_model)
+        est_input = (len(IMPORT_SYSTEM_PROMPT) + len(mapping_prompt)) // 4
+        est_output = len(raw) // 4 if raw else 0
+        cost_usd = round((est_input * 3.0 + est_output * 15.0) / 1_000_000, 4)  # Sonnet pricing
 
         if raw is None:
-            return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI mapping failed"}], "cost_usd": cost_usd, "rows_in_file": len(parsed_rows)}
+            return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI mapping failed"}], "cost_usd": cost_usd, "rows_in_file": len(parsed_rows), "model_used": mapping_model}
 
         try:
             mapping = _clean_json(raw)
         except _json.JSONDecodeError:
-            return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI returned invalid mapping"}], "cost_usd": cost_usd, "rows_in_file": len(parsed_rows)}
+            return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI returned invalid mapping"}], "cost_usd": cost_usd, "rows_in_file": len(parsed_rows), "model_used": mapping_model}
 
         col_map = mapping.get("column_mapping", {})
         category = mapping.get("category", "guests")
         problems = mapping.get("problems", [])
 
-        # Build header index
         header_idx = {h: i for i, h in enumerate(headers)}
 
-        # Apply mapping to all rows
         mapped_rows = []
-        for row in parsed_rows:
+        rejected_rows = []
+        for row_num, row in enumerate(parsed_rows, start=2):
             obj = {}
             for orig, mapped_key in col_map.items():
                 idx = header_idx.get(orig)
@@ -1206,24 +1369,33 @@ Sample data:
                     else:
                         obj[mapped_key] = val if val else None
             if any(v for v in obj.values()):
-                mapped_rows.append(obj)
+                issues = _validate_row(obj, category)
+                if issues:
+                    obj["_rejected"] = True
+                    obj["_rejection_reason"] = "; ".join(issues)
+                    rejected_rows.append({"row": row_num, "data": obj, "reasons": issues})
+                else:
+                    mapped_rows.append(obj)
 
-        columns = list(col_map.values())
-        orig_mappings = {v: v for v in col_map.values()}
+        if rejected_rows:
+            problems.append({"message": "rejected rows (validation failed)", "count": len(rejected_rows)})
 
         return {
             "fileName": file.filename,
             "sections": [{
                 "category": category,
                 "rows": mapped_rows,
-                "columns": columns,
+                "columns": list(col_map.values()),
                 "mappings": {orig: col_map[orig] for orig in col_map},
                 "problems": problems,
+                "rejected_rows": rejected_rows[:20],
             }],
             "problems": [],
             "cost_usd": cost_usd,
             "rows_in_file": len(parsed_rows),
             "rows_extracted": len(mapped_rows),
+            "rows_rejected": len(rejected_rows),
+            "model_used": mapping_model,
         }
 
     # -------- SMALL / UNSTRUCTURED FILES: full AI extraction --------

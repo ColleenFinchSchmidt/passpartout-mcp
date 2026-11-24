@@ -74,6 +74,9 @@ type BacktestData = {
   flagged_total: number;
   flagged: BacktestRow[];
   aq_source?: string;
+  occupancy_source?: string;
+  occupancy_imported_dates?: number;
+  occupancy_simulated_dates?: number;
   has_spa?: boolean;
   recurring_events_loaded?: number;
 };
@@ -175,6 +178,15 @@ function BacktestChart({ data, locale }: { data: BacktestData; locale: "en" | "i
           </span>
         </div>
         <div className="flex flex-wrap gap-1.5">
+          {data.occupancy_source && (
+            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${data.occupancy_source === "imported" ? "border-[var(--color-accent)] text-[var(--color-accent)]" : ""}`}>
+              {locale === "it" ? "Occupazione" : "Occupancy"}: {data.occupancy_source === "imported"
+                ? (locale === "it" ? "dati importati" : "imported data")
+                : data.occupancy_source === "mixed"
+                ? (locale === "it" ? "misto importato/simulato" : "mixed imported/simulated")
+                : (locale === "it" ? "simulata" : "simulated")}
+            </Badge>
+          )}
           {data.aq_source && (
             <Badge variant="outline" className="text-[10px] px-1.5 py-0">
               AQ: {data.aq_source === "real"

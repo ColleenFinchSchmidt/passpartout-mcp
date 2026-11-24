@@ -35,11 +35,17 @@ const ACCEPTED_TYPES = [
 ];
 const MAX_SIZE = 10 * 1024 * 1024;
 
-type DataCategory = "rooms" | "occupancy" | "rates" | "guests" | "amenities" | "extras";
+type DataCategory = "rooms" | "occupancy" | "monthly_occupancy" | "rates" | "guests" | "amenities" | "extras";
 
 type Problem = {
   message: string;
   count?: number;
+};
+
+type RejectedRow = {
+  row: number;
+  data: Record<string, unknown>;
+  reasons: string[];
 };
 
 type ExtractedSection = {
@@ -48,6 +54,8 @@ type ExtractedSection = {
   columns: string[];
   mappings: Record<string, string>;
   problems: Problem[];
+  rejected_rows?: RejectedRow[];
+  sheet_name?: string;
 };
 
 type ParseResult = {
@@ -57,6 +65,8 @@ type ParseResult = {
   cost_usd: number;
   rows_in_file?: number;
   rows_extracted?: number;
+  rows_rejected?: number;
+  model_used?: string;
 };
 
 type SaveStats = {
@@ -76,6 +86,7 @@ type ImportRecord = {
 const categoryIcons: Record<DataCategory, React.ReactNode> = {
   rooms: <BedDouble className="w-4 h-4" />,
   occupancy: <BarChart3 className="w-4 h-4" />,
+  monthly_occupancy: <BarChart3 className="w-4 h-4" />,
   rates: <DollarSign className="w-4 h-4" />,
   guests: <Users className="w-4 h-4" />,
   amenities: <Building className="w-4 h-4" />,
@@ -312,11 +323,12 @@ export default function ImportPage() {
               <FileSpreadsheet className="w-5 h-5 text-[var(--color-accent)]" />
               <span className="text-sm font-medium">{preview.fileName}</span>
               <Badge variant="outline" className="text-[10px]">
-                ~${preview.cost_usd.toFixed(4)}
+                ~${preview.cost_usd.toFixed(4)}{preview.model_used ? ` · ${preview.model_used.replace("claude-", "")}` : ""}
               </Badge>
               {preview.rows_in_file !== undefined && (
                 <span className="text-[10px] text-[var(--color-text-muted)]">
-                  {preview.rows_in_file} lines in file · {preview.sections.reduce((s, sec) => s + sec.rows.length, 0)} rows extracted
+                  {preview.rows_in_file} in file · {preview.sections.reduce((s, sec) => s + sec.rows.length, 0)} extracted
+                  {(preview.rows_rejected ?? 0) > 0 && ` · ${preview.rows_rejected} rejected`}
                 </span>
               )}
             </div>
@@ -344,13 +356,23 @@ export default function ImportPage() {
               <CardContent className="p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    {categoryIcons[section.category]}
+                    {categoryIcons[section.category] || <BarChart3 className="w-4 h-4" />}
                     <h3 className="text-sm font-semibold">
                       {categoryLabel(section.category)}
                     </h3>
+                    {section.sheet_name && (
+                      <span className="text-[10px] text-[var(--color-text-muted)]">
+                        Sheet: {section.sheet_name}
+                      </span>
+                    )}
                   </div>
                   <span className="text-xs text-[var(--color-text-muted)]">
                     {labels.found} {section.rows.length} {labels.rows}
+                    {section.rejected_rows && section.rejected_rows.length > 0 && (
+                      <span className="text-amber-600 ml-1">
+                        · {section.rejected_rows.length} rejected
+                      </span>
+                    )}
                   </span>
                 </div>
 
@@ -431,6 +453,40 @@ export default function ImportPage() {
                         {p.count !== undefined ? `${p.count} ${p.message}` : p.message}
                       </p>
                     ))}
+                  </div>
+                )}
+
+                {/* Rejected rows */}
+                {section.rejected_rows && section.rejected_rows.length > 0 && (
+                  <div className="space-y-1 pt-2 border-t border-[var(--color-border)]">
+                    <p className="text-xs font-medium text-red-700">Rejected rows (not imported)</p>
+                    <div className="overflow-x-auto max-h-32 overflow-y-auto">
+                      <table className="w-full text-[10px]">
+                        <thead>
+                          <tr className="border-b border-[var(--color-border)]">
+                            <th className="text-left py-1 px-1.5 text-[var(--color-text-muted)] font-medium">Row</th>
+                            <th className="text-left py-1 px-1.5 text-[var(--color-text-muted)] font-medium">Reason</th>
+                            <th className="text-left py-1 px-1.5 text-[var(--color-text-muted)] font-medium">Data</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {section.rejected_rows.slice(0, 10).map((rr, ri) => (
+                            <tr key={ri} className="border-b border-[var(--color-border)]/50">
+                              <td className="py-1 px-1.5 text-[var(--color-text-muted)]">{rr.row}</td>
+                              <td className="py-1 px-1.5 text-red-600">{rr.reasons.join("; ")}</td>
+                              <td className="py-1 px-1.5 text-[var(--color-text-muted)] max-w-[200px] truncate">
+                                {JSON.stringify(rr.data).slice(0, 80)}…
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {section.rejected_rows.length > 10 && (
+                        <p className="text-[10px] text-[var(--color-text-muted)] mt-1 px-1.5">
+                          + {section.rejected_rows.length - 10} more rejected rows…
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
               </CardContent>
