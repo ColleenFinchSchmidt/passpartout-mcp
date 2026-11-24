@@ -134,6 +134,24 @@ def upsert_hotel_config(hotel_id: str, updates: dict) -> bool:
         return False
 
 
+def delete_hotel_data(hotel_id: str) -> bool:
+    """Delete all imported data for a hotel (availability + config)."""
+    conn = _get_conn()
+    if not conn:
+        return False
+    try:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM engine.imported_availability WHERE hotel_id = %s", (hotel_id,))
+            avail_deleted = cur.rowcount
+            cur.execute("DELETE FROM engine.imported_hotel_config WHERE hotel_id = %s", (hotel_id,))
+            config_deleted = cur.rowcount
+        _log.info("Deleted hotel data for %s: %d availability rows, %d config rows", hotel_id, avail_deleted, config_deleted)
+        return True
+    except Exception as exc:
+        _log.warning("delete_hotel_data failed: %s", exc)
+        return False
+
+
 def apply_hotel_config_to_memory(hotel: dict, hotel_id: str):
     """Apply persisted config overrides (rates, extras, rooms) to in-memory hotel dict."""
     cfg = get_hotel_config(hotel_id)

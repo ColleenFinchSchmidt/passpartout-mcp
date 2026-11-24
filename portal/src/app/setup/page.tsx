@@ -57,6 +57,7 @@ type SettingsData = {
 async function fetchHotelAndSettings(): Promise<{
   hotel: HotelData | null;
   settings: SettingsData | null;
+  processStartedAt: string | null;
 }> {
   try {
     const headers: Record<string, string> = {};
@@ -74,9 +75,11 @@ async function fetchHotelAndSettings(): Promise<{
     ]);
 
     let hotel: HotelData | null = null;
+    let processStartedAt: string | null = null;
     if (hRes.ok) {
       const data = await hRes.json();
       hotel = data._hotel_profile ?? null;
+      processStartedAt = data.process_started_at ?? null;
     }
 
     let settings: SettingsData | null = null;
@@ -84,9 +87,9 @@ async function fetchHotelAndSettings(): Promise<{
       settings = await sRes.json();
     }
 
-    return { hotel, settings };
+    return { hotel, settings, processStartedAt };
   } catch {
-    return { hotel: null, settings: null };
+    return { hotel: null, settings: null, processStartedAt: null };
   }
 }
 
@@ -97,7 +100,7 @@ function formatLabel(s: string): string {
 }
 
 export default async function SetupPage() {
-  const { hotel, settings } = await fetchHotelAndSettings();
+  const { hotel, settings, processStartedAt } = await fetchHotelAndSettings();
   const allSegments = settings?.segments ?? {};
 
   return (
@@ -354,6 +357,12 @@ export default async function SetupPage() {
               </div>
             </CardContent>
           </Card>
+
+          {processStartedAt && (
+            <p className="text-xs text-[var(--color-text-muted)] px-1">
+              Engine process started: {new Date(processStartedAt).toLocaleString("en-GB", { timeZone: "Europe/Rome", dateStyle: "medium", timeStyle: "long" })}
+            </p>
+          )}
         </>
       )}
     </div>

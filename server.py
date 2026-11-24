@@ -17,7 +17,9 @@ import logging
 import os
 import sys
 import threading
-from datetime import date, datetime, time as dtime, timedelta
+from datetime import date, datetime, time as dtime, timedelta, timezone
+
+_PROCESS_STARTED_AT = datetime.now(timezone.utc).isoformat()
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -686,6 +688,7 @@ def api_suggest_offers(
             "max_discount_pct": hotel.get("max_discount_pct", 0),
         },
         "demo": True,
+        "process_started_at": _PROCESS_STARTED_AT,
     }
 
 
@@ -1268,7 +1271,7 @@ For occupancy: date, rooms_occupied, total_rooms, occupancy_pct, avg_revenue, fr
 For monthly_occupancy: month, avg_occupancy_pct, total_room_nights, total_revenue, avg_revenue.
 For guests: first_name, last_name, email, phone, city, stays, last_stay_date, marketing_consent, consent_date.
 For rates: public_rate_eur, lowest_price_eur, max_discount_pct, min_stay.
-For extras: name, price_eur, description.
+For extras: name, value_to_guest_eur, cost_to_hotel_eur, unit (per_stay_per_room, per_stay_per_person, per_night_per_room, per_night_per_person), limit, segments (comma-separated list of: young_couples, retirees, families, remote_workers, friends_groups), available_months (comma-separated month numbers 1-12, or empty if year-round).
 Do NOT invent other keys or use the original Italian names as keys.
 
 File: {file.filename}, Sheet: {sheet_name}
@@ -1381,7 +1384,9 @@ Return valid JSON:
 }}
 
 For guests: use keys: first_name, last_name, email, phone, city, stays, last_stay_date, marketing_consent, consent_date.
-For occupancy: use keys: date, rooms_occupied, total_rooms, occupancy_pct, avg_revenue.
+For occupancy: use keys: date, rooms_occupied, total_rooms, occupancy_pct, avg_revenue, free_rooms, notes.
+For rates: use keys: public_rate_eur, lowest_price_eur, max_discount_pct, min_stay.
+For extras: use keys: name, value_to_guest_eur, cost_to_hotel_eur, unit (per_stay_per_room, per_stay_per_person, per_night_per_room, per_night_per_person), limit, segments (comma-separated), available_months (comma-separated month numbers 1-12, or empty).
 Examine the sample data to count problems (missing consent, missing emails, bad dates) and estimate for the full {len(parsed_rows)} rows.
 
 File: {file.filename}
@@ -1584,15 +1589,43 @@ def _api_import_apply_inner(body: dict):
             for row in rows:
                 eid = row.get("id") or row.get("name", "").lower().replace(" ", "_")
                 if eid:
-                    existing_extras[eid] = {
+                    # Accept both old and new field names
+                    vtg = row.get("value_to_guest_eur") or row.get("value_to_guest") or 0
+                    cth = row.get("cost_to_hotel_eur") or row.get("cost_to_hotel") or 0
+                    try:
+                        vtg = float(vtg)
+                    except (ValueError, TypeError):
+                        vtg = 0
+                    try:
+                        cth = float(cth)
+                    except (ValueError, TypeError):
+                        cth = 0
+                    # Convert comma-separated strings to lists
+                    segs = row.get("segments", [])
+                    if isinstance(segs, str):
+                        segs = [s.strip() for s in segs.split(",") if s.strip()]
+                    months = row.get("available_months")
+                    if isinstance(months, str) and months.strip():
+                        try:
+                            months = [int(m.strip()) for m in months.split(",") if m.strip()]
+                        except (ValueError, TypeError):
+                            months = None
+                    elif isinstance(months, list):
+                        pass
+                    else:
+                        months = None
+                    extra = {
                         "id": eid,
                         "name": row.get("name", eid),
-                        "value_to_guest": row.get("value_to_guest", 0),
-                        "cost_to_hotel": row.get("cost_to_hotel", 0),
+                        "value_to_guest": vtg,
+                        "cost_to_hotel": cth,
                         "unit": row.get("unit", "per_stay"),
                         "limit": row.get("limit", "unlimited"),
-                        "segments": row.get("segments", []),
+                        "segments": segs,
                     }
+                    if months:
+                        extra["available_months"] = months
+                    existing_extras[eid] = extra
             extras_list = list(existing_extras.values())
             hotel["extras"] = extras_list
             engine_db.upsert_hotel_config(hotel_id, {"extras": extras_list})
@@ -1618,6 +1651,36 @@ def _api_import_apply_inner(body: dict):
             applied["rooms"] = len(rows)
 
     return {"applied": applied, "hotel_id": hotel_id}
+
+
+@api.post("/api/import/reset", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
+def api_import_reset(hotel_id: str = Query("bristol-stresa", description="Hotel ID to reset")):
+    """Reset imported data: clear Postgres overrides and restore in-memory defaults from hotels.json."""
+    hotel = _resolve_hotel(hotel_id)
+    if not hotel:
+        raise HTTPException(status_code=404, detail=f"Hotel not found: {hotel_id}")
+    engine_db.delete_hotel_data(hotel_id)
+    # Reload defaults from the JSON file
+    for orig in MOMENTS_HOTELS:
+        if orig["id"] == hotel_id:
+            for key in ("public_rate_eur", "lowest_price_eur", "max_discount_pct",
+                        "rooms", "extras", "room_types"):
+                if key in orig:
+                    hotel[key] = orig[key]
+                elif key in hotel:
+                    del hotel[key]
+            break
+    return {
+        "reset": True,
+        "hotel_id": hotel_id,
+        "restored": {
+            "public_rate_eur": hotel.get("public_rate_eur"),
+            "lowest_price_eur": hotel.get("lowest_price_eur"),
+            "max_discount_pct": hotel.get("max_discount_pct"),
+            "extras_count": len(hotel.get("extras", [])),
+            "rooms": hotel.get("rooms"),
+        },
+    }
 
 
 # ---------- Inventory REST endpoints ----------

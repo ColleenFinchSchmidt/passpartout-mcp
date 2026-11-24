@@ -1,0 +1,9 @@
+Nome Extra,Valore Ospite EUR,Costo Hotel EUR,Unità,Limite,Segmenti,Mesi Disponibili
+Lezione di Yoga Mattutina,25,8,per_night_per_person,2 per gruppo,"young_couples, remote_workers","5,6,7,8,9"
+Tour in Barca Lago Maggiore,90,45,per_stay_per_person,1 per soggiorno,"retirees, families, friends_groups",
+Degustazione Vini Piemontesi,40,15,per_stay_per_person,unlimited,"retirees, young_couples","3,4,5,6,9,10,11"
+Noleggio E-Bike Giornaliero,18,6,per_night_per_room,3 per camera,"young_couples, remote_workers, friends_groups","4,5,6,7,8,9,10"
+Massaggio Rilassante SPA,70,30,per_stay_per_person,1 per ospite,"retirees, young_couples, remote_workers",
+Picnic Gourmet in Giardino,35,12,per_stay_per_room,unlimited,"families, friends_groups","5,6,7,8,9"
+Corso di Cucina Italiana,55,20,per_stay_per_person,8 per classe,"families, retirees, friends_groups",
+Transfer Aeroporto Malpensa,120,80,per_stay_per_room,unlimited,,

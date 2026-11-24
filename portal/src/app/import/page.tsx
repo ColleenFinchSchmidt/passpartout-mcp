@@ -677,6 +677,33 @@ export default function ImportPage() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Reset demo data */}
+      <Card>
+        <CardContent className="p-5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Trash2 className="w-4 h-4 text-amber-500" />
+            <span className="text-sm font-medium text-amber-700">Reset demo data</span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-amber-300 text-amber-700 hover:bg-amber-50"
+            onClick={async () => {
+              if (!confirm("Reset all imported data (availability, rates, extras) and restore factory defaults? This cannot be undone.")) return;
+              const res = await fetch("/api/import/reset", { method: "POST" });
+              const data = await res.json();
+              if (data.reset) {
+                alert("Demo data reset. Reload Set-up to see defaults.");
+              } else {
+                alert("Reset failed: " + (data.error || "unknown error"));
+              }
+            }}
+          >
+            Reset demo data
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
