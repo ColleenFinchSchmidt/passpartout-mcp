@@ -415,11 +415,18 @@ export default function CalendarPage() {
   const labels = t(locale).calendar;
   const monthNames = locale === "it" ? MONTH_NAMES_IT : MONTH_NAMES_EN;
 
-  const now = new Date();
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [year, setYear] = useState(2026);
+  const [month, setMonth] = useState(11);
   const [days, setDays] = useState<CalDay[]>([]);
   const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const now = new Date();
+    setYear(now.getFullYear());
+    setMonth(now.getMonth() + 1);
+    setReady(true);
+  }, []);
 
   const fetchCalendar = useCallback(async (y: number, m: number) => {
     setLoading(true);
@@ -434,8 +441,8 @@ export default function CalendarPage() {
   }, []);
 
   useEffect(() => {
-    fetchCalendar(year, month);
-  }, [year, month, fetchCalendar]);
+    if (ready) fetchCalendar(year, month);
+  }, [year, month, ready, fetchCalendar]);
 
   const prevMonth = () => {
     if (month === 1) { setYear(year - 1); setMonth(12); }
