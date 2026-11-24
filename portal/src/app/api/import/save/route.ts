@@ -17,7 +17,7 @@ type Section = {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { sections, fileName } = body as { sections: Section[]; fileName: string };
+    const { sections, fileName, modelUsed } = body as { sections: Section[]; fileName: string; modelUsed?: string };
 
     if (!sections || !Array.isArray(sections) || sections.length === 0) {
       return NextResponse.json({ error: "No sections to save" }, { status: 400 });
@@ -36,6 +36,7 @@ export async function POST(request: Request) {
         fileName,
         categories: sections.map(s => s.category),
         rowCounts,
+        modelUsed: modelUsed || sections.map(s => (s as Record<string, unknown>).model_used || "unknown").join(", "),
         rows: {
           create: sections.flatMap(s =>
             s.rows.map(row => ({

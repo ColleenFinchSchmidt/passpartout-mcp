@@ -56,6 +56,7 @@ type ExtractedSection = {
   problems: Problem[];
   rejected_rows?: RejectedRow[];
   sheet_name?: string;
+  model_used?: string;
 };
 
 type ParseResult = {
@@ -81,6 +82,7 @@ type ImportRecord = {
   importedAt: string;
   categories: DataCategory[];
   rowCounts: Record<string, number>;
+  modelUsed?: string;
 };
 
 const categoryIcons: Record<DataCategory, React.ReactNode> = {
@@ -365,6 +367,11 @@ export default function ImportPage() {
                         Sheet: {section.sheet_name}
                       </span>
                     )}
+                    {section.model_used && (
+                      <Badge variant="outline" className="text-[10px]">
+                        {section.model_used.replace("claude-", "")}
+                      </Badge>
+                    )}
                   </div>
                   <span className="text-xs text-[var(--color-text-muted)]">
                     {labels.found} {section.rows.length} {labels.rows}
@@ -585,6 +592,7 @@ export default function ImportPage() {
                         {new Date(rec.importedAt).toLocaleDateString(locale === "it" ? "it-IT" : "en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                         {" · "}
                         {rec.categories.map(c => categoryLabel(c)).join(", ")}
+                        {rec.modelUsed ? ` · ${rec.modelUsed.replace(/claude-/g, "")}` : ""}
                       </p>
                     </div>
                     <Button

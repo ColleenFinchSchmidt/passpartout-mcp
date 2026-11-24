@@ -18,6 +18,7 @@ export async function GET() {
         importedAt: b.createdAt.toISOString(),
         categories: b.categories,
         rowCounts: b.rowCounts,
+        modelUsed: b.modelUsed,
       }))
     );
   } catch (err) {

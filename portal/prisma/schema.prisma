@@ -34,6 +34,7 @@ model ImportBatch {
   categories String[]
   rowCounts  Json
   costUsd    Float        @default(0)
+  modelUsed  String?
   createdAt  DateTime     @default(now())
   undone     Boolean      @default(false)
   undoneAt   DateTime?

@@ -36,6 +36,7 @@ from data_refresh import refresh_holidays
 from local_events import discover_events, get_approved_events
 from demand_signals import fetch_predicthq_events, fetch_competitor_prices
 from inventory import store as inventory_store
+import engine_db
 
 # ---------- shared state ----------
 
@@ -54,6 +55,9 @@ MOMENTS_SETTINGS = load_json(MOMENTS_DATA / "settings.json")
 MOMENTS_HOTELS = load_json(MOMENTS_DATA / "hotels.json")
 MOMENTS_HOTEL_BY_ID = {h["id"]: h for h in MOMENTS_HOTELS}
 
+# Apply persisted hotel config (rates, extras, rooms) from Postgres on startup
+for _h in MOMENTS_HOTELS:
+    engine_db.apply_hotel_config_to_memory(_h, _h["id"])
 
 ROME_TZ = ZoneInfo("Europe/Rome")
 _log = logging.getLogger(__name__)
@@ -1234,15 +1238,19 @@ Headers: {sh_headers}
 Sample data:
 {sample_text}"""
 
-                raw = _ask_claude(IMPORT_SYSTEM_PROMPT, sheet_mapping_prompt, max_tokens=4000, model="claude-sonnet-5-5")
+                sheet_model = "claude-sonnet-5-5"
+                raw = _ask_claude(IMPORT_SYSTEM_PROMPT, sheet_mapping_prompt, max_tokens=4000, model=sheet_model)
                 if raw is None:
-                    _log.warning("Multi-sheet: AI returned None for sheet '%s', retrying with Haiku", sheet_name)
+                    from local_events import _last_claude_error
+                    _log.warning("Multi-sheet: Sonnet failed for sheet '%s': %s — retrying with Haiku", sheet_name, _last_claude_error)
+                    sheet_model = "claude-haiku-3-5-20241022"
                     raw = _ask_claude(IMPORT_SYSTEM_PROMPT, sheet_mapping_prompt, max_tokens=4000)
                 est_tokens = (len(IMPORT_SYSTEM_PROMPT) + len(sheet_mapping_prompt)) // 4
                 total_cost += est_tokens * 0.75 / 1_000_000
 
                 if raw is None:
-                    _log.warning("Multi-sheet: AI returned None for sheet '%s' on retry", sheet_name)
+                    from local_events import _last_claude_error as _err2
+                    _log.warning("Multi-sheet: Haiku also failed for sheet '%s': %s", sheet_name, _err2)
                     continue
                 try:
                     mapping = _clean_json(raw)
@@ -1292,6 +1300,7 @@ Sample data:
                     "problems": problems,
                     "sheet_name": sheet_name,
                     "rejected_rows": rejected_rows[:20],
+                    "model_used": sheet_model,
                 })
 
             return {
@@ -1484,87 +1493,80 @@ def _api_import_apply_inner(body: dict):
                         pass
 
             if free_rooms_data:
-                avail_path = MOMENTS_DATA / "availability.json"
-                existing = load_json(avail_path)
-                if existing.get("hotel_id") != hotel_id:
-                    existing = {"hotel_id": hotel_id, "free_rooms": {}}
-                existing.setdefault("free_rooms", {}).update(free_rooms_data)
-                avail_path.write_text(json.dumps(existing, indent=2))
-                applied["occupancy"] = len(free_rooms_data)
+                n = engine_db.upsert_free_rooms(hotel_id, free_rooms_data)
+                applied["occupancy"] = n
+                # Also write JSON file for local dev (non-Postgres environments)
+                try:
+                    avail_path = MOMENTS_DATA / "availability.json"
+                    existing = load_json(avail_path)
+                    if existing.get("hotel_id") != hotel_id:
+                        existing = {"hotel_id": hotel_id, "free_rooms": {}}
+                    existing.setdefault("free_rooms", {}).update(free_rooms_data)
+                    avail_path.write_text(json.dumps(existing, indent=2))
+                except Exception:
+                    pass
 
         elif cat == "rates":
-            hotel_cfg_path = MOMENTS_DATA / "hotels.json"
-            hotels_list = load_json(hotel_cfg_path)
-            for h in hotels_list:
-                if h["id"] == hotel_id:
-                    for row in rows:
-                        if "public_rate" in row or "public_rate_eur" in row:
-                            try:
-                                h["public_rate_eur"] = int(row.get("public_rate_eur") or row.get("public_rate"))
-                            except (ValueError, TypeError):
-                                pass
-                        if "lowest_price" in row or "lowest_price_eur" in row:
-                            try:
-                                h["lowest_price_eur"] = int(row.get("lowest_price_eur") or row.get("lowest_price"))
-                            except (ValueError, TypeError):
-                                pass
-                        if "max_discount_pct" in row:
-                            try:
-                                h["max_discount_pct"] = int(row["max_discount_pct"])
-                            except (ValueError, TypeError):
-                                pass
-                    break
-            hotel_cfg_path.write_text(json.dumps(hotels_list, indent=2))
+            config_updates = {}
+            for row in rows:
+                if "public_rate" in row or "public_rate_eur" in row:
+                    try:
+                        config_updates["public_rate_eur"] = int(row.get("public_rate_eur") or row.get("public_rate"))
+                    except (ValueError, TypeError):
+                        pass
+                if "lowest_price" in row or "lowest_price_eur" in row:
+                    try:
+                        config_updates["lowest_price_eur"] = int(row.get("lowest_price_eur") or row.get("lowest_price"))
+                    except (ValueError, TypeError):
+                        pass
+                if "max_discount_pct" in row:
+                    try:
+                        config_updates["max_discount_pct"] = int(row["max_discount_pct"])
+                    except (ValueError, TypeError):
+                        pass
+            if config_updates:
+                engine_db.upsert_hotel_config(hotel_id, config_updates)
+                for k, v in config_updates.items():
+                    hotel[k] = v
             applied["rates"] = len(rows)
 
         elif cat == "extras":
-            hotel_cfg_path = MOMENTS_DATA / "hotels.json"
-            hotels_list = load_json(hotel_cfg_path)
-            for h in hotels_list:
-                if h["id"] == hotel_id:
-                    existing_extras = {e["id"]: e for e in h.get("extras", [])}
-                    for row in rows:
-                        eid = row.get("id") or row.get("name", "").lower().replace(" ", "_")
-                        if eid:
-                            existing_extras[eid] = {
-                                "id": eid,
-                                "name": row.get("name", eid),
-                                "value_to_guest": row.get("value_to_guest", 0),
-                                "cost_to_hotel": row.get("cost_to_hotel", 0),
-                                "unit": row.get("unit", "per_stay"),
-                                "limit": row.get("limit", "unlimited"),
-                                "segments": row.get("segments", []),
-                            }
-                    h["extras"] = list(existing_extras.values())
-                    break
-            hotel_cfg_path.write_text(json.dumps(hotels_list, indent=2))
+            existing_extras = {e["id"]: e for e in hotel.get("extras", [])}
+            for row in rows:
+                eid = row.get("id") or row.get("name", "").lower().replace(" ", "_")
+                if eid:
+                    existing_extras[eid] = {
+                        "id": eid,
+                        "name": row.get("name", eid),
+                        "value_to_guest": row.get("value_to_guest", 0),
+                        "cost_to_hotel": row.get("cost_to_hotel", 0),
+                        "unit": row.get("unit", "per_stay"),
+                        "limit": row.get("limit", "unlimited"),
+                        "segments": row.get("segments", []),
+                    }
+            extras_list = list(existing_extras.values())
+            hotel["extras"] = extras_list
+            engine_db.upsert_hotel_config(hotel_id, {"extras": extras_list})
             applied["extras"] = len(rows)
 
         elif cat == "rooms":
-            hotel_cfg_path = MOMENTS_DATA / "hotels.json"
-            hotels_list = load_json(hotel_cfg_path)
-            for h in hotels_list:
-                if h["id"] == hotel_id:
-                    total = 0
-                    room_types = []
-                    for row in rows:
-                        count = row.get("count") or row.get("rooms") or row.get("numero")
-                        try:
-                            total += int(count) if count else 0
-                        except (ValueError, TypeError):
-                            pass
-                        room_types.append(row.get("type") or row.get("tipo") or "unknown")
-                    if total > 0:
-                        h["rooms"] = total
-                    h["room_types"] = room_types
-                    break
-            hotel_cfg_path.write_text(json.dumps(hotels_list, indent=2))
+            total = 0
+            room_types = []
+            for row in rows:
+                count = row.get("count") or row.get("rooms") or row.get("numero")
+                try:
+                    total += int(count) if count else 0
+                except (ValueError, TypeError):
+                    pass
+                room_types.append(row.get("type") or row.get("tipo") or "unknown")
+            config_updates = {}
+            if total > 0:
+                hotel["rooms"] = total
+                config_updates["rooms"] = total
+            hotel["room_types"] = room_types
+            config_updates["room_types"] = room_types
+            engine_db.upsert_hotel_config(hotel_id, config_updates)
             applied["rooms"] = len(rows)
-
-    # Reload hotels in memory
-    global MOMENTS_HOTELS, MOMENTS_HOTEL_BY_ID
-    MOMENTS_HOTELS = load_json(MOMENTS_DATA / "hotels.json")
-    MOMENTS_HOTEL_BY_ID = {h["id"]: h for h in MOMENTS_HOTELS}
 
     return {"applied": applied, "hotel_id": hotel_id}
 
@@ -1725,11 +1727,8 @@ def api_calendar(
                 "status": off["status"],
             })
 
-    # Load imported availability so calendar matches what the engine sees
-    avail_file = load_json(MOMENTS_DATA / "availability.json")
-    imported_free = {}
-    if avail_file.get("hotel_id") == hotel["id"] and avail_file.get("free_rooms"):
-        imported_free = avail_file["free_rooms"]
+    # Load imported availability from Postgres (survives deploys)
+    imported_free = engine_db.get_imported_free_rooms(hotel["id"])
 
     days = []
     d = first_day

@@ -51,13 +51,19 @@ def _fetch_page_text(url: str, max_chars: int = 15000) -> str | None:
         return None
 
 
+_last_claude_error: str | None = None
+
 def _ask_claude(system: str, user: str, max_tokens: int = 8000, model: str | None = None) -> str | None:
+    global _last_claude_error
+    _last_claude_error = None
     if not ANTHROPIC_API_KEY:
+        _last_claude_error = "No ANTHROPIC_API_KEY set"
         return None
+    actual_model = model or ANTHROPIC_MODEL
     try:
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         message = client.messages.create(
-            model=model or ANTHROPIC_MODEL,
+            model=actual_model,
             max_tokens=max_tokens,
             system=system,
             messages=[{"role": "user", "content": user}],
@@ -65,9 +71,11 @@ def _ask_claude(system: str, user: str, max_tokens: int = 8000, model: str | Non
         for block in message.content:
             if block.type == "text":
                 return block.text
+        _last_claude_error = f"No text block in response from {actual_model}"
         return None
     except Exception as exc:
-        logger.warning("Claude API error (%s): %s", type(exc).__name__, exc)
+        _last_claude_error = f"{type(exc).__name__}: {exc}"
+        logger.warning("Claude API error (%s) model=%s: %s", type(exc).__name__, actual_model, exc)
         return None
 
 

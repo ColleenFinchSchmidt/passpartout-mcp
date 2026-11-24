@@ -32,6 +32,11 @@ except ImportError:
     compute_hotel_segment_fit = None
     event_segment_weights = None
 
+try:
+    import engine_db as _edb
+except ImportError:
+    _edb = None
+
 
 def load_json(path: Path) -> dict | list:
     return json.loads(path.read_text())
@@ -488,10 +493,14 @@ def _build_availability(hotel: dict, data_dir: Path, start: date, end: date) -> 
     """Generate availability, using imported data when available."""
     holidays_path = data_dir / "holidays.json"
     holidays_data = json.loads(holidays_path.read_text()) if holidays_path.exists() else {}
-    avail_file = load_json(data_dir / "availability.json")
+    # Read imported data from Postgres first, fall back to JSON file
     imported_free = {}
-    if avail_file.get("hotel_id") == hotel["id"] and avail_file.get("free_rooms"):
-        imported_free = avail_file["free_rooms"]
+    if _edb:
+        imported_free = _edb.get_imported_free_rooms(hotel["id"])
+    if not imported_free:
+        avail_file = load_json(data_dir / "availability.json")
+        if avail_file.get("hotel_id") == hotel["id"] and avail_file.get("free_rooms"):
+            imported_free = avail_file["free_rooms"]
     free = {}
     d = start
     while d <= end:
@@ -506,7 +515,6 @@ def _build_availability(hotel: dict, data_dir: Path, start: date, end: date) -> 
 
 def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | None = None) -> list[dict]:
     today = today or date.today()
-    avail_file = load_json(data_dir / "availability.json")
     contacts = load_json(data_dir / "contacts.json")
 
     window_lo, window_hi = settings["booking_window_days"]
@@ -515,11 +523,8 @@ def evaluate_hotel(hotel: dict, settings: dict, data_dir: Path, today: date | No
     min_score = settings.get("min_score_to_fire", 0.5)
     min_free = settings.get("min_free_rooms", 1)
 
-    file_hotel = avail_file.get("hotel_id")
-    if file_hotel and file_hotel == hotel["id"]:
-        avail = avail_file
-    else:
-        avail = _build_availability(
+    # _build_availability already reads from Postgres, then JSON fallback
+    avail = _build_availability(
             hotel, data_dir,
             today + timedelta(days=window_lo),
             today + timedelta(days=window_hi + min_nights + 5),
@@ -679,11 +684,19 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
     min_free = settings.get("min_free_rooms", 1)
     avail = _build_availability(hotel, data_dir, start_date, end_date)
 
+    min_nights = settings.get("min_nights", 2)
     results = []
     d = start_date
     while d <= end_date:
         day_result = {"date": d.isoformat(), "weekday": d.strftime("%A"), "sources": {}}
-        free_rooms = avail["free_rooms"].get(d.isoformat(), hotel["rooms"])
+        # Use LOWEST free rooms across the stay period (min_nights)
+        stay_free = []
+        for i in range(min_nights):
+            sd = (d + timedelta(days=i)).isoformat()
+            stay_free.append(avail["free_rooms"].get(sd, hotel["rooms"]))
+        free_rooms = min(stay_free) if stay_free else hotel["rooms"]
+
+        hotel_nearly_full = (free_rooms / max(hotel["rooms"], 1)) < 0.30
 
         for city in hotel["guest_cities"]:
             weather = score_weather(hotel, city, settings)
@@ -703,7 +716,10 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
                 hotel_weather_penalty=weather.get("hotel_weather_penalty", 0.0),
             )
 
-            all_reasons = (
+            all_reasons = []
+            if hotel_nearly_full:
+                all_reasons.append(f"Hotel nearly full ({free_rooms}/{hotel['rooms']} free)")
+            all_reasons += (
                 weather["reasons"] + air["reasons"]
                 + holidays["reasons"] + seasonal["reasons"]
             )
@@ -719,7 +735,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
 
             day_result["sources"][city["name"]] = {
                 "combined_score": round(combined, 3),
-                "fires": combined >= settings.get("min_score_to_fire", 0.5) and not blocked,
+                "fires": combined >= settings.get("min_score_to_fire", 0.5) and not blocked and not hotel_nearly_full,
                 "weather": {"score": weather["score"], "reasons": weather["reasons"]},
                 "air_quality": {"score": air["score"], "reasons": air["reasons"]},
                 "holidays": {"score": holidays["score"], "reasons": holidays["reasons"]},
@@ -729,6 +745,7 @@ def explain_moments(hotel: dict, settings: dict, data_dir: Path,
                 "availability": {"free_rooms": free_rooms, "total_rooms": hotel["rooms"]},
                 "target_segments": top_segments,
                 "strike_blocked": blocked,
+                "hotel_nearly_full": hotel_nearly_full,
                 "all_reasons": all_reasons,
             }
 
@@ -927,11 +944,14 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
     hotel_daily = hotel_data["daily"]
     hotel_index = {d: i for i, d in enumerate(hotel_daily["time"])}
 
-    # Load imported availability if present
-    avail_file = load_json(data_dir / "availability.json")
+    # Load imported availability from Postgres first, then JSON fallback
     imported_free_rooms = {}
-    if avail_file.get("hotel_id") == hotel_id and avail_file.get("free_rooms"):
-        imported_free_rooms = avail_file["free_rooms"]
+    if _edb:
+        imported_free_rooms = _edb.get_imported_free_rooms(hotel_id)
+    if not imported_free_rooms:
+        avail_file = load_json(data_dir / "availability.json")
+        if avail_file.get("hotel_id") == hotel_id and avail_file.get("free_rooms"):
+            imported_free_rooms = avail_file["free_rooms"]
     imported_dates_used = 0
     simulated_dates_used = 0
 
@@ -947,12 +967,20 @@ def run_backtest(hotel: dict, settings: dict, months: int = 12,
                 d += timedelta(days=1)
                 continue
 
-            d_str = d.isoformat()
-            if d_str in imported_free_rooms:
-                free = imported_free_rooms[d_str]
+            # Use LOWEST free rooms across all nights of the stay
+            stay_frees = []
+            any_imported = False
+            for sd in stay_dates:
+                sd_str = sd.isoformat()
+                if sd_str in imported_free_rooms:
+                    stay_frees.append(imported_free_rooms[sd_str])
+                    any_imported = True
+                else:
+                    stay_frees.append(_free_rooms(hotel, sd, holidays_data))
+            free = min(stay_frees) if stay_frees else 0
+            if any_imported:
                 imported_dates_used += 1
             else:
-                free = _free_rooms(hotel, d, holidays_data)
                 simulated_dates_used += 1
             if free < min_free:
                 d += timedelta(days=1)
