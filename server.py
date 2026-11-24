@@ -1078,89 +1078,177 @@ async def api_import_parse(file: UploadFile = File(...), model: str | None = Que
 
     from local_events import _ask_claude
     import json as _json
+    import csv as _csv
+    import io as _io
 
     total_lines = len([l for l in text.split("\n") if l.strip()])
-    chunk_limit = 30_000
 
-    def _parse_chunk(chunk_text: str, chunk_label: str, model: str | None = None) -> tuple:
-        user_msg = f"File name: {file.filename} ({chunk_label})\n\n{chunk_text}"
-        est = (len(IMPORT_SYSTEM_PROMPT) + len(user_msg)) // 4
-        raw = _ask_claude(IMPORT_SYSTEM_PROMPT, user_msg, max_tokens=16000, model=model)
-        cost = round(est * 0.25 / 1_000_000, 4)
-        if raw is None:
-            return None, cost
+    def _clean_json(raw: str):
         cleaned = raw.strip()
         if cleaned.startswith("```"):
             cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
             if cleaned.endswith("```"):
                 cleaned = cleaned[:-3]
+        return _json.loads(cleaned)
+
+    # -------- STRUCTURED FILES (CSV/Excel): two-phase approach --------
+    # Phase 1: Parse file ourselves into rows
+    # Phase 2: Send sample to Claude for mapping only, apply to all rows
+    parsed_rows = None
+    headers = None
+
+    if ext == "csv":
         try:
-            return _json.loads(cleaned), cost
+            decoded = contents.decode("utf-8", errors="replace")
+            dialect = _csv.Sniffer().sniff(decoded[:2000])
+            reader = _csv.reader(_io.StringIO(decoded), dialect)
+            all_rows = list(reader)
+            if all_rows:
+                headers = all_rows[0]
+                parsed_rows = all_rows[1:]
+        except Exception:
+            pass
+
+    elif ext in ("xlsx", "xls"):
+        try:
+            import openpyxl
+            wb = openpyxl.load_workbook(_io.BytesIO(contents), data_only=True)
+            # Use the first sheet with data for structured parsing
+            for sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+                sheet_rows = []
+                for row in ws.iter_rows(values_only=True):
+                    vals = [str(c) if c is not None else "" for c in row]
+                    if any(v.strip() for v in vals):
+                        sheet_rows.append(vals)
+                if sheet_rows:
+                    if headers is None:
+                        headers = sheet_rows[0]
+                        parsed_rows = sheet_rows[1:]
+                    else:
+                        parsed_rows.extend(sheet_rows[1:])
+        except Exception:
+            pass
+
+    if parsed_rows is not None and headers and len(parsed_rows) > 50:
+        # Large structured file: use mapping-only prompt
+        sample_size = min(30, len(parsed_rows))
+        sample_text = "\t".join(headers) + "\n"
+        for row in parsed_rows[:sample_size]:
+            sample_text += "\t".join(row[:len(headers)]) + "\n"
+
+        mapping_prompt = f"""You are a hotel data mapper. I have a structured file with {len(parsed_rows)} rows.
+Here are the headers and first {sample_size} rows as a sample.
+
+DO NOT return the row data — I already have all {len(parsed_rows)} rows.
+Instead, return a mapping plan I can apply to every row programmatically.
+
+Return valid JSON:
+{{
+  "category": "guests"|"occupancy"|"rates"|"rooms"|"amenities"|"extras",
+  "column_mapping": {{"original_header": "standardised_key", ...}},
+  "problems": [{{"message": "...", "count": N}}, ...],
+  "consent_column": "header name that indicates marketing consent" or null,
+  "consent_true_values": ["sì", "si", "yes", "true"] (values meaning consent given),
+  "skip_columns": ["columns to ignore"]
+}}
+
+For guests: use keys: first_name, last_name, email, phone, city, stays, last_stay_date, marketing_consent, consent_date.
+For occupancy: use keys: date, rooms_occupied, total_rooms, occupancy_pct, avg_revenue.
+Examine the sample data to count problems (missing consent, missing emails, bad dates) and estimate for the full {len(parsed_rows)} rows.
+
+File: {file.filename}
+Headers: {headers}
+
+Sample data:
+{sample_text}"""
+
+        raw = _ask_claude(IMPORT_SYSTEM_PROMPT, mapping_prompt, max_tokens=4000, model=model)
+        est_tokens = (len(IMPORT_SYSTEM_PROMPT) + len(mapping_prompt)) // 4
+        cost_usd = round(est_tokens * 0.25 / 1_000_000, 4)
+
+        if raw is None:
+            return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI mapping failed"}], "cost_usd": cost_usd, "rows_in_file": len(parsed_rows)}
+
+        try:
+            mapping = _clean_json(raw)
         except _json.JSONDecodeError:
-            _log.warning("Claude returned non-JSON for import: %s", raw[:200])
-            return None, cost
+            return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI returned invalid mapping"}], "cost_usd": cost_usd, "rows_in_file": len(parsed_rows)}
 
-    if len(text) <= chunk_limit:
-        result, cost_usd = _parse_chunk(text, "complete file", model=model)
-        if result is None:
-            return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI could not extract structured data from this file"}], "cost_usd": cost_usd, "rows_in_file": total_lines}
-        result["fileName"] = file.filename
-        result["cost_usd"] = round(cost_usd, 4)
-        result.setdefault("rows_in_file", total_lines)
-        return result
+        col_map = mapping.get("column_mapping", {})
+        category = mapping.get("category", "guests")
+        problems = mapping.get("problems", [])
 
-    # Split into chunks for large files
-    lines = text.split("\n")
-    chunks = []
-    current_chunk = []
-    current_len = 0
-    for line in lines:
-        if current_len + len(line) > chunk_limit and current_chunk:
-            chunks.append("\n".join(current_chunk))
-            current_chunk = []
-            current_len = 0
-        current_chunk.append(line)
-        current_len += len(line) + 1
-    if current_chunk:
-        chunks.append("\n".join(current_chunk))
+        # Build header index
+        header_idx = {h: i for i, h in enumerate(headers)}
 
-    merged_sections: dict[str, dict] = {}
-    total_cost = 0.0
-    all_problems = []
+        # Apply mapping to all rows
+        mapped_rows = []
+        for row in parsed_rows:
+            obj = {}
+            for orig, mapped_key in col_map.items():
+                idx = header_idx.get(orig)
+                if idx is not None and idx < len(row):
+                    val = row[idx].strip()
+                    if mapped_key == "marketing_consent":
+                        consent_vals = mapping.get("consent_true_values", ["sì", "si", "yes", "true"])
+                        obj[mapped_key] = val.lower() in [v.lower() for v in consent_vals]
+                    elif mapped_key == "stays":
+                        try:
+                            obj[mapped_key] = int(val) if val else 0
+                        except ValueError:
+                            obj[mapped_key] = 0
+                    elif mapped_key in ("occupancy_pct", "avg_revenue", "rooms_occupied", "total_rooms"):
+                        try:
+                            obj[mapped_key] = float(val.replace(",", ".").replace("%", "")) if val else None
+                        except ValueError:
+                            obj[mapped_key] = None
+                    else:
+                        obj[mapped_key] = val if val else None
+            if any(v for v in obj.values()):
+                mapped_rows.append(obj)
 
-    for ci, chunk in enumerate(chunks):
-        label = f"chunk {ci+1}/{len(chunks)}"
-        result, cost = _parse_chunk(chunk, label, model=model)
-        total_cost += cost
-        if result is None:
-            all_problems.append({"message": f"Chunk {ci+1} could not be parsed"})
-            continue
-        for section in result.get("sections", []):
-            cat = section["category"]
-            if cat not in merged_sections:
-                merged_sections[cat] = {
-                    "category": cat,
-                    "rows": [],
-                    "columns": section.get("columns", []),
-                    "mappings": section.get("mappings", {}),
-                    "problems": [],
-                }
-            merged_sections[cat]["rows"].extend(section.get("rows", []))
-            merged_sections[cat]["problems"].extend(section.get("problems", []))
-        all_problems.extend(result.get("problems", []))
+        columns = list(col_map.values())
+        orig_mappings = {v: v for v in col_map.values()}
 
-    all_problems.append({"message": f"File was split into {len(chunks)} chunks for processing"})
+        return {
+            "fileName": file.filename,
+            "sections": [{
+                "category": category,
+                "rows": mapped_rows,
+                "columns": columns,
+                "mappings": {orig: col_map[orig] for orig in col_map},
+                "problems": problems,
+            }],
+            "problems": [],
+            "cost_usd": cost_usd,
+            "rows_in_file": len(parsed_rows),
+            "rows_extracted": len(mapped_rows),
+        }
 
-    total_rows = sum(len(s["rows"]) for s in merged_sections.values())
+    # -------- SMALL / UNSTRUCTURED FILES: full AI extraction --------
+    small_limit = 50_000
+    if len(text) > small_limit:
+        text = text[:small_limit] + f"\n\n[... truncated from {total_lines} lines ...]"
 
-    return {
-        "fileName": file.filename,
-        "sections": list(merged_sections.values()),
-        "problems": all_problems,
-        "cost_usd": round(total_cost, 4),
-        "rows_in_file": total_lines,
-        "rows_extracted": total_rows,
-    }
+    user_msg = f"File name: {file.filename}\n\n{text}"
+    est_tokens = (len(IMPORT_SYSTEM_PROMPT) + len(user_msg)) // 4
+    raw = _ask_claude(IMPORT_SYSTEM_PROMPT, user_msg, max_tokens=16000, model=model)
+    cost_usd = round(est_tokens * 0.25 / 1_000_000, 4)
+
+    if raw is None:
+        return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI could not extract structured data"}], "cost_usd": cost_usd, "rows_in_file": total_lines}
+
+    try:
+        result = _clean_json(raw)
+    except _json.JSONDecodeError:
+        _log.warning("Claude returned non-JSON for import: %s", raw[:200])
+        return {"fileName": file.filename, "sections": [], "problems": [{"message": "AI could not extract structured data from this file"}], "cost_usd": cost_usd, "rows_in_file": total_lines}
+
+    result["fileName"] = file.filename
+    result["cost_usd"] = round(cost_usd, 4)
+    result.setdefault("rows_in_file", total_lines)
+    return result
 
 
 # ---------- Import → Engine integration ----------
