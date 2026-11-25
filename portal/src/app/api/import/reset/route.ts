@@ -28,11 +28,12 @@ export async function POST(request: NextRequest) {
       engineResult = { error: `Engine ${engineRes.status}`, detail: errText.slice(0, 200) };
     }
 
-    // Clear portal import history
+    // Clear portal import history and offer actions
     await prisma.importRow.deleteMany({ where: { batch: { hotelId: HOTEL_ID } } });
     await prisma.importBatch.deleteMany({ where: { hotelId: HOTEL_ID } });
+    const { count: actionsCleared } = await prisma.offerAction.deleteMany({ where: { hotelId: HOTEL_ID } });
 
-    return NextResponse.json({ reset: true, engineResult });
+    return NextResponse.json({ reset: true, actionsCleared, engineResult });
   } catch (err) {
     console.error("[import/reset] error:", err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "Reset failed" }, { status: 500 });
