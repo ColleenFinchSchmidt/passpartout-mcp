@@ -1,7 +1,7 @@
 export type Locale = "en" | "it";
 
 type TranslationStrings = {
-  nav: { results: string; offers: string; calendar: string; setup: string };
+  nav: { results: string; offers: string; calendar: string; setup: string; logout: string };
   demo: string;
   login: {
     title: string;
@@ -127,6 +127,7 @@ const translations: Record<Locale, TranslationStrings> = {
       offers: "Offers",
       calendar: "Calendar & rules",
       setup: "Set-up",
+      logout: "Log out",
     },
     demo: "Demo data",
     login: {
@@ -261,6 +262,7 @@ const translations: Record<Locale, TranslationStrings> = {
       offers: "Offerte",
       calendar: "Calendario e regole",
       setup: "Impostazioni",
+      logout: "Esci",
     },
     demo: "Dati demo",
     login: {

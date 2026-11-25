@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { settings } from "@/settings";
 import type { Locale } from "@/i18n";
 import { t } from "@/i18n";
@@ -21,7 +21,14 @@ export default function Nav({
   onToggleLocale: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const labels = t(locale).nav;
+
+  async function handleLogout() {
+    await fetch("/api/demo-login", { method: "DELETE" });
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <nav className="sticky top-0 z-50 bg-[var(--color-nav-bg)] border-b border-[var(--color-border)]">
@@ -60,6 +67,12 @@ export default function Nav({
           <span className="text-sm font-medium text-[var(--color-text)] hidden sm:block">
             {settings.demoHotelName}
           </span>
+          <button
+            onClick={handleLogout}
+            className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+          >
+            {labels.logout}
+          </button>
         </div>
       </div>
     </nav>
