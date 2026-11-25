@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (isLoggedIn && isLoginPage) {
-    return NextResponse.redirect(new URL("/offers", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

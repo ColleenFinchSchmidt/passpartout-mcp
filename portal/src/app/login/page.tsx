@@ -19,7 +19,7 @@ export default function LoginPage() {
     setLoading(true);
     const res = await fetch("/api/demo-login", { method: "POST" });
     if (res.ok) {
-      router.push("/offers");
+      router.push("/");
       router.refresh();
     }
     setLoading(false);
