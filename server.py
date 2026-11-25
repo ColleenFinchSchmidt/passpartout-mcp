@@ -725,11 +725,12 @@ _timeline_cache: dict[str, dict] = {}  # hotel_id -> {"result": ..., "ts": datet
 _TIMELINE_TTL_SECONDS = 6 * 3600  # 6 hours
 
 def _invalidate_timeline_cache(hotel_id: str | None = None):
-    """Clear cached timeline for a hotel (or all hotels)."""
+    """Clear cached timeline for a hotel (or all hotels), then re-warm in background."""
     if hotel_id:
         _timeline_cache.pop(hotel_id, None)
     else:
         _timeline_cache.clear()
+    threading.Thread(target=_warm_timeline_cache, daemon=True).start()
 
 def _daily_cache_refresh():
     """Background thread: clear timeline cache at 06:00 Rome time each day."""
@@ -746,10 +747,11 @@ def _daily_cache_refresh():
 
 threading.Thread(target=_daily_cache_refresh, daemon=True).start()
 
-def _warm_timeline_cache():
-    """Pre-populate the timeline cache for the demo hotel on startup."""
-    import time as _time
-    _time.sleep(5)  # let the server finish starting
+def _warm_timeline_cache(delay: float = 0):
+    """Pre-populate the timeline cache for all demo hotels."""
+    if delay > 0:
+        import time as _time
+        _time.sleep(delay)
     try:
         from offer_timeline import evaluate_timeline
         for hotel in MOMENTS_HOTELS:
@@ -776,7 +778,7 @@ def _warm_timeline_cache():
     except Exception as exc:
         _log.warning("Cache warm-up failed: %s", exc)
 
-threading.Thread(target=_warm_timeline_cache, daemon=True).start()
+threading.Thread(target=_warm_timeline_cache, kwargs={"delay": 5}, daemon=True).start()
 
 @api.get("/api/hotel/offers-timeline", tags=["Hotel tools"], dependencies=[Depends(require_hotel_api_key)])
 def api_offers_timeline(
@@ -1788,6 +1790,7 @@ def api_create_offer(req: CreateOfferRequest):
         auto_waves=req.auto_waves,
         booking_rate=req.booking_rate,
     )
+    _invalidate_timeline_cache(req.hotel_id)
     return offer.to_dict()
 
 
@@ -1816,6 +1819,7 @@ def api_send_wave(offer_id: str, req: SendWaveRequest | None = None):
     result = inventory_store.send_next_wave(offer_id, extra_to_add=req.extra_to_add if req else None)
     if "error" in result:
         raise HTTPException(status_code=409, detail=result["error"])
+    _invalidate_timeline_cache()
     return result
 
 
@@ -2041,6 +2045,7 @@ def api_update_rules(
         MOMENTS_SETTINGS["contact_cooldown_days"] = rules.contact_cooldown_days
         updated["contact_cooldown_days"] = rules.contact_cooldown_days
 
+    _invalidate_timeline_cache(hotel["id"])
     return {"ok": True, "updated": updated, "demo": True}
 
 
